@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e09f12a9b8fb5e44eb81fa499afbecc4, type: 3}
+  m_Name: On Air
+  m_EditorClassIdentifier: 
+  onFixed: []
+  onUpdate:
+  - {fileID: 11400000, guid: a0eb450e41e485140af2827cfd6e0c6b, type: 2}
+  - {fileID: 11400000, guid: e7ddafee00788364c8bffdfd76d547e5, type: 2}
+  - {fileID: 11400000, guid: fb69d9bf752527b4196e532154482edb, type: 2}
+  - {fileID: 11400000, guid: 0e0cb840a5f5c214cb0f8db7dd49d195, type: 2}
+  - {fileID: 11400000, guid: 18585130a9a069c4eb27fc42ffc02ce4, type: 2}
+  - {fileID: 11400000, guid: 7a5964863bd5251438f1a7c39bc295b2, type: 2}
+  onEnter:
+  - {fileID: 11400000, guid: 7a5964863bd5251438f1a7c39bc295b2, type: 2}
+  onExit: []
+  stateName: On Air
+  idCount: 3
+  transitions:
+  - id: 2
+    condition: {fileID: 11400000, guid: 6e21022bc2ec6e1488b00f1fcdada0e2, type: 2}
+    targetState: {fileID: 11400000, guid: 0225933b0bf4587438730a98b935d45e, type: 2}
+    disable: 0

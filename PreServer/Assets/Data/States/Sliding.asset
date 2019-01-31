@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e09f12a9b8fb5e44eb81fa499afbecc4, type: 3}
+  m_Name: Sliding
+  m_EditorClassIdentifier: 
+  onFixed: []
+  onUpdate:
+  - {fileID: 11400000, guid: d3d2ee92667af2b408868919ca17a6d3, type: 2}
+  - {fileID: 11400000, guid: bbd1dea15bde8f04fa472b4ae22c5749, type: 2}
+  onEnter: []
+  onExit: []
+  stateName: Sliding
+  idCount: 2
+  transitions:
+  - id: 1
+    condition: {fileID: 11400000, guid: 18d19b7ebccb5eb4aae3f7ec825eefa9, type: 2}
+    targetState: {fileID: 11400000, guid: 0225933b0bf4587438730a98b935d45e, type: 2}
+    disable: 0
