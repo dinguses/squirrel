@@ -11,6 +11,7 @@ namespace PreServer
         public StateActions[] onUpdate;
         public StateActions[] onEnter;
         public StateActions[] onExit;
+        public StateActions[] actions;
 
         [SerializeField]
         public string stateName;
@@ -22,22 +23,48 @@ namespace PreServer
         public void OnEnter(StateManager states)
         {
             ExecuteActions(states, onEnter);
+            for (int i = 0; i < actions.Length; i++)
+            {
+                if (actions[i] != null)
+                {
+                    //Debug.Log(Time.frameCount + " || Entering States: " + actions[i].name);
+                    actions[i].OnEnter(states);
+                }
+            }
         }
 	
 		public void FixedTick(StateManager states)
 		{
-			ExecuteActions(states,onFixed);
-		}
+            ExecuteActions(states, onFixed);
+            for (int i = 0; i < actions.Length; i++)
+            {
+                if (actions[i] != null)
+                    actions[i].OnFixed(states);
+            }
+        }
 
         public void Tick(StateManager states)
         {
             ExecuteActions(states, onUpdate);
+            for (int i = 0; i < actions.Length; i++)
+            {
+                if (actions[i] != null)
+                    actions[i].OnUpdate(states);
+            }
             CheckTransitions(states);
         }
 
         public void OnExit(StateManager states)
         {
             ExecuteActions(states, onExit);
+            for (int i = 0; i < actions.Length; i++)
+            {
+                if (actions[i] != null)
+                {
+                    //Debug.Log(Time.frameCount + " || Leaving States: " + actions[i].name);
+                    actions[i].OnExit(states);
+                }
+            }
         }
 
         public void CheckTransitions(StateManager states)

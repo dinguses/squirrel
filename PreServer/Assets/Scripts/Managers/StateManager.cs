@@ -85,6 +85,7 @@ namespace PreServer
         public KeyValuePair<int, Vector3> behindPointPair;
 
         public Vector3 groundNormal;
+        public Vector3 frontNormal;
         public Vector3 middleNormal;
         public Vector3 backNormal;
         public Vector3 backupGroundNormal;

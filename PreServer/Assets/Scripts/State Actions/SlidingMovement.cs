@@ -64,10 +64,10 @@ namespace PreServer
 
             Vector3 currentVelocity = states.rigid.velocity;
 
-            float moveAmount = states.movementVariables.moveAmount;
+            //float moveAmount = states.movementVariables.moveAmount;
 
-            if (moveAmount > 0.1f)
-            {
+            //if (moveAmount > 0.1f)
+            //{
                 states.rigid.isKinematic = false;
                 states.rigid.drag = 0;
 
@@ -80,7 +80,7 @@ namespace PreServer
                         targetVelocity.y = 0;
                     }
                 }
-            }
+            //}
 
             //states.targetVelocity = targetVelocity;
             //states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity, states.delta * movementTime);

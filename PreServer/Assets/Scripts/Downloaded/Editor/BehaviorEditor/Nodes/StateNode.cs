@@ -93,7 +93,9 @@ namespace PreServer.BehaviorEditor
 						b.stateRef.onFixedList.DoLayoutList();
 						EditorGUILayout.LabelField("");
 						b.stateRef.onUpdateList.DoLayoutList();
-						standard += 100 + 40 + (b.stateRef.onUpdateList.count + b.stateRef.onFixedList.count) * 20;
+                        EditorGUILayout.LabelField("");
+                        b.stateRef.actionList.DoLayoutList();
+                        standard += 100 + 40 + (b.stateRef.onUpdateList.count + b.stateRef.onFixedList.count + b.stateRef.actionList.count) * 20;
 					}
 					b.showEnterExit = EditorGUILayout.Toggle("Show Enter/Exit ", b.showEnterExit);
 					if (b.showEnterExit)
@@ -123,11 +125,13 @@ namespace PreServer.BehaviorEditor
 			b.stateRef.onUpdateList = new ReorderableList(b.stateRef.serializedState, b.stateRef.serializedState.FindProperty("onUpdate"), true, true, true, true);
 			b.stateRef.onEnterList = new ReorderableList(b.stateRef.serializedState, b.stateRef.serializedState.FindProperty("onEnter"), true, true, true, true);
 			b.stateRef.onExitList = new ReorderableList(b.stateRef.serializedState, b.stateRef.serializedState.FindProperty("onExit"), true, true, true, true);
+			b.stateRef.actionList = new ReorderableList(b.stateRef.serializedState, b.stateRef.serializedState.FindProperty("actions"), true, true, true, true);
 
 			HandleReordableList(b.stateRef.onFixedList, "On Fixed");
 			HandleReordableList(b.stateRef.onUpdateList, "On Update");
 			HandleReordableList(b.stateRef.onEnterList, "On Enter");
 			HandleReordableList(b.stateRef.onExitList, "On Exit");
+			HandleReordableList(b.stateRef.actionList, "Actions");
 		}
 
         void HandleReordableList(ReorderableList list, string targetName)

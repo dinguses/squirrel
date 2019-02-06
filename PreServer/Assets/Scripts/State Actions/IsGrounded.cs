@@ -71,6 +71,7 @@ namespace PreServer
 
                     states.isGrounded = true;
 
+                    states.frontNormal = frontHit.normal;
                     states.middleNormal = middleHit.normal;
                     states.backNormal = backHit.normal;
                 }

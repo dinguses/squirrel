@@ -62,6 +62,7 @@ namespace PreServer.BehaviorEditor
 		public ReorderableList onUpdateList;
 		public ReorderableList onEnterList;
 		public ReorderableList onExitList;
+		public ReorderableList actionList;
 	}
 
 	[System.Serializable]

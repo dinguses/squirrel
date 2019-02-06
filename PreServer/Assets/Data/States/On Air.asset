@@ -4,7 +4,8 @@
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -22,6 +23,7 @@ MonoBehaviour:
   onEnter:
   - {fileID: 11400000, guid: 7a5964863bd5251438f1a7c39bc295b2, type: 2}
   onExit: []
+  actions: []
   stateName: On Air
   idCount: 3
   transitions:

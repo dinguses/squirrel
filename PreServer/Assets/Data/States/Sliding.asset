@@ -4,7 +4,8 @@
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -13,14 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   onFixed: []
   onUpdate:
-  - {fileID: 11400000, guid: d3d2ee92667af2b408868919ca17a6d3, type: 2}
   - {fileID: 11400000, guid: bbd1dea15bde8f04fa472b4ae22c5749, type: 2}
   onEnter: []
   onExit: []
+  actions:
+  - {fileID: 11400000, guid: d3d2ee92667af2b408868919ca17a6d3, type: 2}
   stateName: Sliding
-  idCount: 2
+  idCount: 3
   transitions:
-  - id: 1
+  - id: 2
     condition: {fileID: 11400000, guid: 18d19b7ebccb5eb4aae3f7ec825eefa9, type: 2}
     targetState: {fileID: 11400000, guid: 0225933b0bf4587438730a98b935d45e, type: 2}
     disable: 0

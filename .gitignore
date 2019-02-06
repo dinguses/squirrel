@@ -34,3 +34,7 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+PreServer/Logs/Packages-Update.log
+PreServer/ProjectSettings/VFXManager.asset
+PreServer/ProjectSettings/ProjectVersion.txt
+PreServer/Packages/manifest.json
