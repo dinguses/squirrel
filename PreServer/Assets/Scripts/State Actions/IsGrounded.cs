@@ -13,7 +13,7 @@ namespace PreServer
     {
         public float groundedDis = .8f;
         public float onAirDis = .85f;
-
+        public LayerMask groundLayer;
         public override void Execute(StateManager states)
         {
             // Setup origin points for three different ground checking vector3s. One in middle of player, one in front, and one in back
@@ -59,7 +59,7 @@ namespace PreServer
             Debug.DrawRay(middleOrigin, dir * dis, Color.green);
             Debug.DrawRay(frontOrigin, dir * dis, Color.yellow);
             Debug.DrawRay(backOrigin, dir * dis, Color.white);
-
+            //Debug.Log(Time.frameCount + " || Front Collider Grounded: " + isGrounded(states.frontCollider));
             // If player is already grounded, check if they should remain
             if (states.isGrounded)
             {
@@ -69,16 +69,16 @@ namespace PreServer
                     Physics.SphereCast(backOrigin, 0.3f, dir, out backHit, dis, Layers.ignoreLayersController))
                 {
 
-                    states.isGrounded = true;
+                    //states.isGrounded = true;
 
                     states.frontNormal = frontHit.normal;
                     states.middleNormal = middleHit.normal;
                     states.backNormal = backHit.normal;
                 }
-                else
-                {
-                    states.isGrounded = false;
-                }
+                //else
+                //{
+                //    states.isGrounded = false;
+                //}
             }
 
             // If player is not grounded, see if they should be
@@ -88,7 +88,7 @@ namespace PreServer
                 // Velocity check is to make sure player gets fully off the ground for a jump on a sloped surface
                 if ((Physics.SphereCast(middleOrigin, 0.3f, dir, out middleHit, dis, Layers.ignoreLayersController) ||
                     Physics.SphereCast(frontOrigin, 0.3f, dir, out frontHit, dis, Layers.ignoreLayersController) ||
-                    Physics.SphereCast(backOrigin, 0.3f, dir, out backHit, dis, Layers.ignoreLayersController)) && !states.stepUpJump && states.rigid.velocity.y <= 1.0f)
+                    Physics.SphereCast(backOrigin, 0.3f, dir, out backHit, dis, Layers.ignoreLayersController)  && !states.stepUpJump && states.rigid.velocity.y <= 1.0f))
                 {
                     //Debug.Log("Grounding with - " + states.rigid.velocity.y);
                     //Debug.Log(middleHit.collider.name);
@@ -119,13 +119,22 @@ namespace PreServer
                     }
 
 
-                    states.isGrounded = true;
+                    //states.isGrounded = true;
                 }
-                else
-                {
-                    states.isGrounded = false;
-                }
+                //else
+                //{
+                //    //states.isGrounded = false;
+                //}
             }
+
+            states.isGrounded = (isGrounded(states.frontCollider) || isGrounded(states.backCollider));
+        }
+
+        //Checks to see if the collider is interacting with anything on the default layer '0'
+        //https://www.youtube.com/watch?v=vdOFUFMiPDU
+        bool isGrounded(CapsuleCollider col)
+        {
+            return Physics.CheckCapsule(col.bounds.center, new Vector3(col.bounds.center.x, col.bounds.min.y, col.bounds.center.z), col.radius * 0.9f, groundLayer);
         }
     }
 }

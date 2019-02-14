@@ -19,6 +19,7 @@ MonoBehaviour:
   onExit: []
   actions:
   - {fileID: 11400000, guid: d3d2ee92667af2b408868919ca17a6d3, type: 2}
+  - {fileID: 11400000, guid: 0fefc443c939d994d8badbe13fdaaede, type: 2}
   stateName: Sliding
   idCount: 3
   transitions:

@@ -18,7 +18,7 @@ namespace PreServer
 
         public override void Execute(StateManager states)
         {
-            float frontY = 0;
+            //float frontY = 0;
             RaycastHit hit;
             RaycastHit hit2;
             Vector3 origin = states.mTransform.position + (states.mTransform.forward * frontRayOffset);
@@ -28,17 +28,17 @@ namespace PreServer
 
             Debug.DrawRay(origin, -Vector3.up, Color.red);
             //Debug.DrawRay(origin2, -Vector3.up, Color.red);
-            Vector3 targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * movementSpeed;
+            //Vector3 targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * movementSpeed;
 
             if (Physics.Raycast(origin, -Vector3.up, out hit, 1, Layers.ignoreLayersController))
             {
-                float y = hit.point.y;
+                //float y = hit.point.y;
 
                 states.groundNormal = hit.normal;
 
 
 
-                frontY = y - states.mTransform.position.y;
+                //frontY = y - states.mTransform.position.y;
 
                 if (Physics.Raycast(origin2, -Vector3.up, out hit2, 1, Layers.ignoreLayersController))
                 {
@@ -63,23 +63,34 @@ namespace PreServer
             }
 
             Vector3 currentVelocity = states.rigid.velocity;
+            Vector3 vector = hit.normal;
+            vector.y += 0.5f;
+            //Debug.DrawLine(origin, hit.point, Color.green);
+            //Debug.DrawRay(origin, states.groundNormal, Color.yellow);
+            //Vector3 dir = origin - states.groundNormal;
+            //Vector3 left = Vector3.Cross(states.groundNormal, Vector3.right);
+            //Debug.DrawRay(origin, left, Color.yellow);
 
+            //Vector3 right = -left;
+            //Vector3 right = Vector3.Cross(Vector3.up, dir).normalized;
+            //Vector3 right = Vector3.Cross(-dir, Vector3.up).normalized;
+            //Vector3 right = Vector3.Cross(dir, -Vector3.up).normalized;
             //float moveAmount = states.movementVariables.moveAmount;
 
             //if (moveAmount > 0.1f)
             //{
-                states.rigid.isKinematic = false;
+            states.rigid.isKinematic = false;
                 states.rigid.drag = 0;
 
-                if (Mathf.Abs(frontY) > 0.02f)
-                {
-                    targetVelocity.y = ((frontY > 0) ? frontY + 0.2f : frontY) * movementSpeed;
+                //if (Mathf.Abs(frontY) > 0.02f)
+                //{
+                //    targetVelocity.y = ((frontY > 0) ? frontY + 0.2f : frontY) * movementSpeed;
 
-                    if (targetVelocity.y > 0)
-                    {
-                        targetVelocity.y = 0;
-                    }
-                }
+                //    if (targetVelocity.y > 0)
+                //    {
+                //        targetVelocity.y = 0;
+                //    }
+                //}
             //}
 
             //states.targetVelocity = targetVelocity;

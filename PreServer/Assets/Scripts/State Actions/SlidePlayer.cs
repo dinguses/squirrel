@@ -15,6 +15,7 @@ namespace PreServer
         public float downwardsGravity;
         public float movementTime = 10;
         public float slideTime = 0.3f;
+        public float movementSpeed;
         float timer = 0;
         float gravity = 0;
 
@@ -29,13 +30,19 @@ namespace PreServer
             gravity = downwardsGravity;
             //Debug.Log(Time.frameCount + " || Slide Player On State Enter");
         }
-
+        Vector3 currentVelocity;
+        Vector3 targetVelocity;
         public override void OnUpdate(StateManager states)
         {
+            //need to make a rotate on slide action
+            currentVelocity = states.rigid.velocity;
+            targetVelocity = currentVelocity;
+            //currentVelocity.x = 0;
+            //This is causing the player move up the high slope, but why?
+            targetVelocity.x = states.mTransform.forward.x * states.movementVariables.moveAmount * movementSpeed;
             if (timer >= slideTime)
             {
-                Vector3 currentVelocity = states.rigid.velocity;
-                Vector3 targetVelocity = currentVelocity;
+                
 
                 targetVelocity.y = currentVelocity.y - gravity;
 
@@ -43,6 +50,11 @@ namespace PreServer
 
                 states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity, states.delta * movementTime);
                 gravity += gravityAdditive;
+                //Debug.Log(Time.frameCount + " || velocity: " + states.rigid.velocity + " current: " + currentVelocity + " target: " + targetVelocity);
+            }
+            else if(!currentVelocity.Equals(targetVelocity))
+            {
+                states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity, states.delta * movementTime);
                 //Debug.Log(Time.frameCount + " || velocity: " + states.rigid.velocity + " current: " + currentVelocity + " target: " + targetVelocity);
             }
             timer += states.delta;
