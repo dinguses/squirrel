@@ -23,7 +23,7 @@ namespace PreServer
             if (currentTransform.value == null)
                 return;
 
-            if (isAtFixed)
+            /*if (isAtFixed)
             {
                 if (!stateVariable.value.followMeOnFixedUpdate)
                     return;
@@ -32,7 +32,7 @@ namespace PreServer
             {
                 if (stateVariable.value.followMeOnFixedUpdate)
                     return;
-            }
+            }*/
 
             Vector3 targetPosition = Vector3.Lerp(currentTransform.value.position, stateVariable.value.mTransform.position, delta.value * speed);
             currentTransform.value.position = targetPosition;

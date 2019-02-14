@@ -15,7 +15,7 @@ MonoBehaviour:
   targetTransform: {fileID: 11400000, guid: 74c4d5a43fc4b4947a4d7dc56225221e, type: 2}
   delta: {fileID: 11400000, guid: 2f164c647f2e14e46a18de8684f60115, type: 2}
   angle: 6011.5625
-  speed: 10
+  speed: 100
   negative: 0
   clamp: 0
   minClamp: -35

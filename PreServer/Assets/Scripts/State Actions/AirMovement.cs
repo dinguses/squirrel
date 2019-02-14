@@ -31,8 +31,9 @@ namespace PreServer
             // Is jump being pressed?
             if (Input.GetKeyUp("joystick button 3") || Input.GetKeyUp("space"))
             {
+                // was <= 10, noticed it was broken after Camera
                 // Needs to be at least a minimum jump
-                if (currentVelocity.y <= 10)
+                if (currentVelocity.y <= 12)
                 {
                     // Did they let go before short hop window? If so, do short hop. If not, they're letting go after short hop window
                     if (currentVelocity.y >= 7.5f)
