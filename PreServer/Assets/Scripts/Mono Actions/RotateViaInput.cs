@@ -13,7 +13,7 @@ namespace PreServer
         public FloatVariable delta;
 
         public float angle;
-        public float speed = 9;
+        public float speed;
         public bool negative;
         public bool clamp;
         public float minClamp = -35;
@@ -24,10 +24,16 @@ namespace PreServer
         {
             float t = delta.value * speed;
 
+            var test = targetTransform.value.localRotation.y;
+
             if (!negative)
+            {
                 angle = Mathf.Lerp(angle, angle += targetFloat.value, t);
+            }
             else
+            {
                 angle = Mathf.Lerp(angle, angle -= targetFloat.value, t);
+            }
 
             if (clamp)
             {
