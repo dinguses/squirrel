@@ -39,7 +39,21 @@ namespace PreServer
             targetVelocity = currentVelocity;
             //currentVelocity.x = 0;
             //This is causing the player move up the high slope, but why?
-            targetVelocity.x = states.mTransform.forward.x * states.movementVariables.moveAmount * movementSpeed;
+            targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * movementSpeed;
+            //float angle = 0;
+            //if (states.middle != null)
+            //    angle = states.middle.transform.eulerAngles.y;
+            //else if (states.front != null)
+            //    angle = states.front.transform.eulerAngles.y;
+            //else if (states.back != null)
+            //    angle = states.back.transform.eulerAngles.y;
+            //else
+            //    angle = states.mTransform.;
+            //targetVelocity.z = (force * Mathf.Cos(angle));
+            //targetVelocity.z = (force > 0 ? - Mathf.Abs(targetVelocity.z) : + Mathf.Abs(targetVelocity.z));
+            //targetVelocity.x = force;
+            //targetVelocity = states.mTransform.TransformDirection(Vector3.Lerp(currentVelocity, targetVelocity, states.delta * movementTime));
+            //Debug.Log(Time.frameCount + " || target: " + targetVelocity + " force: " + force + " angle: " + angle);
             if (timer >= slideTime)
             {
                 
@@ -48,13 +62,13 @@ namespace PreServer
 
                 //Debug.Log(targetVelocity.y);
 
-                states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity, states.delta * movementTime);
+                states.rigid.velocity = targetVelocity;
                 gravity += gravityAdditive;
                 //Debug.Log(Time.frameCount + " || velocity: " + states.rigid.velocity + " current: " + currentVelocity + " target: " + targetVelocity);
             }
             else if(!currentVelocity.Equals(targetVelocity))
             {
-                states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity, states.delta * movementTime);
+                states.rigid.velocity = targetVelocity;
                 //Debug.Log(Time.frameCount + " || velocity: " + states.rigid.velocity + " current: " + currentVelocity + " target: " + targetVelocity);
             }
             timer += states.delta;

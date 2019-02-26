@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2504159a4b4c7e4bb8d260db4cfba31, type: 3}
   m_Name: Is Grounded
   m_EditorClassIdentifier: 
-  groundedDis: 1
-  onAirDis: 0.75
+  groundedDis: 0.5
+  onAirDis: 0.5
   groundLayer:
     serializedVersion: 2
     m_Bits: 1

@@ -38,6 +38,7 @@ namespace PreServer
             dir.z = dir.z - states.groundNormal.z;
 
             Debug.DrawRay(origin, dir, Color.red);
+            Debug.DrawRay(origin2, dir, Color.cyan);
 
             // Raycast from first origin point
             if (Physics.Raycast(origin, dir, out hit, 1, Layers.ignoreLayersController))

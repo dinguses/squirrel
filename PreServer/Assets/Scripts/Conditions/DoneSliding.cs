@@ -13,7 +13,8 @@ namespace PreServer
     public class DoneSliding : Condition
     {
         public float minSlideAngle = 35;
-
+        public float maxSlideAngle = 70;
+        float angle = 0;
         public override bool CheckCondition(StateManager state)
         {
             //bool result = false;
@@ -26,8 +27,8 @@ namespace PreServer
             float dis = .8f;
             Physics.SphereCast(frontOrigin, 0.3f, dir, out frontHit, dis, Layers.ignoreLayersController);
 
-
-            if (Vector3.Angle(frontHit.normal, Vector3.up) < minSlideAngle)
+            angle = Vector3.Angle(frontHit.normal, Vector3.up);
+            if (angle <= minSlideAngle || angle >= maxSlideAngle)
             {
                 return true;
             }

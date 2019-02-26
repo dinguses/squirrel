@@ -14,12 +14,13 @@ namespace PreServer
     public class MonitorSlide : Condition
     {
         public float minSlideAngle = 35;
-        
+        public float maxSlideAngle = 70;
+        float angle = 0;
         public override bool CheckCondition(StateManager state)
         {
             bool result = false;
-
-            if (Vector3.Angle(state.backupGroundNormal, Vector3.up) > minSlideAngle && state.backupGroundNormal == state.middleNormal)
+            angle = Vector3.Angle(state.backupGroundNormal, Vector3.up);
+            if (angle > minSlideAngle && angle < maxSlideAngle/* && state.backupGroundNormal == state.middleNormal*/)
             {
                 //Debug.Log("sliding?");
                 result = true;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEditor;
 
 namespace PreServer
 {
@@ -103,6 +104,9 @@ namespace PreServer
 
         public Camera mainCam;
         public Camera mainCam2;
+        public GameObject front;
+        public GameObject middle;
+        public GameObject back;
 
         private void Start()
         {
@@ -455,6 +459,90 @@ namespace PreServer
             grindPoints = new Dictionary<int, Vector3>();
             grindCenters = new Dictionary<int, BoxCollider>();
             grindCenter = new BoxCollider();
+        }
+        float groundedDis = .5f;
+        float onAirDis = .5f;
+        private void OnDrawGizmos()
+        {
+            // Setup origin points for three different ground checking vector3s. One in middle of player, one in front, and one in back
+            Vector3 middleOrigin = transform.position;
+            Vector3 frontOrigin = transform.position;
+            Vector3 backOrigin = transform.position;
+
+            middleOrigin += transform.forward;
+            frontOrigin += transform.forward + transform.forward / 2;
+            //backOrigin += transform.forward / 2;
+
+            // Origins should be coming from inside of player
+            middleOrigin.y += .7f;
+            frontOrigin.y += .7f;
+            backOrigin.y += .7f;
+
+            // Dir represents the downward direction
+            Vector3 dir = -Vector3.up;
+
+
+            //TODO: testing this
+
+            if (isGrounded)
+            {
+                // If player is on a sloped surface, must account for the normal
+                dir.z = dir.z - groundNormal.z;
+            }
+            else
+            {
+                dir.z = dir.z - transform.up.z;
+                //dir.z = dir.z
+            }
+
+            // Set distance depending on if player grounded or in air
+            float dis = (isGrounded) ? groundedDis : onAirDis;
+            Gizmos.color = Color.red;
+            // Draw the rays
+            Gizmos.DrawRay(frontOrigin, dir * dis);
+            Gizmos.color = Color.blue;
+
+            Gizmos.DrawSphere(middleOrigin + dir * dis, 0.3f);
+            Gizmos.color = Color.green;
+
+            Gizmos.DrawSphere(backOrigin + dir * dis, 0.3f);
+        }
+
+        public static void DrawWireCapsule(Vector3 _pos, Quaternion _rot, float _radius, float _height, Color _color = default(Color))
+        {
+            if (_color != default(Color))
+                Handles.color = _color;
+            Matrix4x4 angleMatrix = Matrix4x4.TRS(_pos, _rot, Handles.matrix.lossyScale);
+            using (new Handles.DrawingScope(angleMatrix))
+            {
+                float pointOffset = (_height - (_radius * 2)) / 2;
+
+                //draw sideways
+                Handles.DrawWireArc(Vector3.up * pointOffset, Vector3.left, Vector3.back, -180, _radius);
+                Handles.DrawLine(new Vector3(0, pointOffset, -_radius), new Vector3(0, -pointOffset, -_radius));
+                Handles.DrawLine(new Vector3(0, pointOffset, _radius), new Vector3(0, -pointOffset, _radius));
+                Handles.DrawWireArc(Vector3.down * pointOffset, Vector3.left, Vector3.back, 180, _radius);
+                //draw frontways
+                Handles.DrawWireArc(Vector3.up * pointOffset, Vector3.back, Vector3.left, 180, _radius);
+                Handles.DrawLine(new Vector3(-_radius, pointOffset, 0), new Vector3(-_radius, -pointOffset, 0));
+                Handles.DrawLine(new Vector3(_radius, pointOffset, 0), new Vector3(_radius, -pointOffset, 0));
+                Handles.DrawWireArc(Vector3.down * pointOffset, Vector3.back, Vector3.left, -180, _radius);
+                //draw center
+                Handles.DrawWireDisc(Vector3.up * pointOffset, Vector3.up, _radius);
+                Handles.DrawWireDisc(Vector3.down * pointOffset, Vector3.up, _radius);
+
+            }
+        }
+
+        void OnSceneGUI()
+        {
+            fef(frontCollider);
+            fef(backCollider);
+        }
+
+        void fef(CapsuleCollider col)
+        {
+            DrawWireCapsule(col.bounds.center, col.transform.rotation, col.radius * 0.9f, col.bounds.min.y);
         }
     }
 }

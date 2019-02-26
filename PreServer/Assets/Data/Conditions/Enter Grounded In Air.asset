@@ -9,11 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3aa91eeb7593fc4da1229f8fe2649e0, type: 3}
-  m_Name: Slide Player
+  m_Script: {fileID: 11500000, guid: fcae54bbcbc08db47974e524a06df5fc, type: 3}
+  m_Name: Enter Grounded In Air
   m_EditorClassIdentifier: 
-  gravityAdditive: 0.05
-  downwardsGravity: 0.1
-  movementTime: 10
-  slideTime: 0.3
-  movementSpeed: 5.25
+  description: 

@@ -4,7 +4,8 @@
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -26,7 +27,7 @@ MonoBehaviour:
   onExit: []
   actions: []
   stateName: Locomotion
-  idCount: 6
+  idCount: 7
   transitions:
   - id: 1
     condition: {fileID: 11400000, guid: 09646b58739c1844d967360476f1c82b, type: 2}
@@ -43,4 +44,8 @@ MonoBehaviour:
   - id: 5
     condition: {fileID: 11400000, guid: aae7d415446cab04a85384fe44f0a00c, type: 2}
     targetState: {fileID: 11400000, guid: ae542f02ed7c6e0428c814943fd536c6, type: 2}
+    disable: 0
+  - id: 6
+    condition: {fileID: 11400000, guid: 38eb054bde0e8364c846d1233495768f, type: 2}
+    targetState: {fileID: 11400000, guid: e1f3977816c5d564bbc56823aab1cf95, type: 2}
     disable: 0

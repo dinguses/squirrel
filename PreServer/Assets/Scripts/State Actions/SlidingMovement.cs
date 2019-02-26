@@ -21,13 +21,13 @@ namespace PreServer
             //float frontY = 0;
             RaycastHit hit;
             RaycastHit hit2;
-            Vector3 origin = states.mTransform.position + (states.mTransform.forward * frontRayOffset);
+            Vector3 origin = states.mTransform.position + states.mTransform.forward * frontRayOffset;
             Vector3 origin2 = states.mTransform.position;
             origin.y += .5f;
             origin2.y += .5f;
 
             Debug.DrawRay(origin, -Vector3.up, Color.red);
-            //Debug.DrawRay(origin2, -Vector3.up, Color.red);
+            Debug.DrawRay(origin2, -Vector3.up, Color.red);
             //Vector3 targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * movementSpeed;
 
             if (Physics.Raycast(origin, -Vector3.up, out hit, 1, Layers.ignoreLayersController))
@@ -68,8 +68,9 @@ namespace PreServer
             //Debug.DrawLine(origin, hit.point, Color.green);
             //Debug.DrawRay(origin, states.groundNormal, Color.yellow);
             //Vector3 dir = origin - states.groundNormal;
-            //Vector3 left = Vector3.Cross(states.groundNormal, Vector3.right);
-            //Debug.DrawRay(origin, left, Color.yellow);
+            //Vector3 forward = Vector3.Cross(hit.normal, Vector3.up);
+            //vector = Vector3.Cross(forward, hit.normal);
+            //Debug.DrawRay(origin, vector, Color.yellow);
 
             //Vector3 right = -left;
             //Vector3 right = Vector3.Cross(Vector3.up, dir).normalized;

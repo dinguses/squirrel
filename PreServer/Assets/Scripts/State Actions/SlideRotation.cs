@@ -48,7 +48,7 @@ namespace PreServer
             Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * states.movementVariables.moveAmount * speed);
             //Figure out the angle between the 2 quaternions, if it is outside the constraint or there is no input, slowly rotate the user back to start
             float angle = Quaternion.Angle(start, targetRotation);
-            Debug.Log(angle);
+            //Debug.Log(angle);
             if (angle <= constraint && angle >= -constraint)
                 states.mTransform.rotation = targetRotation;
         }

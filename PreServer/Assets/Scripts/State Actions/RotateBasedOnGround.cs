@@ -12,7 +12,7 @@ namespace PreServer
     public class RotateBasedOnGround : StateActions
     {
         public float rotSpeed = 8;
-
+        public float rotationConstraint = 70;
         public override void Execute(StateManager states)
         {
 
@@ -39,7 +39,7 @@ namespace PreServer
                     amount = 15;
             }
 
-            if (angle < 35)
+            if (angle < rotationConstraint)
             {
                 Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, states.groundNormal) * states.mTransform.rotation;
                 Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * amount);

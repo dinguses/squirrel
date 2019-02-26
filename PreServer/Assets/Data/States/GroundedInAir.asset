@@ -10,21 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e09f12a9b8fb5e44eb81fa499afbecc4, type: 3}
-  m_Name: Sliding
+  m_Name: GroundedInAir
   m_EditorClassIdentifier: 
   onFixed: []
   onUpdate:
-  - {fileID: 11400000, guid: bbd1dea15bde8f04fa472b4ae22c5749, type: 2}
-  - {fileID: 11400000, guid: 27ee309ca608d9c4b8b620caaad85818, type: 2}
+  - {fileID: 11400000, guid: 0e0cb840a5f5c214cb0f8db7dd49d195, type: 2}
   onEnter: []
   onExit: []
   actions:
-  - {fileID: 11400000, guid: d3d2ee92667af2b408868919ca17a6d3, type: 2}
-  - {fileID: 11400000, guid: 0fefc443c939d994d8badbe13fdaaede, type: 2}
-  stateName: Sliding
-  idCount: 3
+  - {fileID: 11400000, guid: 113386b037b368242a9579d83d09ec72, type: 2}
+  stateName: 
+  idCount: 1
   transitions:
-  - id: 2
-    condition: {fileID: 11400000, guid: 18d19b7ebccb5eb4aae3f7ec825eefa9, type: 2}
+  - id: 0
+    condition: {fileID: 11400000, guid: 391e2705f7460434fb2de0c357621b5f, type: 2}
     targetState: {fileID: 11400000, guid: 0225933b0bf4587438730a98b935d45e, type: 2}
     disable: 0

@@ -23,7 +23,7 @@ namespace PreServer
 
             middleOrigin+= states.mTransform.forward;
             frontOrigin+= states.mTransform.forward + states.mTransform.forward / 2;
-            backOrigin+= states.mTransform.forward / 2;
+            //backOrigin += states.mTransform.forward / 2;
 
             // Origins should be coming from inside of player
             middleOrigin.y += .7f;
@@ -63,22 +63,35 @@ namespace PreServer
             // If player is already grounded, check if they should remain
             if (states.isGrounded)
             {
-                // If any of the three rays hit the ground, then player is still grounded
-                if (Physics.SphereCast(middleOrigin, 0.3f, dir, out middleHit, dis, Layers.ignoreLayersController)  || 
-                    Physics.SphereCast(frontOrigin, 0.3f, dir, out frontHit, dis, Layers.ignoreLayersController)    ||
-                    Physics.SphereCast(backOrigin, 0.3f, dir, out backHit, dis, Layers.ignoreLayersController))
+                if (Physics.Raycast(middleOrigin, dir, out middleHit, dis, Layers.ignoreLayersController))
                 {
-
-                    //states.isGrounded = true;
-
-                    states.frontNormal = frontHit.normal;
                     states.middleNormal = middleHit.normal;
-                    states.backNormal = backHit.normal;
+                    states.middle = middleHit.transform.gameObject;
                 }
-                //else
-                //{
-                //    states.isGrounded = false;
-                //}
+                else
+                {
+                    states.middle = null;
+                }
+
+                if (Physics.SphereCast(frontOrigin, 0.3f, dir, out frontHit, dis, Layers.ignoreLayersController))
+                {
+                    states.frontNormal = frontHit.normal;
+                    states.front = frontHit.transform.gameObject;
+                }
+                else
+                {
+                    states.front = null;
+                }
+
+                if (Physics.SphereCast(backOrigin, 0.3f, dir, out backHit, dis, Layers.ignoreLayersController))
+                {
+                    states.backNormal = backHit.normal;
+                    states.back = backHit.transform.gameObject;
+                }
+                else
+                {
+                    states.back = null;
+                }
             }
 
             // If player is not grounded, see if they should be
