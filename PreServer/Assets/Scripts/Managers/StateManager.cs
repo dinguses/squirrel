@@ -35,7 +35,16 @@ namespace PreServer
         public AnimatorData animData;
 
         public bool isJumping;
-        public bool isGrounded;
+        bool _isGrounded;
+        public bool isGrounded
+        {
+            get { return _isGrounded; }
+            set
+            {
+                Debug.Log(Time.frameCount + " || setting isGrounded to: " + value + " was: " + _isGrounded);
+                _isGrounded = value;
+            }
+        }
         public bool followMeOnFixedUpdate;
 
         public bool isRun;
@@ -107,9 +116,11 @@ namespace PreServer
         public GameObject front;
         public GameObject middle;
         public GameObject back;
+        public static StateManager ptr;
 
         private void Start()
         {
+            ptr = this;
             mTransform = this.transform;
 
             groundNormal = Vector3.zero;
@@ -160,7 +171,8 @@ namespace PreServer
         private void Update()
         {
             delta = Time.deltaTime;
-
+            UpdateGroundNormals();
+            SetAnimStates();
             if (currentState != null)
             {
                 currentState.Tick(this);
@@ -246,6 +258,164 @@ namespace PreServer
                 }
             }
             #endregion
+        }
+
+        public float groundedDis = .8f;
+        public float onAirDis = .85f;
+        public LayerMask groundLayer;
+        public void UpdateGroundNormals()
+        {
+            // Setup origin points for three different ground checking vector3s. One in middle of player, one in front, and one in back
+            Vector3 middleOrigin = transform.position;
+            Vector3 frontOrigin = transform.position;
+            Vector3 backOrigin = transform.position;
+
+            middleOrigin += transform.forward;
+            frontOrigin += transform.forward + transform.forward / 2;
+            //backOrigin += states.mTransform.forward / 2;
+
+            // Origins should be coming from inside of player
+            middleOrigin.y += .7f;
+            frontOrigin.y += .7f;
+            backOrigin.y += .7f;
+
+            // Dir represents the downward direction
+            Vector3 dir = -Vector3.up;
+
+
+            //TODO: testing this
+
+            if (isGrounded)
+            {
+                // If player is on a sloped surface, must account for the normal
+                dir.z = dir.z - groundNormal.z;
+            }
+            else
+            {
+                dir.z = dir.z - transform.up.z;
+                //dir.z = dir.z 
+            }
+
+            // Set distance depending on if player grounded or in air
+            float dis = (isGrounded) ? groundedDis : onAirDis;
+
+            // RaycastHits for each grounding ray
+            RaycastHit middleHit = new RaycastHit();
+            RaycastHit frontHit = new RaycastHit();
+            RaycastHit backHit = new RaycastHit();
+
+            // Draw the rays
+            Debug.DrawRay(middleOrigin, dir * dis, Color.green);
+            Debug.DrawRay(frontOrigin, dir * dis, Color.yellow);
+            Debug.DrawRay(backOrigin, dir * dis, Color.white);
+            //Debug.Log(Time.frameCount + " || Front Collider Grounded: " + isGrounded(states.frontCollider));
+            // If player is already grounded, check if they should remain
+            //if (states.isGrounded)
+            //{
+            float angle = 0;
+            if (Physics.SphereCast(middleOrigin, 0.3f, dir, out middleHit, dis, Layers.ignoreLayersController))
+            {
+                middleNormal = middleHit.normal;
+                //states.middle = middleHit.transform.gameObject;
+                angle = Vector3.Angle(middleHit.normal, Vector3.up);
+                if (angle >= 70)
+                    middle = null;
+                else
+                    middle = middleHit.transform.gameObject;
+            }
+            else
+            {
+                middle = null;
+            }
+
+            if (Physics.Raycast(frontOrigin, dir, out frontHit, dis + 0.3f, Layers.ignoreLayersController))
+            {
+                frontNormal = frontHit.normal;
+                //states.front = frontHit.transform.gameObject;
+                angle = Vector3.Angle(frontHit.normal, Vector3.up);
+                if (angle >= 70)
+                    front = null;
+                else
+                    front = frontHit.transform.gameObject;
+            }
+            else
+            {
+                front = null;
+            }
+
+            if (Physics.SphereCast(backOrigin, 0.3f, dir, out backHit, dis, Layers.ignoreLayersController))
+            {
+                backNormal = backHit.normal;
+                //states.back = backHit.transform.gameObject;
+                angle = Vector3.Angle(backHit.normal, Vector3.up);
+                if (angle >= 70)
+                    back = null;
+                else
+                    back = backHit.transform.gameObject;
+            }
+            else
+            {
+                back = null;
+            }
+
+            // If the back raycast hits something, but the front and middle aren't, AND the player is grounded, then the player is probably on a slope, but not rotated properly
+            //TODO: Make this better ASAP!!!!!
+            if (backHit.normal != groundNormal && frontHit.normal == Vector3.zero && middleHit.normal == Vector3.zero && !isGrounded)
+            {
+                //Debug.Log("backHit specific use case!");
+
+                // Set the ground normal to be the normal of the backHit
+                groundNormal = backHit.normal;
+            }
+
+            isGrounded = (CheckGrounded(frontCollider) || CheckGrounded(backCollider));
+        }
+
+        //Checks to see if the collider is interacting with anything on the default layer '0'
+        //https://www.youtube.com/watch?v=vdOFUFMiPDU
+        bool CheckGrounded(CapsuleCollider col)
+        {
+            //return Physics.CheckBox(new Vector3(col.bounds.center.x, col.bounds.center.y - (col.bounds.size.y - (col.bounds.size.y * 0.5f)), col.bounds.center.z), new Vector3(col.bounds.size.x * 1.5f, col.bounds.size.y * 0.5f, col.bounds.size.z * 1.5f) * 0.5f, col.transform.rotation, groundLayer);
+            return Physics.CheckCapsule(col.bounds.center, new Vector3(col.bounds.center.x, col.bounds.min.y, col.bounds.center.z), col.radius * 1.5f, groundLayer);
+        }
+        /// <summary>
+        /// Updates animator's isGrounded
+        /// </summary>
+        void SetAnimStates()
+        {
+            anim.SetBool(hashes.isGrounded, isGrounded);
+
+            float timeDifference = Time.realtimeSinceStartup - timeSinceJump;
+
+            anim.SetFloat(hashes.TimeSinceGrounded, timeDifference);
+
+            //states.anim.SetFloat(states.hashes.vertical, states.movementVariables.moveAmount, 0.2f, states.delta);
+            anim.SetFloat(hashes.speed, movementVariables.moveAmount, 0.01f, delta);
+
+            if (movementVariables.moveAmount == 0)
+            {
+                timeSinceMove = Time.realtimeSinceStartup;
+            }
+
+            if (movementVariables.moveAmount > .3f)
+            {
+                timeSinceSlow = Time.realtimeSinceStartup;
+            }
+
+            timeDifference = Time.realtimeSinceStartup - timeSinceMove;
+            float timeDifference2 = Time.realtimeSinceStartup - timeSinceSlow;
+
+            if (timeDifference < .2f)
+            {
+                anim.SetFloat(hashes.TimeSinceMove, timeDifference, 0.01f, delta);
+            }
+
+            if (timeDifference2 < .2f)
+            {
+                anim.SetFloat(hashes.TimeSinceSlow, timeDifference2, 0.01f, delta);
+            }
+
+            anim.SetBool(hashes.UpIdle, UpIdle);
         }
 
         void OnTriggerEnter(Collider other)
@@ -460,52 +630,59 @@ namespace PreServer
             grindCenters = new Dictionary<int, BoxCollider>();
             grindCenter = new BoxCollider();
         }
-        float groundedDis = .5f;
-        float onAirDis = .5f;
         private void OnDrawGizmos()
         {
-            // Setup origin points for three different ground checking vector3s. One in middle of player, one in front, and one in back
-            Vector3 middleOrigin = transform.position;
-            Vector3 frontOrigin = transform.position;
-            Vector3 backOrigin = transform.position;
+            //// Setup origin points for three different ground checking vector3s. One in middle of player, one in front, and one in back
+            //Vector3 middleOrigin = transform.position;
+            //Vector3 frontOrigin = transform.position;
+            //Vector3 backOrigin = transform.position;
 
-            middleOrigin += transform.forward;
-            frontOrigin += transform.forward + transform.forward / 2;
-            //backOrigin += transform.forward / 2;
+            //middleOrigin += transform.forward;
+            //frontOrigin += transform.forward + transform.forward / 2;
+            ////backOrigin += transform.forward / 2;
 
-            // Origins should be coming from inside of player
-            middleOrigin.y += .7f;
-            frontOrigin.y += .7f;
-            backOrigin.y += .7f;
+            //// Origins should be coming from inside of player
+            //middleOrigin.y += .7f;
+            //frontOrigin.y += .7f;
+            //backOrigin.y += .7f;
 
-            // Dir represents the downward direction
-            Vector3 dir = -Vector3.up;
+            //// Dir represents the downward direction
+            //Vector3 dir = -Vector3.up;
 
 
-            //TODO: testing this
+            ////TODO: testing this
 
-            if (isGrounded)
-            {
-                // If player is on a sloped surface, must account for the normal
-                dir.z = dir.z - groundNormal.z;
-            }
-            else
-            {
-                dir.z = dir.z - transform.up.z;
-                //dir.z = dir.z
-            }
+            //if (isGrounded)
+            //{
+            //    // If player is on a sloped surface, must account for the normal
+            //    dir.z = dir.z - groundNormal.z;
+            //}
+            //else
+            //{
+            //    dir.z = dir.z - transform.up.z;
+            //    //dir.z = dir.z
+            //}
 
-            // Set distance depending on if player grounded or in air
-            float dis = (isGrounded) ? groundedDis : onAirDis;
-            Gizmos.color = Color.red;
-            // Draw the rays
-            Gizmos.DrawRay(frontOrigin, dir * dis);
-            Gizmos.color = Color.blue;
+            //// Set distance depending on if player grounded or in air
+            //float dis = (isGrounded) ? groundedDis : onAirDis;
+            //Gizmos.color = Color.red;
+            //// Draw the rays
+            //Gizmos.DrawRay(frontOrigin, dir * dis);
+            //Gizmos.color = Color.blue;
 
-            Gizmos.DrawSphere(middleOrigin + dir * dis, 0.3f);
-            Gizmos.color = Color.green;
+            //Gizmos.DrawSphere(middleOrigin + dir * dis, 0.3f);
+            //Gizmos.color = Color.green;
 
-            Gizmos.DrawSphere(backOrigin + dir * dis, 0.3f);
+            //Gizmos.DrawSphere(backOrigin + dir * dis, 0.3f);
+
+            //Gizmos.color = Color.red;
+            ////Gizmos.DrawCube(frontCollider.bounds.center, new Vector3(frontCollider.bounds.size.x, frontCollider.bounds.size.y, frontCollider.bounds.size.z));
+            //Gizmos.DrawWireCube(new Vector3(frontCollider.bounds.center.x, frontCollider.bounds.center.y - (frontCollider.bounds.size.y - (frontCollider.bounds.size.y * 0.5f)), frontCollider.bounds.center.z),
+            //    new Vector3(frontCollider.bounds.size.x * 1.5f, frontCollider.bounds.size.y * 0.5f, frontCollider.bounds.size.z * 1.5f));
+
+            //Gizmos.color = Color.blue;
+            //Gizmos.DrawWireCube(new Vector3(backCollider.bounds.center.x, backCollider.bounds.center.y - (backCollider.bounds.size.y - (backCollider.bounds.size.y * 0.5f)), backCollider.bounds.center.z),
+            //    new Vector3(backCollider.bounds.size.x * 1.5f, backCollider.bounds.size.y * 0.5f, backCollider.bounds.size.z * 1.5f));
         }
 
         public static void DrawWireCapsule(Vector3 _pos, Quaternion _rot, float _radius, float _height, Color _color = default(Color))
@@ -536,11 +713,11 @@ namespace PreServer
 
         void OnSceneGUI()
         {
-            fef(frontCollider);
-            fef(backCollider);
+            Fef(frontCollider);
+            Fef(backCollider);
         }
 
-        void fef(CapsuleCollider col)
+        void Fef(CapsuleCollider col)
         {
             DrawWireCapsule(col.bounds.center, col.transform.rotation, col.radius * 0.9f, col.bounds.min.y);
         }

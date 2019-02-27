@@ -24,7 +24,7 @@ namespace PreServer
             if (state.back)
                 count++;
 
-            return !state.isGrounded || (state.isGrounded && count != 0);
+            return !state.isGrounded || count != 0;
         }
     }
 }

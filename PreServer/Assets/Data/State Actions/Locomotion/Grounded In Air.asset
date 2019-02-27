@@ -19,3 +19,6 @@ MonoBehaviour:
   movementSpeed: 0
   groundedDis: 0.5
   onAirDis: 0.5
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 1

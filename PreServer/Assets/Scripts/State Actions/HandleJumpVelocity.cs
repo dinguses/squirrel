@@ -15,7 +15,8 @@ namespace PreServer
         public override void Execute(StateManager states)
         {
             states.rigid.drag = 0;
-            Vector3 currentVelocity = states.rigid.velocity;
+            //TODO: May need to revert to old (commented out) system based on feedback
+            Vector3 currentVelocity = states.transform.InverseTransformDirection(states.rigid.velocity);
             //Vector3 currentVelocity = new Vector3(0, 0, 0);
 
             states.timeSinceJump = Time.realtimeSinceStartup;
@@ -44,36 +45,37 @@ namespace PreServer
 
             //Debug.Log(currentVelocity.z);
             //currentVelocity.z = 0;
+            
+            //TODO: Counteracts velocity when you're on a slope 
+            //var grunk = Vector3.Angle(states.mTransform.up, Vector3.up);
 
-            var grunk = Vector3.Angle(states.mTransform.up, Vector3.up);
+            //if (grunk >= 5 && grunk < 10)
+            //{
+            //    currentVelocity.x = currentVelocity.x / 4;
+            //}
 
-            if (grunk >= 5 && grunk < 10)
-            {
-                currentVelocity.x = currentVelocity.x / 4;
-            }
+            //if (grunk >= 10)
+            //{
+            //    currentVelocity.x = currentVelocity.x / 8;
+            //    currentVelocity.z = currentVelocity.z / 8;
+            //}
 
-            if (grunk >= 10)
-            {
-                currentVelocity.x = currentVelocity.x / 8;
-                currentVelocity.z = currentVelocity.z / 8;
-            }
-
-            if (grunk >= 25)
-            {
-                currentVelocity.x = 0;
-                currentVelocity.z = 0;
-            }
+            //if (grunk >= 25)
+            //{
+            //    currentVelocity.x = 0;
+            //    currentVelocity.z = 0;
+            //}
 
             currentVelocity += jumpSpeed * Vector3.up;
 
-            if (currentVelocity.y > jumpSpeed)
-            {
-                //currentVelocity.y = jumpSpeed;
-            }
+            //if (currentVelocity.y > jumpSpeed)
+            //{
+            //    //currentVelocity.y = jumpSpeed;
+            //}
 
             Debug.DrawRay(states.mTransform.position, currentVelocity);
 
-            states.rigid.velocity = currentVelocity;
+            states.rigid.velocity = states.transform.TransformDirection(currentVelocity);
         }
     }
 }

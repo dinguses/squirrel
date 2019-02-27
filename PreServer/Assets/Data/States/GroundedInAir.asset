@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: GroundedInAir
   m_EditorClassIdentifier: 
   onFixed: []
-  onUpdate:
-  - {fileID: 11400000, guid: 0e0cb840a5f5c214cb0f8db7dd49d195, type: 2}
+  onUpdate: []
   onEnter: []
   onExit: []
   actions:
