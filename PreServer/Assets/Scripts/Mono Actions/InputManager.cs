@@ -38,7 +38,6 @@ namespace PreServer
                 playerStates.value.isJumping = jump.value;
                 playerStates.value.isRestart = restart.value;
                 playerStates.value.isRun = run.value;
-                playerStates.value.isZoom = zoom.value;
             }
         }
     }

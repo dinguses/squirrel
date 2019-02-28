@@ -35,23 +35,21 @@ namespace PreServer
         public AnimatorData animData;
 
         public bool isJumping;
-        bool _isGrounded;
-        public bool isGrounded
-        {
-            get { return _isGrounded; }
-            set
-            {
-                Debug.Log(Time.frameCount + " || setting isGrounded to: " + value + " was: " + _isGrounded);
-                _isGrounded = value;
-            }
-        }
-        public bool followMeOnFixedUpdate;
+//bool _isGrounded;
+        public bool isGrounded;
+        //{
+        //    get { return _isGrounded; }
+        //    set
+        //    {
+        //        //Debug.Log(Time.frameCount + " || setting isGrounded to: " + value + " was: " + _isGrounded);
+        //        _isGrounded = value;
+        //    }
+        //}
+
+        public bool isColidingInAir;
 
         public bool isRun;
         public bool isRestart;
-        public bool isZoom;
-
-        public bool doneZomming = false;
 
         [HideInInspector]
         public float timeSinceJump;
@@ -117,6 +115,11 @@ namespace PreServer
         public GameObject middle;
         public GameObject back;
         public static StateManager ptr;
+
+        public float groundedDis = .8f;
+        public float onAirDis = .85f;
+        public LayerMask groundLayer;
+
 
         private void Start()
         {
@@ -260,9 +263,6 @@ namespace PreServer
             #endregion
         }
 
-        public float groundedDis = .8f;
-        public float onAirDis = .85f;
-        public LayerMask groundLayer;
         public void UpdateGroundNormals()
         {
             // Setup origin points for three different ground checking vector3s. One in middle of player, one in front, and one in back
@@ -300,38 +300,24 @@ namespace PreServer
             float dis = (isGrounded) ? groundedDis : onAirDis;
 
             // RaycastHits for each grounding ray
-            RaycastHit middleHit = new RaycastHit();
             RaycastHit frontHit = new RaycastHit();
+            RaycastHit middleHit = new RaycastHit();
             RaycastHit backHit = new RaycastHit();
 
             // Draw the rays
-            Debug.DrawRay(middleOrigin, dir * dis, Color.green);
-            Debug.DrawRay(frontOrigin, dir * dis, Color.yellow);
+            Debug.DrawRay(frontOrigin, dir * dis, Color.green);
+            Debug.DrawRay(middleOrigin, dir * dis, Color.yellow);
             Debug.DrawRay(backOrigin, dir * dis, Color.white);
-            //Debug.Log(Time.frameCount + " || Front Collider Grounded: " + isGrounded(states.frontCollider));
+
             // If player is already grounded, check if they should remain
             //if (states.isGrounded)
             //{
+
             float angle = 0;
-            if (Physics.SphereCast(middleOrigin, 0.3f, dir, out middleHit, dis, Layers.ignoreLayersController))
-            {
-                middleNormal = middleHit.normal;
-                //states.middle = middleHit.transform.gameObject;
-                angle = Vector3.Angle(middleHit.normal, Vector3.up);
-                if (angle >= 70)
-                    middle = null;
-                else
-                    middle = middleHit.transform.gameObject;
-            }
-            else
-            {
-                middle = null;
-            }
 
             if (Physics.Raycast(frontOrigin, dir, out frontHit, dis + 0.3f, Layers.ignoreLayersController))
             {
                 frontNormal = frontHit.normal;
-                //states.front = frontHit.transform.gameObject;
                 angle = Vector3.Angle(frontHit.normal, Vector3.up);
                 if (angle >= 70)
                     front = null;
@@ -343,10 +329,23 @@ namespace PreServer
                 front = null;
             }
 
+            if (Physics.SphereCast(middleOrigin, 0.3f, dir, out middleHit, dis, Layers.ignoreLayersController))
+            {
+                middleNormal = middleHit.normal;
+                angle = Vector3.Angle(middleHit.normal, Vector3.up);
+                if (angle >= 70)
+                    middle = null;
+                else
+                    middle = middleHit.transform.gameObject;
+            }
+            else
+            {
+                middle = null;
+            }
+
             if (Physics.SphereCast(backOrigin, 0.3f, dir, out backHit, dis, Layers.ignoreLayersController))
             {
                 backNormal = backHit.normal;
-                //states.back = backHit.transform.gameObject;
                 angle = Vector3.Angle(backHit.normal, Vector3.up);
                 if (angle >= 70)
                     back = null;
@@ -368,7 +367,22 @@ namespace PreServer
                 groundNormal = backHit.normal;
             }
 
-            isGrounded = (CheckGrounded(frontCollider) || CheckGrounded(backCollider));
+            if (front || middle || back)
+                isGrounded = true;
+            else
+                isGrounded = false;
+
+            if ((CheckGrounded(frontCollider) || CheckGrounded(backCollider)) && (!front && !middle && !back) && !isGrounded)
+            {
+                isColidingInAir = true;
+            }
+            else
+            {
+                isColidingInAir = false;
+            }
+
+            //isGrounded = (CheckGrounded(frontCollider) || CheckGrounded(backCollider));
+            //isColidingInAir = (CheckGrounded(frontCollider) || CheckGrounded(backCollider));
         }
 
         //Checks to see if the collider is interacting with anything on the default layer '0'
@@ -376,7 +390,7 @@ namespace PreServer
         bool CheckGrounded(CapsuleCollider col)
         {
             //return Physics.CheckBox(new Vector3(col.bounds.center.x, col.bounds.center.y - (col.bounds.size.y - (col.bounds.size.y * 0.5f)), col.bounds.center.z), new Vector3(col.bounds.size.x * 1.5f, col.bounds.size.y * 0.5f, col.bounds.size.z * 1.5f) * 0.5f, col.transform.rotation, groundLayer);
-            return Physics.CheckCapsule(col.bounds.center, new Vector3(col.bounds.center.x, col.bounds.min.y, col.bounds.center.z), col.radius * 1.5f, groundLayer);
+            return Physics.CheckCapsule(col.bounds.center, new Vector3(col.bounds.center.x, col.bounds.min.y, col.bounds.center.z), col.radius * 0.9f, groundLayer);
         }
         /// <summary>
         /// Updates animator's isGrounded
