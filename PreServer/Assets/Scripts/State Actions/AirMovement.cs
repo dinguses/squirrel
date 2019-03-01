@@ -71,7 +71,7 @@ namespace PreServer
 
 
 
-            float groundedDis = 1.9f;
+            float groundedDis = 2.9f;
 
             Vector3 origin = states.mTransform.position;
             origin += states.mTransform.forward;
@@ -111,6 +111,31 @@ namespace PreServer
                     Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * 4.75f);
                     states.mTransform.rotation = targetRotation;
                 }
+            }
+
+            //TODO: properly implement step up logic for air movement
+            if (states.stepUp)
+            {
+                bool positive = false;
+
+                var test = states.rigid.position;
+
+                //var test = states.mTransform.forward.z;
+                if (test.z > 0)
+                    positive = true;
+                //Debug.Log(states.mTransform.forward.z);
+
+                /*if (positive)
+                     test.z += .2f;
+                 else
+                     test.z -= -.2f;*/
+                test.y = test.y + .1f;
+                states.rigid.position = Vector3.Lerp(states.rigid.position, test + (states.mTransform.forward / 8), states.delta * 10);
+                //states.rigid.velocity = new Vector3(states.rigid.velocity.x, 0, states.rigid.velocity.z);
+                //targetVelocity.y += 1f;
+                //states.rigid.AddRelativeForce(0, 10f, 0);
+                //targetVelocity.y += 1;
+                //holdYVel = targetVelocity.y;
             }
 
             // If player is not directly above slope

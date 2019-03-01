@@ -120,6 +120,9 @@ namespace PreServer
         public float onAirDis = .85f;
         public LayerMask groundLayer;
 
+        public bool topHitLong = false;
+        public bool topHit = false;
+        public bool bottomHit = false;
 
         private void Start()
         {
@@ -176,6 +179,9 @@ namespace PreServer
             delta = Time.deltaTime;
             UpdateGroundNormals();
             SetAnimStates();
+
+            StepUpTest();
+
             if (currentState != null)
             {
                 currentState.Tick(this);
@@ -261,6 +267,74 @@ namespace PreServer
                 }
             }
             #endregion
+        }
+
+        public void StepUpTest()
+        {
+            var bottomFloat = .1f;
+            var topFloat = .6f;
+            var topFloatLong = .6f;
+
+            if (!isGrounded)
+            {
+                topFloat = .9f;
+                topFloatLong = .9f;
+            }
+
+            var bottomRay = mTransform.position + (mTransform.forward * 1.25f) + (Vector3.up * bottomFloat);
+            var topRay = mTransform.position + (mTransform.forward * 1.25f) + (Vector3.up * topFloat);
+            var topRayLong = mTransform.position + (mTransform.forward * 2.5f) + (Vector3.up * topFloatLong);
+
+            //bool bottomHit;
+            //bool topHit;
+            //bool topHitLong;
+
+            RaycastHit hitBottom = new RaycastHit();
+            RaycastHit hitTop = new RaycastHit();
+            RaycastHit hitTopLong = new RaycastHit();
+
+            if (stepUp)
+            {
+                Debug.DrawRay(bottomRay, mTransform.forward, Color.green);
+                Debug.DrawRay(topRay, mTransform.forward, Color.green);
+                Debug.DrawRay(topRayLong, mTransform.forward, Color.green);
+            }
+            else
+            {
+                Debug.DrawRay(bottomRay, mTransform.forward, Color.blue);
+                Debug.DrawRay(topRay, mTransform.forward, Color.blue);
+                Debug.DrawRay(topRayLong, mTransform.forward, Color.blue);
+            }
+
+            if (Physics.Raycast(bottomRay, mTransform.forward, out hitBottom, 1, Layers.ignoreLayersController))
+                bottomHit = true;
+            else
+                bottomHit = false;
+
+            if (Physics.Raycast(topRay, mTransform.forward, out hitTop, 1, Layers.ignoreLayersController))
+                topHit = true;
+            else
+                topHit = false;
+
+            if (Physics.Raycast(topRayLong, mTransform.forward, out hitTopLong, 1, Layers.ignoreLayersController))
+                topHitLong = true;
+            else
+                topHitLong = false;
+
+
+            if (bottomHit && !topHit && !topHitLong && movementVariables.moveAmount > 0.05f)
+            {
+                stepUp = true;
+                frontCollider.enabled = false;
+                frontColliderJump.enabled = true;
+            }
+            else
+            {
+                //states.stepUpDelay = true;
+                stepUp = false;
+                frontCollider.enabled = true;
+                frontColliderJump.enabled = false;
+            }
         }
 
         public void UpdateGroundNormals()
@@ -372,9 +446,15 @@ namespace PreServer
             else
                 isGrounded = false;
 
-            if ((CheckGrounded(frontCollider) || CheckGrounded(backCollider)) && (!front && !middle && !back) && !isGrounded)
+            if ((CheckGrounded(frontCollider) || CheckGrounded(backCollider)) && (!front && !middle && !back) && !isGrounded && bottomHit)
             {
-                isColidingInAir = true;
+                float timeDifference = Time.realtimeSinceStartup - timeSinceJump;
+
+                // have to have been ungrounded to start checking
+                if (timeDifference > .05f)
+                {
+                    isColidingInAir = true;
+                }
             }
             else
             {

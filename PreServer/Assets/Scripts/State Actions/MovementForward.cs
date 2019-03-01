@@ -105,8 +105,6 @@ namespace PreServer
                 // If at least 0.1f movement
                 if (moveAmount > 0.1f)
                 {
-                    //states.rigid.isKinematic = false;
-
                     // Set drag to 0 while moving
                     states.rigid.drag = 0;
 
@@ -176,7 +174,8 @@ namespace PreServer
                 else
                     test.z -= -.2f;*/
                 test.y = test.y + .1f;
-                states.rigid.position = Vector3.Lerp(states.rigid.position, test, states.delta * 20);
+                states.rigid.position = Vector3.Lerp(states.rigid.position, test + (states.mTransform.forward / 8), states.delta * 10);
+                //states.rigid.velocity = new Vector3(states.rigid.velocity.x, 0, states.rigid.velocity.z);
                 //targetVelocity.y += 1f;
                 //states.rigid.AddRelativeForce(0, 10f, 0);
                 //targetVelocity.y += 1;

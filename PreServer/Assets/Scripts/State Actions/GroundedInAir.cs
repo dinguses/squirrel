@@ -19,6 +19,9 @@ namespace PreServer
         public float groundedDis = .8f;
         public float onAirDis = .85f;
         public LayerMask groundLayer;
+        Vector3 currentVelocity;
+        Vector3 targetVelocity;
+
         public override void Execute(StateManager states)
         {
 
@@ -26,24 +29,35 @@ namespace PreServer
 
         public override void OnEnter(StateManager states)
         {
-            gravity = downwardsGravity;
+
         }
-        Vector3 currentVelocity;
-        Vector3 targetVelocity;
+
         public override void OnUpdate(StateManager states)
         {
-            currentVelocity = states.rigid.velocity;
-            targetVelocity = currentVelocity;
-            targetVelocity.y = currentVelocity.y - gravity;
-            targetVelocity.z = 0;
-            targetVelocity.x = 0;
-            states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity, states.delta * movementTime);
-            gravity += gravityAdditive;
+            if (states.isColidingInAir)
+            {
+                if (gravity == 0)
+                {
+                    gravity = downwardsGravity;
+                }
+
+                currentVelocity = states.rigid.velocity;
+                targetVelocity = currentVelocity;
+                targetVelocity.y = currentVelocity.y - gravity;
+                targetVelocity.z = 0;
+                targetVelocity.x = 0;
+                states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity, states.delta * movementTime);
+                gravity += gravityAdditive;
+            }
+            else
+            {
+                gravity = downwardsGravity;
+            }
         }
 
         public override void OnExit(StateManager states)
         {
-            gravity = downwardsGravity;
+
         }
     }
 }

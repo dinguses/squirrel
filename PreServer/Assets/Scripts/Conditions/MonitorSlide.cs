@@ -20,6 +20,7 @@ namespace PreServer
         {
             bool result = false;
             angle = Vector3.Angle(state.backupGroundNormal, Vector3.up);
+
             if (angle > minSlideAngle && angle < maxSlideAngle/* && state.backupGroundNormal == state.middleNormal*/)
             {
                 //Debug.Log("sliding?");

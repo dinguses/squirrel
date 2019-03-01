@@ -45,7 +45,7 @@ namespace PreServer
 
             //Debug.Log(currentVelocity.z);
             //currentVelocity.z = 0;
-            
+
             //TODO: Counteracts velocity when you're on a slope 
             //var grunk = Vector3.Angle(states.mTransform.up, Vector3.up);
 
