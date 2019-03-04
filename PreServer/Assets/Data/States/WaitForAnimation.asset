@@ -19,13 +19,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2ae5d05983b3c2b4a9b94d3182f58ee5, type: 2}
   actions: []
   stateName: WaitForAnimation
-  idCount: 4
+  idCount: 5
   transitions:
-  - id: 1
-    condition: {fileID: 11400000, guid: 77722e1815aa13041a574c6e0137d917, type: 2}
-    targetState: {fileID: 11400000, guid: ae542f02ed7c6e0428c814943fd536c6, type: 2}
-    disable: 0
   - id: 3
     condition: {fileID: 11400000, guid: 09646b58739c1844d967360476f1c82b, type: 2}
     targetState: {fileID: 11400000, guid: 79c7f8040eac1954590da60b276a0b99, type: 2}
+    disable: 0
+  - id: 4
+    condition: {fileID: 11400000, guid: 77722e1815aa13041a574c6e0137d917, type: 2}
+    targetState: {fileID: 11400000, guid: ae542f02ed7c6e0428c814943fd536c6, type: 2}
     disable: 0

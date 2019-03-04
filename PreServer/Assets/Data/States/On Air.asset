@@ -19,15 +19,12 @@ MonoBehaviour:
   onEnter:
   - {fileID: 11400000, guid: 7a5964863bd5251438f1a7c39bc295b2, type: 2}
   onExit: []
-  actions: []
+  actions:
+  - {fileID: 11400000, guid: 113386b037b368242a9579d83d09ec72, type: 2}
   stateName: On Air
   idCount: 5
   transitions:
   - id: 2
     condition: {fileID: 11400000, guid: 6e21022bc2ec6e1488b00f1fcdada0e2, type: 2}
     targetState: {fileID: 11400000, guid: 0225933b0bf4587438730a98b935d45e, type: 2}
-    disable: 0
-  - id: 4
-    condition: {fileID: 11400000, guid: 38eb054bde0e8364c846d1233495768f, type: 2}
-    targetState: {fileID: 11400000, guid: e1f3977816c5d564bbc56823aab1cf95, type: 2}
     disable: 0

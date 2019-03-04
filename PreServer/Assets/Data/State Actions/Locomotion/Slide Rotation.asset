@@ -4,8 +4,7 @@
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -14,3 +13,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraTransform: {fileID: 11400000, guid: 74c4d5a43fc4b4947a4d7dc56225221e, type: 2}
   speed: 4
+  constraint: 60
