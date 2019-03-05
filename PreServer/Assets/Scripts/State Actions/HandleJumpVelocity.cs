@@ -16,7 +16,7 @@ namespace PreServer
         {
             states.rigid.drag = 0;
             //TODO: May need to revert to old (commented out) system based on feedback
-            Vector3 currentVelocity = states.transform.InverseTransformDirection(states.rigid.velocity);
+            Vector3 currentVelocity = /*states.transform.InverseTransformDirection(*/states.rigid.velocity/*)*/;
             //Vector3 currentVelocity = new Vector3(0, 0, 0);
 
             states.timeSinceJump = Time.realtimeSinceStartup;
@@ -75,7 +75,7 @@ namespace PreServer
 
             Debug.DrawRay(states.mTransform.position, currentVelocity);
 
-            states.rigid.velocity = states.transform.TransformDirection(currentVelocity);
+            states.rigid.velocity = /*states.transform.TransformDirection(*/currentVelocity/*)*/;
         }
     }
 }
