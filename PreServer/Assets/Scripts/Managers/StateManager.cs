@@ -82,6 +82,7 @@ namespace PreServer
         public int randMax;
         public int idleInc;
         public bool inGrindZone;
+        public bool isSliding;
 
         public Dictionary<int, Vector3> grindPoints;
         public Dictionary<int, BoxCollider> grindCenters;
@@ -123,6 +124,8 @@ namespace PreServer
         public bool topHitLong = false;
         public bool topHit = false;
         public bool bottomHit = false;
+        public float minSlideAngle = 35;
+        public float maxSlideAngle = 70;
 
         private void Start()
         {
@@ -181,7 +184,7 @@ namespace PreServer
             SetAnimStates();
 
             StepUpTest();
-
+            CheckSliding();
             if (currentState != null)
             {
                 currentState.Tick(this);
@@ -388,7 +391,9 @@ namespace PreServer
             //{
 
             float angle = 0;
-
+            frontSliding = false;
+            middleSliding = false;
+            backSliding = false;
             if (Physics.Raycast(frontOrigin, dir, out frontHit, dis + 0.3f, Layers.ignoreLayersController))
             {
                 frontNormal = frontHit.normal;
@@ -396,7 +401,11 @@ namespace PreServer
                 if (angle >= 70)
                     front = null;
                 else
+                {
+                    if (angle > 35)
+                        frontSliding = true;
                     front = frontHit.transform.gameObject;
+                }
             }
             else
             {
@@ -463,6 +472,18 @@ namespace PreServer
 
             //isGrounded = (CheckGrounded(frontCollider) || CheckGrounded(backCollider));
             //isColidingInAir = (CheckGrounded(frontCollider) || CheckGrounded(backCollider));
+            if (Physics.Raycast(middleOrigin, dir, out middleHit, dis + 0.3f, Layers.ignoreLayersController))
+            {
+                angle = Vector3.Angle(middleHit.normal, Vector3.up);
+                if (angle > 35 && angle < 70)
+                    middleSliding = true;
+            }
+            if (Physics.Raycast(backOrigin, dir, out backHit, dis + 0.3f, Layers.ignoreLayersController))
+            {
+                angle = Vector3.Angle(backHit.normal, Vector3.up);
+                if (angle > 35 && angle < 70)
+                    backSliding = true;
+            }
         }
 
         //Checks to see if the collider is interacting with anything on the default layer '0'
@@ -510,6 +531,59 @@ namespace PreServer
             }
 
             anim.SetBool(hashes.UpIdle, UpIdle);
+        }
+
+        bool frontSliding = false;
+        bool middleSliding = false;
+        bool backSliding = false;
+        void CheckSliding()
+        {
+            Vector3 origin = Vector3.zero;
+
+            // Origin should be coming from inside of player
+            Vector3 dir = -transform.forward;
+            //Debug.Log(transform.rotation.eulerAngles.x + "  " + transform.rotation.eulerAngles.y + " " + transform.rotation.eulerAngles.z);
+            if(transform.rotation.eulerAngles.x < 180)
+            {
+                dir = transform.forward;
+                origin = transform.position;
+                origin += transform.forward * 2;
+            }
+            else
+            {
+                dir = -transform.forward;
+                origin = transform.position;
+            }
+            origin.y += .35f;
+            // Set distance depending on if player grounded or in air
+            float dis = 0.3f;
+
+            // RaycastHits for each grounding ray
+            RaycastHit hit = new RaycastHit();
+
+            // Draw the rays
+            Debug.DrawRay(origin, dir * dis, Color.black);
+
+            // If player is already grounded, check if they should remain
+            //if (states.isGrounded)
+            //{
+            bool backCastHit = Physics.Raycast(origin, dir, out hit, dis + 0.3f, Layers.ignoreLayersController);
+            if (backCastHit)
+            {
+                float angle = Vector3.Angle(hit.normal, Vector3.up);
+                //If the back cast hit another slide, then you're still in the sliding state
+                if (angle > 35 && angle < 70)
+                    backCastHit = false;
+            }
+
+            if ((frontSliding || middleSliding || backSliding) && !backCastHit)
+            {
+                isSliding = true;
+            }
+            else
+            {
+                isSliding = false;
+            }
         }
 
         void OnTriggerEnter(Collider other)
@@ -779,41 +853,41 @@ namespace PreServer
             //    new Vector3(backCollider.bounds.size.x * 1.5f, backCollider.bounds.size.y * 0.5f, backCollider.bounds.size.z * 1.5f));
         }
 
-        public static void DrawWireCapsule(Vector3 _pos, Quaternion _rot, float _radius, float _height, Color _color = default(Color))
-        {
-            if (_color != default(Color))
-                Handles.color = _color;
-            Matrix4x4 angleMatrix = Matrix4x4.TRS(_pos, _rot, Handles.matrix.lossyScale);
-            using (new Handles.DrawingScope(angleMatrix))
-            {
-                float pointOffset = (_height - (_radius * 2)) / 2;
+        //public static void DrawWireCapsule(Vector3 _pos, Quaternion _rot, float _radius, float _height, Color _color = default(Color))
+        //{
+        //    if (_color != default(Color))
+        //        Handles.color = _color;
+        //    Matrix4x4 angleMatrix = Matrix4x4.TRS(_pos, _rot, Handles.matrix.lossyScale);
+        //    using (new Handles.DrawingScope(angleMatrix))
+        //    {
+        //        float pointOffset = (_height - (_radius * 2)) / 2;
 
-                //draw sideways
-                Handles.DrawWireArc(Vector3.up * pointOffset, Vector3.left, Vector3.back, -180, _radius);
-                Handles.DrawLine(new Vector3(0, pointOffset, -_radius), new Vector3(0, -pointOffset, -_radius));
-                Handles.DrawLine(new Vector3(0, pointOffset, _radius), new Vector3(0, -pointOffset, _radius));
-                Handles.DrawWireArc(Vector3.down * pointOffset, Vector3.left, Vector3.back, 180, _radius);
-                //draw frontways
-                Handles.DrawWireArc(Vector3.up * pointOffset, Vector3.back, Vector3.left, 180, _radius);
-                Handles.DrawLine(new Vector3(-_radius, pointOffset, 0), new Vector3(-_radius, -pointOffset, 0));
-                Handles.DrawLine(new Vector3(_radius, pointOffset, 0), new Vector3(_radius, -pointOffset, 0));
-                Handles.DrawWireArc(Vector3.down * pointOffset, Vector3.back, Vector3.left, -180, _radius);
-                //draw center
-                Handles.DrawWireDisc(Vector3.up * pointOffset, Vector3.up, _radius);
-                Handles.DrawWireDisc(Vector3.down * pointOffset, Vector3.up, _radius);
+        //        //draw sideways
+        //        Handles.DrawWireArc(Vector3.up * pointOffset, Vector3.left, Vector3.back, -180, _radius);
+        //        Handles.DrawLine(new Vector3(0, pointOffset, -_radius), new Vector3(0, -pointOffset, -_radius));
+        //        Handles.DrawLine(new Vector3(0, pointOffset, _radius), new Vector3(0, -pointOffset, _radius));
+        //        Handles.DrawWireArc(Vector3.down * pointOffset, Vector3.left, Vector3.back, 180, _radius);
+        //        //draw frontways
+        //        Handles.DrawWireArc(Vector3.up * pointOffset, Vector3.back, Vector3.left, 180, _radius);
+        //        Handles.DrawLine(new Vector3(-_radius, pointOffset, 0), new Vector3(-_radius, -pointOffset, 0));
+        //        Handles.DrawLine(new Vector3(_radius, pointOffset, 0), new Vector3(_radius, -pointOffset, 0));
+        //        Handles.DrawWireArc(Vector3.down * pointOffset, Vector3.back, Vector3.left, -180, _radius);
+        //        //draw center
+        //        Handles.DrawWireDisc(Vector3.up * pointOffset, Vector3.up, _radius);
+        //        Handles.DrawWireDisc(Vector3.down * pointOffset, Vector3.up, _radius);
 
-            }
-        }
+        //    }
+        //}
 
-        void OnSceneGUI()
-        {
-            Fef(frontCollider);
-            Fef(backCollider);
-        }
+        //void OnSceneGUI()
+        //{
+        //    Fef(frontCollider);
+        //    Fef(backCollider);
+        //}
 
-        void Fef(CapsuleCollider col)
-        {
-            DrawWireCapsule(col.bounds.center, col.transform.rotation, col.radius * 0.9f, col.bounds.min.y);
-        }
+        //void Fef(CapsuleCollider col)
+        //{
+        //    DrawWireCapsule(col.bounds.center, col.transform.rotation, col.radius * 0.9f, col.bounds.min.y);
+        //}
     }
 }

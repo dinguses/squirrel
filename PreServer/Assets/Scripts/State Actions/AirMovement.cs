@@ -20,6 +20,7 @@ namespace PreServer
         public float extraGrav;
         public float extraGravShort = 4.5f;
         public float extaGravFull = 3.5f;
+        public float rotationConstraint = 70;
 
         public override void Execute(StateManager states)
         {
@@ -109,6 +110,12 @@ namespace PreServer
                 {
                     Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, hit.normal) * states.mTransform.rotation;
                     Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * 4.75f);
+                    states.mTransform.rotation = targetRotation;
+                }
+                else if (angle > 35 && angle <= 70)
+                {
+                    Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, hit.normal) * states.mTransform.rotation;
+                    Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * 14.75f);
                     states.mTransform.rotation = targetRotation;
                 }
             }

@@ -14,26 +14,51 @@ namespace PreServer
     {
         public float minSlideAngle = 35;
         public float maxSlideAngle = 70;
-        float angle = 0;
+        float frontAngle = 0;
+        float backAngle = 0;
+        float middleAngle = 0;
+        int count = 0;
         public override bool CheckCondition(StateManager state)
         {
-            //bool result = false;
-            Vector3 frontOrigin = state.mTransform.position;
-            frontOrigin += state.mTransform.forward + state.mTransform.forward / 2;
-            frontOrigin.y += .7f;
-            RaycastHit frontHit = new RaycastHit();
-            Vector3 dir = -Vector3.up;
-            dir.z = dir.z - state.groundNormal.z;
-            float dis = .8f;
-            Physics.SphereCast(frontOrigin, 0.3f, dir, out frontHit, dis, Layers.ignoreLayersController);
+            //count = 0;
+            ////bool result = false;
+            ////Vector3 frontOrigin = state.mTransform.position;
+            ////frontOrigin += state.mTransform.forward + state.mTransform.forward / 2;
+            ////frontOrigin.y += .7f;
+            ////RaycastHit frontHit = new RaycastHit();
+            ////Vector3 dir = -Vector3.up;
+            ////dir.z = dir.z - state.groundNormal.z;
+            ////float dis = .8f;
+            ////Physics.SphereCast(frontOrigin, 0.3f, dir, out frontHit, dis, Layers.ignoreLayersController);
+            ////if (state.front != null)
+            ////    frontAngle = Vector3.Angle(state.frontNormal, Vector3.up);
+            ////else
+            ////    frontAngle = 0;
 
-            angle = Vector3.Angle(frontHit.normal, Vector3.up);
-            if (angle <= minSlideAngle || angle >= maxSlideAngle)
-            {
-                return true;
-            }
+            ////if (state.back != null)
+            ////    backAngle = Vector3.Angle(state.backNormal, Vector3.up);
+            ////else
+            ////    backAngle = 0;
 
-            return false;
+            //if (state.middle != null)
+            //    middleAngle = Vector3.Angle(state.middleNormal, Vector3.up);
+            //else
+            //    middleAngle = 0;
+
+            ////count += CheckAngle(frontAngle) ? 1 : 0;
+            //count += CheckAngle(middleAngle) ? 1 : 0;
+            ////count += CheckAngle(backAngle) ? 1 : 0;
+            //if (count == 1)
+            //{
+            //    return true;
+            //}
+
+            return !state.isSliding;
+        }
+
+        bool CheckAngle(float angle)
+        {
+            return angle <= minSlideAngle || angle >= maxSlideAngle;
         }
     }
 }
