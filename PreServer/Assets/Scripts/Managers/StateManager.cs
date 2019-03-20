@@ -126,9 +126,14 @@ namespace PreServer
         public bool bottomHit = false;
         public float minSlideAngle = 35;
         public float maxSlideAngle = 70;
-
+        float length = 0;
         private void Start()
         {
+            Vector3 frontOrigin = transform.position;
+            Vector3 backOrigin = transform.position;
+
+            frontOrigin += transform.forward + transform.forward / 2;
+            length = Vector3.Distance(frontOrigin, backOrigin);
             ptr = this;
             mTransform = this.transform;
 
@@ -159,6 +164,11 @@ namespace PreServer
             currentHitBox = new BoxCollider();
             newHitBox = new BoxCollider();
             exitingGrind = false;
+        }
+
+        public float GetLength()
+        {
+            return length;
         }
 
         private void FixedUpdate()
@@ -484,6 +494,25 @@ namespace PreServer
                 if (angle > 35 && angle < 70)
                     backSliding = true;
             }
+            if (middleSliding)
+            {
+                Vector3 forward = Vector3.Cross(middleHit.normal, Vector3.up);
+                slideDirection = Vector3.Cross(forward, middleHit.normal);
+            }
+            else if (frontSliding)
+            {
+                Vector3 forward = Vector3.Cross(frontHit.normal, Vector3.up);
+                slideDirection = Vector3.Cross(forward, frontHit.normal);
+            }
+            else if (backSliding)
+            {
+                Vector3 forward = Vector3.Cross(backHit.normal, Vector3.up);
+                slideDirection = Vector3.Cross(forward, backHit.normal);
+            }
+            else
+            {
+                //slideDirection = Vector3.zero;
+            }
         }
 
         //Checks to see if the collider is interacting with anything on the default layer '0'
@@ -536,49 +565,53 @@ namespace PreServer
         bool frontSliding = false;
         bool middleSliding = false;
         bool backSliding = false;
+        Vector3 slideDirection;
         void CheckSliding()
         {
-            Vector3 origin = Vector3.zero;
 
+            Vector3 origin = transform.position/* + (transform.forward*1.5f)*/;
             // Origin should be coming from inside of player
-            Vector3 dir = -transform.forward;
+            //Vector3 dir = /*transform.rotation.eulerAngles.x < 180 ? slideDirection : */-slideDirection;
             //Debug.Log(transform.rotation.eulerAngles.x + "  " + transform.rotation.eulerAngles.y + " " + transform.rotation.eulerAngles.z);
-            if(transform.rotation.eulerAngles.x < 180)
+            if (transform.rotation.eulerAngles.x < 180)
             {
-                dir = transform.forward;
+                //slideDirection = -slideDirection;
                 origin = transform.position;
                 origin += transform.forward * 2;
             }
             else
             {
-                dir = -transform.forward;
+                //slideDirection = -transform.forward;
                 origin = transform.position;
             }
+            //dir = Quaternion.AngleAxis(transform.rotation.eulerAngles.y, transform.up) * dir;
             origin.y += .35f;
+            //Debug.Log(dir.x + "  " + dir.y + " " + dir.z);
             // Set distance depending on if player grounded or in air
-            float dis = 0.3f;
+            //float dis = 0.3f;
 
             // RaycastHits for each grounding ray
             RaycastHit hit = new RaycastHit();
 
             // Draw the rays
-            Debug.DrawRay(origin, dir * dis, Color.black);
+            //Debug.DrawRay(origin, -slideDirection * (GetLength() * 0.65f), Color.black);
 
             // If player is already grounded, check if they should remain
             //if (states.isGrounded)
             //{
-            bool backCastHit = Physics.Raycast(origin, dir, out hit, dis + 0.3f, Layers.ignoreLayersController);
-            if (backCastHit)
-            {
-                float angle = Vector3.Angle(hit.normal, Vector3.up);
-                //If the back cast hit another slide, then you're still in the sliding state
-                if (angle > 35 && angle < 70)
-                    backCastHit = false;
-            }
 
-            if ((frontSliding || middleSliding || backSliding) && !backCastHit)
+
+            if ((frontSliding || middleSliding || backSliding))
             {
-                isSliding = true;
+                bool backCastHit = Physics.Raycast(origin, -slideDirection, out hit, GetLength() * 0.65f, Layers.ignoreLayersController);
+                if (backCastHit)
+                {
+                    float angle = Vector3.Angle(hit.normal, Vector3.up);
+                    //If the back cast hit another slide, then you're still in the sliding state
+                    if (angle > 35 && angle < 70)
+                        backCastHit = false;
+                }
+                isSliding = !backCastHit;
             }
             else
             {
