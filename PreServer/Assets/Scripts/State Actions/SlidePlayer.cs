@@ -68,6 +68,7 @@ namespace PreServer
             }
             else if(!currentVelocity.Equals(targetVelocity))
             {
+                targetVelocity.y = currentVelocity.y;
                 states.rigid.velocity = targetVelocity;
                 //Debug.Log(Time.frameCount + " || velocity: " + states.rigid.velocity + " current: " + currentVelocity + " target: " + targetVelocity);
             }
