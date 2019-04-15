@@ -129,6 +129,8 @@ namespace PreServer
         float length = 0;
         private void Start()
         {
+            climbHit = new RaycastHit();
+
             Vector3 frontOrigin = transform.position;
             Vector3 backOrigin = transform.position;
 
@@ -190,11 +192,16 @@ namespace PreServer
         private void Update()
         {
             delta = Time.deltaTime;
-            UpdateGroundNormals();
-            SetAnimStates();
+            if (climbState == ClimbState.NONE)
+            {
+                UpdateGroundNormals();
+                SetAnimStates();
+                StepUpTest();
+                CheckSliding();
+                if(isGrounded)
+                    CheckForClimb();
+            }
 
-            StepUpTest();
-            CheckSliding();
             if (currentState != null)
             {
                 currentState.Tick(this);
@@ -560,6 +567,24 @@ namespace PreServer
             }
 
             anim.SetBool(hashes.UpIdle, UpIdle);
+        }
+
+        public enum ClimbState { NONE, ENTERING, CLIMBING, EXITING }
+        public ClimbState climbState;
+        public RaycastHit climbHit;
+        void CheckForClimb()
+        {
+            var topFloat = .6f;
+            var topRay = mTransform.position + (mTransform.forward * 1.25f) + (Vector3.up * topFloat);
+
+            //Debug.DrawRay(topRay, mTransform.forward, Color.blue);
+
+            if (Physics.Raycast(topRay, mTransform.forward, out climbHit, 1, Layers.ignoreLayersController))
+            {
+                float angle = Vector3.Angle(climbHit.normal, Vector3.up);
+                if (angle >= 70 && angle <= 90)
+                    climbState = ClimbState.ENTERING;
+            }
         }
 
         bool frontSliding = false;

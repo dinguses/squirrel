@@ -10,22 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e09f12a9b8fb5e44eb81fa499afbecc4, type: 3}
-  m_Name: On Air
+  m_Name: ExitClimb
   m_EditorClassIdentifier: 
   onFixed: []
-  onUpdate:
-  - {fileID: 11400000, guid: fb69d9bf752527b4196e532154482edb, type: 2}
-  - {fileID: 11400000, guid: 0e0cb840a5f5c214cb0f8db7dd49d195, type: 2}
-  - {fileID: 11400000, guid: 7a5964863bd5251438f1a7c39bc295b2, type: 2}
-  onEnter:
-  - {fileID: 11400000, guid: 7a5964863bd5251438f1a7c39bc295b2, type: 2}
+  onUpdate: []
+  onEnter: []
   onExit: []
   actions:
-  - {fileID: 11400000, guid: 113386b037b368242a9579d83d09ec72, type: 2}
-  stateName: On Air
-  idCount: 5
+  - {fileID: 11400000, guid: 748c2f761881531418c1a9ab7b1bd70e, type: 2}
+  stateName: 
+  idCount: 1
   transitions:
-  - id: 2
-    condition: {fileID: 11400000, guid: 6e21022bc2ec6e1488b00f1fcdada0e2, type: 2}
+  - id: 0
+    condition: {fileID: 11400000, guid: b5291d00fb3c6534ab1f265c25884443, type: 2}
     targetState: {fileID: 11400000, guid: 0225933b0bf4587438730a98b935d45e, type: 2}
     disable: 0
