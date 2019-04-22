@@ -17,7 +17,7 @@ namespace PreServer
             bool result = state.isJumping;
 
             // If player is jumping AND is grounded
-            if (state.isJumping && state.isGrounded)
+            if (state.isJumping && (state.isGrounded || state.climbState == StateManager.ClimbState.CLIMBING))
             {
                 //TODO: should this go here?
 

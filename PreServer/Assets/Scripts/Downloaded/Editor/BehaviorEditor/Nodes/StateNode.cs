@@ -84,7 +84,7 @@ namespace PreServer.BehaviorEditor
 					//	SerializedObject serializedState = new SerializedObject(b.stateRef.currentState);
 					}
 
-					float standard = 150;
+					float standard = 170;
 					b.stateRef.serializedState.Update();
 					b.showActions = EditorGUILayout.Toggle("Show Actions ", b.showActions);
 					if (b.showActions)
@@ -95,7 +95,7 @@ namespace PreServer.BehaviorEditor
 						b.stateRef.onUpdateList.DoLayoutList();
                         EditorGUILayout.LabelField("");
                         b.stateRef.actionList.DoLayoutList();
-                        standard += 100 + 40 + (b.stateRef.onUpdateList.count + b.stateRef.onFixedList.count + b.stateRef.actionList.count) * 20;
+                        standard += 100 + 40 + (b.stateRef.onUpdateList.count + b.stateRef.onFixedList.count + b.stateRef.actionList.count) * 30;
 					}
 					b.showEnterExit = EditorGUILayout.Toggle("Show Enter/Exit ", b.showEnterExit);
 					if (b.showEnterExit)
@@ -104,7 +104,7 @@ namespace PreServer.BehaviorEditor
 						b.stateRef.onEnterList.DoLayoutList();
 						EditorGUILayout.LabelField("");
 						b.stateRef.onExitList.DoLayoutList();
-						standard += 100 + 40 + (b.stateRef.onEnterList.count + b.stateRef.onExitList.count) * 20;
+						standard += 100 + 40 + (b.stateRef.onEnterList.count + b.stateRef.onExitList.count) * 30;
 					}
 
 					b.stateRef.serializedState.ApplyModifiedProperties();

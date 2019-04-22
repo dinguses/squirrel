@@ -198,8 +198,11 @@ namespace PreServer
                 SetAnimStates();
                 StepUpTest();
                 CheckSliding();
-                if(isGrounded)
-                    CheckForClimb();
+                CheckForClimb();
+            }
+            else
+            {
+                SetClimbAnimStates();
             }
 
             if (currentState != null)
@@ -569,21 +572,60 @@ namespace PreServer
             anim.SetBool(hashes.UpIdle, UpIdle);
         }
 
+        void SetClimbAnimStates()
+        {
+            anim.SetBool(hashes.isGrounded, true);
+
+            float timeDifference = Time.realtimeSinceStartup - timeSinceJump;
+
+            anim.SetFloat(hashes.TimeSinceGrounded, timeDifference);
+
+            //states.anim.SetFloat(states.hashes.vertical, states.movementVariables.moveAmount, 0.2f, states.delta);
+            anim.SetFloat(hashes.speed, movementVariables.moveAmount, 0.01f, delta);
+
+            if (movementVariables.moveAmount == 0)
+            {
+                timeSinceMove = Time.realtimeSinceStartup;
+            }
+
+            if (movementVariables.moveAmount > .3f)
+            {
+                timeSinceSlow = Time.realtimeSinceStartup;
+            }
+
+            timeDifference = Time.realtimeSinceStartup - timeSinceMove;
+            float timeDifference2 = Time.realtimeSinceStartup - timeSinceSlow;
+
+            if (timeDifference < .2f)
+            {
+                anim.SetFloat(hashes.TimeSinceMove, timeDifference, 0.01f, delta);
+            }
+
+            if (timeDifference2 < .2f)
+            {
+                anim.SetFloat(hashes.TimeSinceSlow, timeDifference2, 0.01f, delta);
+            }
+            anim.SetBool(hashes.UpIdle, false);
+        }
+
         public enum ClimbState { NONE, ENTERING, CLIMBING, EXITING }
         public ClimbState climbState;
         public RaycastHit climbHit;
+        Transform prevClimbT;
         void CheckForClimb()
         {
             var topFloat = .6f;
             var topRay = mTransform.position + (mTransform.forward * 1.25f) + (Vector3.up * topFloat);
 
             //Debug.DrawRay(topRay, mTransform.forward, Color.blue);
-
             if (Physics.Raycast(topRay, mTransform.forward, out climbHit, 1, Layers.ignoreLayersController))
             {
                 float angle = Vector3.Angle(climbHit.normal, Vector3.up);
-                if (angle >= 70 && angle <= 90)
+                if (angle >= 70 && angle <= 90/* && (prevClimbT != climbHit.transform || isGrounded)*/)
+                {
                     climbState = ClimbState.ENTERING;
+                    prevClimbT = climbHit.transform;
+                }
             }
         }
 

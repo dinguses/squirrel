@@ -18,6 +18,7 @@ namespace PreServer
         public override void OnEnter(StateManager states)
         {
             base.OnEnter(states);
+            states.rigid.velocity = Vector3.zero;
             states.rigid.useGravity = false;
             startPos = states.transform.position;
             targetPos = states.climbHit.point + (states.climbHit.normal * offsetFromWall);

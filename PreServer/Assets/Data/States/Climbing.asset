@@ -19,9 +19,13 @@ MonoBehaviour:
   actions:
   - {fileID: 11400000, guid: 10718ce09e002874180ab9e8360cb82e, type: 2}
   stateName: 
-  idCount: 1
+  idCount: 2
   transitions:
   - id: 0
     condition: {fileID: 11400000, guid: edc4ea99884573d43af9a867f7b0ebb5, type: 2}
     targetState: {fileID: 11400000, guid: ba9acb6f87c3fee4baf58fbdbbd0efe5, type: 2}
+    disable: 0
+  - id: 1
+    condition: {fileID: 11400000, guid: 09646b58739c1844d967360476f1c82b, type: 2}
+    targetState: {fileID: 11400000, guid: 79c7f8040eac1954590da60b276a0b99, type: 2}
     disable: 0

@@ -29,7 +29,7 @@ namespace PreServer
 
         public override void OnEnter(StateManager states)
         {
-
+            states.climbState = StateManager.ClimbState.NONE;
         }
 
         public override void OnUpdate(StateManager states)

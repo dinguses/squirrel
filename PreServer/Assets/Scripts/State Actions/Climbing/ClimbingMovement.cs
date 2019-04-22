@@ -24,6 +24,7 @@ namespace PreServer
             front = new RaycastHit();
             under = new RaycastHit();
             transitioning = false;
+            states.isGrounded = false;
         }
 
         public override void Execute(StateManager states)
@@ -79,6 +80,11 @@ namespace PreServer
                     states.climbState = StateManager.ClimbState.EXITING;
                     return;
                 }
+                else if(angle > 90)
+                {
+                    states.rigid.velocity = Vector3.zero;
+                    states.mTransform.rotation = prevRotation;
+                }
             }
 
             // Setup origin points for three different ground checking vector3s. One in middle of player, one in front, and one in back
@@ -92,8 +98,8 @@ namespace PreServer
             Vector3 dir = -states.transform.forward + (-states.transform.up * 0.5f);
 
             // Draw the rays
-            Debug.DrawRay(frontOrigin, dir * 1f, Color.green);
-            if (Physics.Raycast(frontOrigin, dir, out under, 1f, Layers.ignoreLayersController))
+            Debug.DrawRay(frontOrigin, dir * 1.5f, Color.green);
+            if (Physics.Raycast(frontOrigin, dir, out under, 1.5f, Layers.ignoreLayersController))
             {
                 float angle = Vector3.Angle(under.normal, Vector3.up);
                 if (angle >= 70 && angle <= 90 && (under.transform != states.climbHit.transform || under.normal != states.climbHit.normal))
@@ -118,15 +124,25 @@ namespace PreServer
                     states.climbState = StateManager.ClimbState.EXITING;
                     return;
                 }
+                else if (angle > 90)
+                {
+                    states.rigid.velocity = Vector3.zero;
+                    states.mTransform.rotation = prevRotation;
+                }
+            }
+            else
+            {
+                states.rigid.velocity = Vector3.zero;
+                states.mTransform.rotation = prevRotation;
             }
             Debug.DrawRay(targetPos, states.transform.up * 3f, Color.yellow);
         }
-
+        Quaternion prevRotation;
         void Rotate(StateManager states)
         {
             if (cameraTransform.value == null)
                 return;
-
+            prevRotation = states.mTransform.rotation; 
             float h = states.movementVariables.horizontal;
             float v = states.movementVariables.vertical;
 
@@ -228,7 +244,7 @@ namespace PreServer
         public override void OnExit(StateManager states)
         {
             base.OnExit(states);
-            states.rigid.velocity = Vector3.zero;
+            //states.rigid.velocity = Vector3.zero;
         }
     }
 }

@@ -23,9 +23,13 @@ MonoBehaviour:
   actions:
   - {fileID: 11400000, guid: 113386b037b368242a9579d83d09ec72, type: 2}
   stateName: On Air
-  idCount: 5
+  idCount: 6
   transitions:
   - id: 2
     condition: {fileID: 11400000, guid: 6e21022bc2ec6e1488b00f1fcdada0e2, type: 2}
     targetState: {fileID: 11400000, guid: 0225933b0bf4587438730a98b935d45e, type: 2}
+    disable: 0
+  - id: 5
+    condition: {fileID: 11400000, guid: ca427418d9e083944922360065340559, type: 2}
+    targetState: {fileID: 11400000, guid: f512ff9fac98b0b408bbb538464a0ff9, type: 2}
     disable: 0

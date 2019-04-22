@@ -35062,6 +35062,7 @@ MonoBehaviour:
   randMax: 0
   idleInc: 0
   inGrindZone: 0
+  isSliding: 0
   facingPoint: {x: 0, y: 0, z: 0}
   behindPoint: {x: 0, y: 0, z: 0}
   groundNormal: {x: 0, y: 0, z: 0}
@@ -35089,6 +35090,10 @@ MonoBehaviour:
   topHitLong: 0
   topHit: 0
   bottomHit: 0
+  minSlideAngle: 35
+  maxSlideAngle: 70
+  climbTimer: 2
+  climbState: 0
 --- !u!4 &2013423612
 Transform:
   m_ObjectHideFlags: 0
