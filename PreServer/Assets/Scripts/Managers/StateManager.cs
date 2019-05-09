@@ -35,6 +35,8 @@ namespace PreServer
         public AnimatorData animData;
 
         public bool isJumping;
+        public bool dashActive;
+        public int dashInAirCounter;
 //bool _isGrounded;
         public bool isGrounded;
         //{
@@ -204,6 +206,9 @@ namespace PreServer
             {
                 SetClimbAnimStates();
             }
+            //Reset lagdash when squirrel touches the ground
+            if (isGrounded && dashInAirCounter != 0)
+                dashInAirCounter = 0;
 
             if (currentState != null)
             {
@@ -898,6 +903,12 @@ namespace PreServer
             grindCenters = new Dictionary<int, BoxCollider>();
             grindCenter = new BoxCollider();
         }
+
+        public bool CanDash()
+        {
+            return !isSliding && climbState == ClimbState.NONE && (isGrounded || dashInAirCounter == 0);
+        }
+
         private void OnDrawGizmos()
         {
             //// Setup origin points for three different ground checking vector3s. One in middle of player, one in front, and one in back
@@ -944,7 +955,7 @@ namespace PreServer
             //Gizmos.DrawSphere(backOrigin + dir * dis, 0.3f);
 
             //Gizmos.color = Color.red;
-            ////Gizmos.DrawCube(frontCollider.bounds.center, new Vector3(frontCollider.bounds.size.x, frontCollider.bounds.size.y, frontCollider.bounds.size.z));
+            //Gizmos.DrawCube(frontCollider.bounds.center, new Vector3(frontCollider.bounds.size.x, frontCollider.bounds.size.y, frontCollider.bounds.size.z));
             //Gizmos.DrawWireCube(new Vector3(frontCollider.bounds.center.x, frontCollider.bounds.center.y - (frontCollider.bounds.size.y - (frontCollider.bounds.size.y * 0.5f)), frontCollider.bounds.center.z),
             //    new Vector3(frontCollider.bounds.size.x * 1.5f, frontCollider.bounds.size.y * 0.5f, frontCollider.bounds.size.z * 1.5f));
 

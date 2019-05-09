@@ -4,6 +4,9 @@ using UnityEngine;
 using SO;
 namespace PreServer
 {
+    /// <summary>
+    /// TODO: Detach when climbing off platforms, jump forward on climbs, jump backwards
+    /// </summary>
     [CreateAssetMenu(menuName = "Actions/State Actions/Climbing Movement")]
     public class ClimbingMovement : StateActions
     {
@@ -12,19 +15,22 @@ namespace PreServer
         public TransformVariable cameraTransform;
         Vector3 climbRight;
         Vector3 climbUp;
+        Vector3 climbForward;
         bool transitioning = false;
         RaycastHit front;
         RaycastHit under;
         public override void OnEnter(StateManager states)
         {
             base.OnEnter(states);
-            Vector3 forward = Vector3.Cross(states.climbHit.normal, Vector3.up);
-            climbUp = Vector3.Cross(forward, states.climbHit.normal);
+            Vector3 v = Vector3.Cross(states.climbHit.normal, Vector3.up);
+            climbForward = Vector3.Cross(v, states.climbHit.normal);
             climbRight = Vector3.Cross(states.climbHit.normal, Vector3.up);
+            climbUp = states.climbHit.normal;
             front = new RaycastHit();
             under = new RaycastHit();
             transitioning = false;
             states.isGrounded = false;
+            states.dashInAirCounter = 0;
         }
 
         public override void Execute(StateManager states)
@@ -39,6 +45,8 @@ namespace PreServer
             if (transitioning)
             {
                 Transfer(states);
+                //Rotate(states);
+                Move(states);
             }
             else
             {
@@ -50,28 +58,33 @@ namespace PreServer
 
         void CheckRaycast(StateManager states)
         {
+            bool frontHit = false, underHit = false;
             float topFloat = .6f;
             Vector3 topRay = states.transform.position + (states.transform.forward * 1.5f) + (states.transform.up * topFloat);
 
             Debug.DrawRay(topRay, states.transform.forward * 0.75f, Color.blue);
-
+            //Raycast in front of the squirrel, used to check if we've hit a ceiling, ground, or another climb-able surface
             if (Physics.Raycast(topRay, states.transform.forward, out front, 0.75f, Layers.ignoreLayersController))
             {
+                frontHit = true;
                 float angle = Vector3.Angle(front.normal, Vector3.up);
+                //can climb if the angle is between 70 and 90, and it is a different surface, might need to adjust
                 if (angle >= 70 && angle <= 90 && (front.transform != states.climbHit.transform || front.normal != states.climbHit.normal))
                 {
+                    if (Vector3.Angle(under.normal, states.climbHit.normal) > 45)
+                        states.rigid.velocity = Vector3.zero;
                     states.climbHit = front;
-                    transitioning = true;
                     startPos = states.transform.position;
                     targetPos = states.climbHit.point + (states.climbHit.normal * offsetFromWall);
                     targetRot = Quaternion.FromToRotation(states.transform.up, states.climbHit.normal) * states.transform.rotation;
                     t = 0;
                     inPos = false;
                     inRot = false;
-                    Vector3 forward = Vector3.Cross(states.climbHit.normal, Vector3.up);
-                    climbUp = Vector3.Cross(forward, states.climbHit.normal);
+                    Vector3 v = Vector3.Cross(states.climbHit.normal, Vector3.up);
+                    climbForward = Vector3.Cross(v, states.climbHit.normal);
                     climbRight = Vector3.Cross(states.climbHit.normal, Vector3.up);
-                    states.rigid.velocity = Vector3.zero;
+                    climbUp = states.climbHit.normal;
+                    transitioning = true;
                     return;
                 }
                 else if (angle < 70)
@@ -80,7 +93,7 @@ namespace PreServer
                     states.climbState = StateManager.ClimbState.EXITING;
                     return;
                 }
-                else if(angle > 90)
+                else if (angle > 90)
                 {
                     states.rigid.velocity = Vector3.zero;
                     states.mTransform.rotation = prevRotation;
@@ -101,24 +114,27 @@ namespace PreServer
             Debug.DrawRay(frontOrigin, dir * 1.5f, Color.green);
             if (Physics.Raycast(frontOrigin, dir, out under, 1.5f, Layers.ignoreLayersController))
             {
+                underHit = true;
                 float angle = Vector3.Angle(under.normal, Vector3.up);
                 if (angle >= 70 && angle <= 90 && (under.transform != states.climbHit.transform || under.normal != states.climbHit.normal))
                 {
+                    if (Vector3.Angle(under.normal, states.climbHit.normal) > 45)
+                        states.rigid.velocity = Vector3.zero;
                     states.climbHit = under;
-                    transitioning = true;
                     startPos = states.transform.position;
                     targetPos = states.climbHit.point + (states.climbHit.normal * offsetFromWall);
                     targetRot = Quaternion.FromToRotation(states.transform.up, states.climbHit.normal) * states.transform.rotation;
                     t = 0;
                     inPos = false;
                     inRot = false;
-                    Vector3 forward = Vector3.Cross(states.climbHit.normal, Vector3.up);
-                    climbUp = Vector3.Cross(forward, states.climbHit.normal);
+                    Vector3 v = Vector3.Cross(states.climbHit.normal, Vector3.up);
+                    climbForward = Vector3.Cross(v, states.climbHit.normal);
                     climbRight = Vector3.Cross(states.climbHit.normal, Vector3.up);
-                    states.rigid.velocity = Vector3.zero;
+                    climbUp = states.climbHit.normal;
+                    transitioning = true;
                     return;
                 }
-                else if(angle < 70)
+                else if (angle < 70)
                 {
                     states.climbHit = under;
                     states.climbState = StateManager.ClimbState.EXITING;
@@ -126,51 +142,60 @@ namespace PreServer
                 }
                 else if (angle > 90)
                 {
-                    states.rigid.velocity = Vector3.zero;
-                    states.mTransform.rotation = prevRotation;
+                    //states.rigid.velocity = Vector3.zero;
+                    //states.mTransform.rotation = prevRotation;
+                    states.climbState = StateManager.ClimbState.NONE;
+                    states.isJumping = true;
+                    return;
                 }
             }
             else
             {
-                states.rigid.velocity = Vector3.zero;
-                states.mTransform.rotation = prevRotation;
+                //states.rigid.velocity = Vector3.zero;
+                //states.mTransform.rotation = prevRotation;
+                states.climbState = StateManager.ClimbState.NONE;
+                states.isJumping = true;
             }
-            Debug.DrawRay(targetPos, states.transform.up * 3f, Color.yellow);
+            Debug.DrawRay(targetPos, states.climbHit.normal * 3f, Color.yellow);
+            if (!underHit && !frontHit)
+            {
+                states.climbState = StateManager.ClimbState.NONE;
+                states.isJumping = true;
+            }
         }
         Quaternion prevRotation;
         void Rotate(StateManager states)
         {
             if (cameraTransform.value == null)
                 return;
+           //keep track fo previous rotation in case we need to revert back to it, in the the case of detecting an unclimbable surface
             prevRotation = states.mTransform.rotation; 
             float h = states.movementVariables.horizontal;
             float v = states.movementVariables.vertical;
 
+            //Get the angle between the camera's forward and the climb's up and get it in 360 degrees
+            float angle = -Vector3.Angle(climbUp, cameraTransform.value.forward);
+            angle = (Vector3.Angle(climbRight, cameraTransform.value.forward) > 90f) ? 360f - angle : angle;
 
-            //var test = cameraTransform.value;
-            //Vector3 cameraStuff = test.right;
-            //cameraStuff.Normalize();
-            ////Debug.Log(Time.frameCount + " || angle: " + Vector3.Angle(cameraStuff, climbRight));
+            //rotating climb up and climb right based on camera's position
+            Vector3 climbForwardAlt = (Quaternion.AngleAxis(angle, climbUp) * -climbForward);
+            Vector3 climbRightAlt = (Quaternion.AngleAxis(angle, climbUp) * -climbRight);
 
-            //if (Vector3.Angle(cameraStuff, climbRight) > 90)
-            //{
-            //    h = -h;
-            //}
-
-            //float m = Mathf.Abs(h) + Mathf.Abs(v);
-            //Debug.Log(Time.frameCount + " || h: " + h + " v: " + v);
-            Vector3 targetDir = climbUp * v;
-            targetDir += climbRight * h;
+            Vector3 targetDir = climbForwardAlt * v;
+            targetDir += (climbRightAlt * h);
             targetDir.Normalize();
-            //targetDir.x = 0;
 
+            //Debug purposes to visualize the direction
+            //Debug.DrawRay(states.transform.position, climbForwardAlt * 3, Color.blue);
+            //Debug.DrawRay(states.transform.position, climbRightAlt * 3, Color.yellow);
+
+            //If there's no input, then don't do anything
             if (targetDir == Vector3.zero)
                 return;
 
+            //Apply rotation
             states.movementVariables.moveDirection = targetDir;
 
-            //targetDir.x = states.mTransform.forward.x;
-            //Debug.DrawRay(states.mTransform.position, targetDir, Color.red);
             Quaternion tr = Quaternion.LookRotation(targetDir, states.transform.up);
             Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * states.movementVariables.moveAmount * rotationSpeed);
 
@@ -183,6 +208,8 @@ namespace PreServer
             testOrigin.y += .5f;
             //Debug.DrawRay(origin2, -Vector3.up, Color.red);
             Vector3 targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * climbSpeed;
+            //if (transitioning)
+            //    targetVelocity = Quaternion.Inverse(targetRot) * targetVelocity;
             Vector3 currentVelocity = states.rigid.velocity;
             states.targetVelocity = targetVelocity;
             states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity, states.delta * climbSpeed);
@@ -203,6 +230,7 @@ namespace PreServer
 
             if (inPos && inRot)
             {
+                //Debug.Log(Time.frameCount + " || I am in rotation");
                 transitioning = false;
                 //Vector3 tp = Vector3.Lerp(startPos, targetPos, 0.99f);
                 states.transform.position = targetPos;
@@ -211,9 +239,13 @@ namespace PreServer
             if (!inRot)
             {
                 if (states.transform.rotation == targetRot)
+                {
                     inRot = true;
+                    states.rigid.velocity += states.transform.forward;
+                }
                 Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, targetRot, t);
                 states.mTransform.rotation = targetRotation;
+                //Debug.Log(Time.frameCount + " || still rotating: " + inRot);
             }
 
             if (!inPos)
