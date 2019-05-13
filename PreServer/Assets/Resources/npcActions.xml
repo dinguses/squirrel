@@ -1,0 +1,58 @@
+<!--?xml version="1.0" encoding="UTF-8"?-->
+<actions>
+  <action id="0" gen="1">
+    <reqs>
+      <req id="0" value="Gunch" />
+      <req id="1" value="f" />
+    </reqs>
+    <steps>
+      <step type="move" x="-36" y="0" z="-20" />
+      <step type="wait" time="3" />
+    </steps>
+  </action>
+  <action id="1" gen="0">
+    <reqs>
+      <req id="0" value="SanicFan" />
+      <req id="1" value="m" />
+    </reqs>
+    <steps>
+      <step type="move" x="-44" y="0" z="44" />
+      <step type="msg" words="OH SONNIC I FOUND YOU, MY SWEET BOY" />
+    </steps>
+  </action>
+  <action id="2" gen="0">
+    <reqs>
+      <req id="0" value="FartGuy" />
+      <req id="1" value="m" />
+    </reqs>
+    <steps>
+      <step type="move" x="40" y="0" z="-26" />
+    </steps>
+  </action>
+  <action id="3" gen="0">
+    <steps>
+      <step type="move" x="7" y="0" z="14" />
+    </steps>
+  </action>
+  <action id="4" gen="0">
+    <steps>
+      <step type="move" x="17" y="0" z="-24" />
+    </steps>
+  </action>
+  <action id="5" gen="0">
+    <steps>
+      <step type="move" x="44" y="0" z="60" />
+      <step type="move" x="47" y="0" z="20" />
+    </steps>
+  </action>
+  <action id="6" gen="0">
+    <steps>
+      <step type="wait" time="6" />
+      <step type="move" x="44" y="0" z="60" />
+      <step type="wait" time="2" />
+      <step type="msg" words="whoa" />
+      <step type="wait" time="4" />
+      <step type="move" x="47" y="0" z="20" />
+    </steps>
+  </action>
+</actions>

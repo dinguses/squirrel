@@ -24,5 +24,8 @@ namespace PreServer
         public int squ_grind_idle = Animator.StringToHash("squ_grind_idle");
         public int squ_grind_run = Animator.StringToHash("squ_grind_run");
         public int squ_grind_180 = Animator.StringToHash("squ_grind_180");
+
+        public int npc_idle = Animator.StringToHash("NPC_IDLE");
+        public int npc_run = Animator.StringToHash("NPC_WALK");
     }
 }

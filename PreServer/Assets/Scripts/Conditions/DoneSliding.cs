@@ -18,6 +18,9 @@ namespace PreServer
         float backAngle = 0;
         float middleAngle = 0;
         int count = 0;
+
+        bool result = false;
+
         public override bool CheckCondition(StateManager state)
         {
             //count = 0;
@@ -53,12 +56,14 @@ namespace PreServer
             //    return true;
             //}
 
+            result = state.isSliding;
+
             return !state.isSliding;
         }
 
-        bool CheckAngle(float angle)
+        /*bool CheckAngle(float angle)
         {
             return angle <= minSlideAngle || angle >= maxSlideAngle;
-        }
+        }*/
     }
 }
