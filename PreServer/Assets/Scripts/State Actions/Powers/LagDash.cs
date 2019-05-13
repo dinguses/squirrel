@@ -25,6 +25,7 @@ namespace PreServer
             base.OnEnter(states);
             states.dashInAirCounter++;
             states.rigid.useGravity = false;
+            states.rigid.velocity = states.transform.forward * dashSpeed;
             //Debug.Log("LagDash Setting Velocity to: " + states.rigid.velocity);
             timer = 0;
             //startPos = states.transform.position;
@@ -70,7 +71,6 @@ namespace PreServer
             //Debug.Log("LagDash Update: " + states.rigid.velocity);
             //Transfer(states);
             //Debug.DrawRay(targetPos, Vector3.up * ff, Color.yellow);
-            states.rigid.velocity = states.transform.forward * dashSpeed;
         }
 
         void CheckRaycast(StateManager states)
@@ -123,7 +123,6 @@ namespace PreServer
             states.rigid.useGravity = true;
             states.rigid.velocity = Vector3.zero;
             timer = 0;
-            states.lagDashCooldown = 1.0f;
         }
     }
 }

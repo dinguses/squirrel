@@ -19,11 +19,6 @@ namespace PreServer
         bool transitioning = false;
         RaycastHit front;
         RaycastHit under;
-        public float dashSpeed = 40f;
-        public float dashTime = 0.15f;
-        bool dash = false;
-        float timer = 0;
-        bool dashActivated = false;
         public override void OnEnter(StateManager states)
         {
             base.OnEnter(states);
@@ -36,9 +31,6 @@ namespace PreServer
             transitioning = false;
             states.isGrounded = false;
             states.dashInAirCounter = 0;
-            dash = false;
-            timer = dashTime;
-            dashActivated = false;
         }
 
         public override void Execute(StateManager states)
@@ -50,7 +42,6 @@ namespace PreServer
         {
             base.OnUpdate(states);
 
-
             if (transitioning)
             {
                 Transfer(states);
@@ -59,29 +50,9 @@ namespace PreServer
             }
             else
             {
-                if(timer > dashTime && states.dashActive && states.CanDash() && !dashActivated)
-                {
-                    //Debug.Log("Adding velocity 9");
-                    states.rigid.velocity = states.transform.forward * dashSpeed;
-                    timer = 0;
-                    dashActivated = true;
-                }
-                if (!states.dashActive)
-                {
-                    Rotate(states);
-                    Move(states);
-                }
+                Rotate(states);
+                Move(states);
                 CheckRaycast(states);
-            }
-
-            timer += Time.deltaTime;
-            if (timer > dashTime && states.dashActive && dashActivated)
-            {
-                states.dashActive = false;
-                states.rigid.velocity = Vector3.zero;
-                //Debug.Log("Dash over");
-                states.lagDashCooldown = 1.0f;
-                dashActivated = false;
             }
         }
 
@@ -101,15 +72,7 @@ namespace PreServer
                 if (angle >= 70 && angle <= 90 && (front.transform != states.climbHit.transform || front.normal != states.climbHit.normal))
                 {
                     if (Vector3.Angle(under.normal, states.climbHit.normal) > 45)
-                    {
                         states.rigid.velocity = Vector3.zero;
-                        if (states.dashActive)
-                        {
-                            states.dashActive = false;
-                            states.lagDashCooldown = 1.0f;
-                            dashActivated = false;
-                        }
-                    }
                     states.climbHit = front;
                     startPos = states.transform.position;
                     targetPos = states.climbHit.point + (states.climbHit.normal * offsetFromWall);
@@ -156,16 +119,7 @@ namespace PreServer
                 if (angle >= 70 && angle <= 90 && (under.transform != states.climbHit.transform || under.normal != states.climbHit.normal))
                 {
                     if (Vector3.Angle(under.normal, states.climbHit.normal) > 45)
-                    {
                         states.rigid.velocity = Vector3.zero;
-                        if (states.dashActive)
-                        {
-                            states.dashActive = false;
-                            states.lagDashCooldown = 1.0f;
-                            dashActivated = false;
-                        }
-                    }
-                    
                     states.climbHit = under;
                     startPos = states.transform.position;
                     targetPos = states.climbHit.point + (states.climbHit.normal * offsetFromWall);
@@ -323,11 +277,6 @@ namespace PreServer
         {
             base.OnExit(states);
             //states.rigid.velocity = Vector3.zero;
-            if (states.dashActive)
-            {
-                states.dashActive = false;
-                states.lagDashCooldown = 1.0f;
-            }
         }
     }
 }
