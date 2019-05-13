@@ -123,6 +123,7 @@ namespace PreServer
             states.rigid.useGravity = true;
             states.rigid.velocity = Vector3.zero;
             timer = 0;
+            states.lagDashCooldown = 1.0f;
         }
     }
 }

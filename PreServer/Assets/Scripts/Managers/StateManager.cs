@@ -76,6 +76,7 @@ namespace PreServer
 
         public Text inGrindZoneText;
         public Text newColliderText;
+        public Image dashCooldown;
 
         public bool stepUp;
         public bool stepUpJump;
@@ -129,6 +130,9 @@ namespace PreServer
         public float minSlideAngle = 35;
         public float maxSlideAngle = 70;
         float length = 0;
+        [HideInInspector]
+        public float lagDashCooldown = 0;
+
         private void Start()
         {
             climbHit = new RaycastHit();
@@ -245,6 +249,7 @@ namespace PreServer
             {
                 newColliderText.text = "newCollider - " + newHitBox.name;
             }
+            dashCooldown.fillAmount = 1 - lagDashCooldown;
             #endregion
 
             //TODO: make this better
@@ -295,6 +300,12 @@ namespace PreServer
                 }
             }
             #endregion
+            if (lagDashCooldown > 0)
+            {
+                lagDashCooldown -= delta;
+                if (lagDashCooldown < 0)
+                    lagDashCooldown = 0;
+            }
         }
 
         public void StepUpTest()
@@ -906,7 +917,7 @@ namespace PreServer
 
         public bool CanDash()
         {
-            return !isSliding && climbState == ClimbState.NONE && (isGrounded || dashInAirCounter == 0);
+            return !isSliding && (climbState == ClimbState.NONE || climbState == ClimbState.CLIMBING) && (isGrounded || dashInAirCounter == 0) && lagDashCooldown <= 0; ;
         }
 
         private void OnDrawGizmos()
