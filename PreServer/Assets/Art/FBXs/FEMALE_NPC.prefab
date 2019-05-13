@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4794589153238534}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:lowerarm_r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34,7 +34,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4844735626585396}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:ball_r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49,7 +49,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4695206269233820}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:neck_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -65,7 +65,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4246064485478930}
   - component: {fileID: 137720089734212202}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: female_01_body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -80,7 +80,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4023522521930660}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:upperarm_r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4411254793693704}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:thigh_l
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -111,7 +111,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4031228113710848}
   - component: {fileID: 137842395279036610}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: female_01_shirt2_tee
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -127,7 +127,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4586630317179658}
   - component: {fileID: 137767496601731100}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: female_01_shirt1_long
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -143,7 +143,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4917847569188256}
   - component: {fileID: 137954997335597508}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: head_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -158,7 +158,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4622426853707040}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:thigh_r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -174,7 +174,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4951863776838376}
   - component: {fileID: 137605585078213094}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: female_01_dress1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -190,7 +190,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4132934326687668}
   - component: {fileID: 137015767515594820}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: female_01_shirt5_twoLayer_Interior
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -205,7 +205,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4932571055701944}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:thumb_01_r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -220,7 +220,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4961794739102006}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:middle_01_l
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -235,7 +235,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4923103222690264}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:ball_l
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -250,7 +250,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4757824755941172}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:thumb_01_l
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -266,7 +266,11 @@ GameObject:
   m_Component:
   - component: {fileID: 4611108320658948}
   - component: {fileID: 95174603091144440}
-  m_Layer: 0
+  - component: {fileID: 136415411518785548}
+  - component: {fileID: 54686986739913822}
+  - component: {fileID: 114459744597975382}
+  - component: {fileID: 23384966459911604}
+  m_Layer: 9
   m_Name: FEMALE_NPC
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -281,7 +285,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4993751300568772}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:upperarm_l
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -297,7 +301,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4065402061949100}
   - component: {fileID: 137433841005415314}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: female_01_dress2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -312,7 +316,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4551385595283470}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:spine_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -327,7 +331,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4707156106121224}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:hand_r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -342,7 +346,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4173973137621260}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:clavicle_l
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -358,7 +362,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4483691385446152}
   - component: {fileID: 137249131266468292}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: female_01_shirt3_muscle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -373,7 +377,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4479703857370442}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -388,7 +392,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4136328375031600}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -403,7 +407,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4021759254524888}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:hand_l
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -419,7 +423,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4899360649960602}
   - component: {fileID: 137516307161680036}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: female_01_pants1_long
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -435,7 +439,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4219559986310480}
   - component: {fileID: 137720557279489602}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: female_01_pants3_skirt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -450,7 +454,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4814614488130086}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:pelvis
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -465,7 +469,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4815672086274466}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:foot_l
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -480,7 +484,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4313035446976918}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:spine_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -496,7 +500,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4125400894905672}
   - component: {fileID: 137613673224531926}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: female_01_shirt5_twoLayer_Exterior
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -512,7 +516,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4908435758559786}
   - component: {fileID: 137817544989937466}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: female_01_pants2_shorts
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -528,7 +532,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4317024916140996}
   - component: {fileID: 137576677188888138}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: female_01_dress3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -543,7 +547,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4760716924801296}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:foot_r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -558,7 +562,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4494869428133912}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:spine_03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -573,7 +577,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4780665043494504}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:eyelids
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -589,7 +593,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4145963657769502}
   - component: {fileID: 137756752125202150}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: female_01_belt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -604,7 +608,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4939097790609264}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:calf_r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -619,7 +623,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4821824157287962}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:middle_01_r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -635,7 +639,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4622590879756690}
   - component: {fileID: 137573964310140298}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: female_01_shirt4_suit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -651,7 +655,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4486384603675478}
   - component: {fileID: 137567971350204038}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: female_01_swimsuit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -668,7 +672,7 @@ GameObject:
   - component: {fileID: 4118311279898718}
   - component: {fileID: 33709533896293190}
   - component: {fileID: 23094562646136806}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:eyesAndTeeth
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -683,7 +687,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4459785895584908}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:calf_l
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -699,7 +703,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4641355680233576}
   - component: {fileID: 137248396970370592}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: female_01_pants3_longSkirt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -714,7 +718,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4310781264286872}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:clavicle_r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -729,7 +733,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4684603106775144}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Squ_People3:lowerarm_l
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1428,6 +1432,41 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!23 &23384966459911604
+MeshRenderer:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1320737665514768}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 4294967295
+  m_Materials:
+  - {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
 --- !u!33 &33709533896293190
 MeshFilter:
   m_ObjectHideFlags: 1
@@ -1435,6 +1474,21 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1870334692702302}
   m_Mesh: {fileID: 4300128, guid: 91a5e6858c2ab154782028ecbc4dea76, type: 3}
+--- !u!54 &54686986739913822
+Rigidbody:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1320737665514768}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 0
 --- !u!95 &95174603091144440
 Animator:
   serializedVersion: 3
@@ -1453,6 +1507,38 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &114459744597975382
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1320737665514768}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7423fd44f5409ba4a88696fa82146bdb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  npcTransform: {fileID: 0}
+  rigid: {fileID: 0}
+  anim: {fileID: 0}
+  currStepNum: 0
+  destination: {x: 0, y: 0, z: 0}
+  waitTime: 0
+  message: 
+  stepInProg: 0
+--- !u!136 &136415411518785548
+CapsuleCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1320737665514768}
+  m_Material: {fileID: 13400000, guid: db9b66e5f06243844ab428d410e1b7ac, type: 2}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 2
+  m_Height: 11
+  m_Direction: 1
+  m_Center: {x: 0, y: 5.5, z: 0}
 --- !u!137 &137015767515594820
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

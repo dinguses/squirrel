@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Experimental.UIElements;
 using UnityEngine.UI;
@@ -396,6 +397,9 @@ namespace PreServer
 
         public void Start()
         {
+            //maleNPC = (GameObject) AssetDatabase.LoadAssetAtPath("Assets/Art/FBXs/MALE_NPC.prefab", typeof(GameObject));
+            //femaleNPC = (GameObject)AssetDatabase.LoadAssetAtPath("Assets/Art/FBXs/FEMALE_NPC.prefab", typeof(GameObject));
+
             skins = new Texture[9];
             skins[0] = skin1;
             skins[1] = skin2;
