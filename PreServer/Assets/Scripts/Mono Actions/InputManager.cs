@@ -14,6 +14,7 @@ namespace PreServer
         public BoolVariable restart;
         public BoolVariable run;
         public BoolVariable zoom;
+        public BoolVariable dash;
 
         public StateManagerVariable playerStates;
         public ActionBatch inputUpdateBatch;
@@ -38,6 +39,8 @@ namespace PreServer
                 playerStates.value.isJumping = jump.value;
                 playerStates.value.isRestart = restart.value;
                 playerStates.value.isRun = run.value;
+                if(!playerStates.value.dashActive && playerStates.value.CanDash())
+                    playerStates.value.dashActive = dash.value;
             }
         }
     }

@@ -35,6 +35,8 @@ namespace PreServer
         public AnimatorData animData;
 
         public bool isJumping;
+        public bool dashActive;
+        public int dashInAirCounter;
 //bool _isGrounded;
         public bool isGrounded;
         //{
@@ -129,6 +131,8 @@ namespace PreServer
         float length = 0;
         private void Start()
         {
+            climbHit = new RaycastHit();
+
             Vector3 frontOrigin = transform.position;
             Vector3 backOrigin = transform.position;
 
@@ -190,11 +194,22 @@ namespace PreServer
         private void Update()
         {
             delta = Time.deltaTime;
-            UpdateGroundNormals();
-            SetAnimStates();
+            if (climbState == ClimbState.NONE)
+            {
+                UpdateGroundNormals();
+                SetAnimStates();
+                StepUpTest();
+                CheckSliding();
+                CheckForClimb();
+            }
+            else
+            {
+                SetClimbAnimStates();
+            }
+            //Reset lagdash when squirrel touches the ground
+            if (isGrounded && dashInAirCounter != 0)
+                dashInAirCounter = 0;
 
-            StepUpTest();
-            CheckSliding();
             if (currentState != null)
             {
                 currentState.Tick(this);
@@ -562,6 +577,63 @@ namespace PreServer
             anim.SetBool(hashes.UpIdle, UpIdle);
         }
 
+        void SetClimbAnimStates()
+        {
+            anim.SetBool(hashes.isGrounded, true);
+
+            float timeDifference = Time.realtimeSinceStartup - timeSinceJump;
+
+            anim.SetFloat(hashes.TimeSinceGrounded, timeDifference);
+
+            //states.anim.SetFloat(states.hashes.vertical, states.movementVariables.moveAmount, 0.2f, states.delta);
+            anim.SetFloat(hashes.speed, movementVariables.moveAmount, 0.01f, delta);
+
+            if (movementVariables.moveAmount == 0)
+            {
+                timeSinceMove = Time.realtimeSinceStartup;
+            }
+
+            if (movementVariables.moveAmount > .3f)
+            {
+                timeSinceSlow = Time.realtimeSinceStartup;
+            }
+
+            timeDifference = Time.realtimeSinceStartup - timeSinceMove;
+            float timeDifference2 = Time.realtimeSinceStartup - timeSinceSlow;
+
+            if (timeDifference < .2f)
+            {
+                anim.SetFloat(hashes.TimeSinceMove, timeDifference, 0.01f, delta);
+            }
+
+            if (timeDifference2 < .2f)
+            {
+                anim.SetFloat(hashes.TimeSinceSlow, timeDifference2, 0.01f, delta);
+            }
+            anim.SetBool(hashes.UpIdle, false);
+        }
+
+        public enum ClimbState { NONE, ENTERING, CLIMBING, EXITING }
+        public ClimbState climbState;
+        public RaycastHit climbHit;
+        Transform prevClimbT;
+        void CheckForClimb()
+        {
+            var topFloat = .6f;
+            var topRay = mTransform.position + (mTransform.forward * 1.25f) + (Vector3.up * topFloat);
+
+            //Debug.DrawRay(topRay, mTransform.forward, Color.blue);
+            if (Physics.Raycast(topRay, mTransform.forward, out climbHit, 1, Layers.ignoreLayersController))
+            {
+                float angle = Vector3.Angle(climbHit.normal, Vector3.up);
+                if (angle >= 70 && angle <= 90/* && (prevClimbT != climbHit.transform || isGrounded)*/)
+                {
+                    climbState = ClimbState.ENTERING;
+                    prevClimbT = climbHit.transform;
+                }
+            }
+        }
+
         bool frontSliding = false;
         bool middleSliding = false;
         bool backSliding = false;
@@ -831,6 +903,12 @@ namespace PreServer
             grindCenters = new Dictionary<int, BoxCollider>();
             grindCenter = new BoxCollider();
         }
+
+        public bool CanDash()
+        {
+            return !isSliding && climbState == ClimbState.NONE && (isGrounded || dashInAirCounter == 0);
+        }
+
         private void OnDrawGizmos()
         {
             //// Setup origin points for three different ground checking vector3s. One in middle of player, one in front, and one in back
@@ -877,7 +955,7 @@ namespace PreServer
             //Gizmos.DrawSphere(backOrigin + dir * dis, 0.3f);
 
             //Gizmos.color = Color.red;
-            ////Gizmos.DrawCube(frontCollider.bounds.center, new Vector3(frontCollider.bounds.size.x, frontCollider.bounds.size.y, frontCollider.bounds.size.z));
+            //Gizmos.DrawCube(frontCollider.bounds.center, new Vector3(frontCollider.bounds.size.x, frontCollider.bounds.size.y, frontCollider.bounds.size.z));
             //Gizmos.DrawWireCube(new Vector3(frontCollider.bounds.center.x, frontCollider.bounds.center.y - (frontCollider.bounds.size.y - (frontCollider.bounds.size.y * 0.5f)), frontCollider.bounds.center.z),
             //    new Vector3(frontCollider.bounds.size.x * 1.5f, frontCollider.bounds.size.y * 0.5f, frontCollider.bounds.size.z * 1.5f));
 

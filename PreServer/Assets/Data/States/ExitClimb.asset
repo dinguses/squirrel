@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e09f12a9b8fb5e44eb81fa499afbecc4, type: 3}
+  m_Name: ExitClimb
+  m_EditorClassIdentifier: 
+  onFixed: []
+  onUpdate: []
+  onEnter: []
+  onExit: []
+  actions:
+  - {fileID: 11400000, guid: 748c2f761881531418c1a9ab7b1bd70e, type: 2}
+  stateName: 
+  idCount: 1
+  transitions:
+  - id: 0
+    condition: {fileID: 11400000, guid: b5291d00fb3c6534ab1f265c25884443, type: 2}
+    targetState: {fileID: 11400000, guid: 0225933b0bf4587438730a98b935d45e, type: 2}
+    disable: 0

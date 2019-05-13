@@ -65,8 +65,13 @@ namespace PreServer
             //    currentVelocity.x = 0;
             //    currentVelocity.z = 0;
             //}
-
-            currentVelocity += jumpSpeed * Vector3.up;
+            if (states.climbState == StateManager.ClimbState.CLIMBING)
+            {
+                currentVelocity += jumpSpeed * ((states.transform.up * 2f) + Vector3.up);
+                currentVelocity.y = jumpSpeed * Vector3.up.y;
+            }
+            else
+                currentVelocity += jumpSpeed * Vector3.up;
 
             //if (currentVelocity.y > jumpSpeed)
             //{

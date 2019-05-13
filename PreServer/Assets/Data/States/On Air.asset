@@ -4,7 +4,8 @@
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -22,9 +23,17 @@ MonoBehaviour:
   actions:
   - {fileID: 11400000, guid: 113386b037b368242a9579d83d09ec72, type: 2}
   stateName: On Air
-  idCount: 5
+  idCount: 7
   transitions:
   - id: 2
     condition: {fileID: 11400000, guid: 6e21022bc2ec6e1488b00f1fcdada0e2, type: 2}
     targetState: {fileID: 11400000, guid: 0225933b0bf4587438730a98b935d45e, type: 2}
+    disable: 0
+  - id: 5
+    condition: {fileID: 11400000, guid: ca427418d9e083944922360065340559, type: 2}
+    targetState: {fileID: 11400000, guid: f512ff9fac98b0b408bbb538464a0ff9, type: 2}
+    disable: 0
+  - id: 6
+    condition: {fileID: 11400000, guid: 183a7fbf36cc6584c8f4a936b2e53754, type: 2}
+    targetState: {fileID: 11400000, guid: 38e9ae9e4e2bbee48a64b3bf7351e59c, type: 2}
     disable: 0
