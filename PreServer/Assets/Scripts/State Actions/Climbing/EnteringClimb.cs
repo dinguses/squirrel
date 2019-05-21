@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SO;
 
 namespace PreServer
 {
@@ -16,8 +17,17 @@ namespace PreServer
         Quaternion targetRot;
         public float offsetFromWall = 0.3f;
         float delta;
+        bool moveCamera = false;
+        public TransformVariable cameraTransform;
+        CameraManager camera;
+        float cameraAngle = 0;
+        float tempAngle = 0;
         public override void OnEnter(StateManager states)
         {
+            if (camera == null && cameraTransform != null)
+            {
+                camera = cameraTransform.value.GetComponent<CameraManager>();
+            }
             base.OnEnter(states);
             states.rigid.useGravity = false;
             startPos = states.transform.position;
@@ -26,6 +36,38 @@ namespace PreServer
             t = 0;
             inPos = false;
             inRot = false;
+            tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, states.climbHit.normal, Vector3.up);
+            if (tempAngle < 90 && tempAngle > -90)
+            {
+                cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
+                moveCamera = true;
+                if (camera != null)
+                    camera.ignoreInput = true;
+            }
+            else
+            {
+                moveCamera = false;
+            }
+        }
+
+        public override void OnFixed(StateManager states)
+        {
+            base.OnFixed(states);
+
+            if (moveCamera)
+            {
+                if (camera != null && tempAngle < 180 && tempAngle > -180)
+                {
+                    camera.AddToYaw((cameraAngle * Time.deltaTime * 4));
+                    tempAngle -= (cameraAngle * Time.deltaTime * 4);
+                }
+                else
+                {
+                    moveCamera = false;
+                    if (camera != null)
+                        camera.ignoreInput = false;
+                }
+            }
         }
 
         public override void Execute(StateManager states)
@@ -60,7 +102,7 @@ namespace PreServer
                 states.mTransform.rotation = targetRotation;
             }
 
-            if(inPos && inRot)
+            if(inPos && inRot && !moveCamera)
             {
                 states.climbState = StateManager.ClimbState.CLIMBING;
             }
@@ -79,6 +121,9 @@ namespace PreServer
         {
             base.OnExit(states);
             states.rigid.velocity = Vector3.zero;
+            moveCamera = false;
+            if (camera != null)
+                camera.ignoreInput = false;
         }
     }
 }

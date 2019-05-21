@@ -27,6 +27,7 @@ namespace PreServer
             states.rigid.useGravity = false;
             states.rigid.velocity = states.transform.forward * dashSpeed;
             //Debug.Log("LagDash Setting Velocity to: " + states.rigid.velocity);
+            states.rigid.drag = 0;
             timer = 0;
             //startPos = states.transform.position;
             //t = 0;

@@ -20,19 +20,37 @@ namespace PreServer
         Vector3 rotationSmoothVelocity;
         float yaw;
         float pitch;
+        public bool ignoreInput = false;
+        public float GetYaw()
+        {
+            return yaw;
+        }
+
+        public void AddToYaw(float val)
+        {
+            yaw += val;
+        }
+
+        public void SetCurrentRotation(Vector3 v)
+        {
+            currentRotation = v;
+        }
 
         void FixedUpdate()
         {
-            yaw += Input.GetAxis("RightStickHorizontal") * mouseSens;
-            pitch -= Input.GetAxis("RightStickVertical") * mouseSens;
-            pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
-
+            if (!ignoreInput)
+            {
+                yaw += Input.GetAxis("RightStickHorizontal") * mouseSens;
+                pitch -= Input.GetAxis("RightStickVertical") * mouseSens;
+                pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
+            }
             currentRotation = Vector3.SmoothDamp(currentRotation, new Vector3(pitch, yaw), ref rotationSmoothVelocity, rotationSmoothTime);
             cam.value.transform.eulerAngles = currentRotation;
 
 
             Vector3 targetPosition = Vector3.Lerp(cam.value.transform.position, player.position, Time.deltaTime * camFollowSpeed);
             cam.value.transform.position = targetPosition;
+            //Debug.Log("CameraManager currentRotation: " + currentRotation);
         }
     }
 }

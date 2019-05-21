@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: Entering Climb
   m_EditorClassIdentifier: 
   offsetFromWall: 0.05
+  cameraTransform: {fileID: 11400000, guid: 74c4d5a43fc4b4947a4d7dc56225221e, type: 2}
