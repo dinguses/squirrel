@@ -24,9 +24,17 @@ namespace PreServer
         bool dash = false;
         float timer = 0;
         bool dashActivated = false;
+        bool moveCamera = false;
+        CameraManager camera;
+        float cameraAngle = 0;
+        float tempAngle = 0;
         public override void OnEnter(StateManager states)
         {
             base.OnEnter(states);
+            if(camera == null && cameraTransform != null)
+            {
+                camera = cameraTransform.value.GetComponent<CameraManager>();
+            }
             Vector3 v = Vector3.Cross(states.climbHit.normal, Vector3.up);
             climbForward = Vector3.Cross(v, states.climbHit.normal);
             climbRight = Vector3.Cross(states.climbHit.normal, Vector3.up);
@@ -39,6 +47,9 @@ namespace PreServer
             dash = false;
             timer = dashTime;
             dashActivated = false;
+            moveCamera = false;
+            if (camera != null)
+                camera.ignoreInput = false;
         }
 
         public override void Execute(StateManager states)
@@ -81,6 +92,7 @@ namespace PreServer
                 states.lagDashCooldown = 1.0f;
                 dashActivated = false;
             }
+            Debug.DrawRay(states.climbHit.point, states.climbHit.normal * 3f, Color.yellow);
         }
 
         void CheckRaycast(StateManager states)
@@ -98,14 +110,33 @@ namespace PreServer
                 //can climb if the angle is between 70 and 90, and it is a different surface, might need to adjust
                 if (angle >= 70 && angle <= 90 && (front.transform != states.climbHit.transform || front.normal != states.climbHit.normal))
                 {
-                    if (Vector3.Angle(under.normal, states.climbHit.normal) > 45)
+                    angle = Vector3.Angle(front.normal, states.climbHit.normal);
+                    bool angleOver = angle > 45;
+                    if (angleOver)
                     {
                         states.rigid.velocity = Vector3.zero;
+                        moveCamera = true;
+                        if (camera != null)
+                            camera.ignoreInput = true;
+                        //camera angle is the amount the camera needs to move, tempAngle is the starting point
+                        tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, front.normal, Vector3.up);
+                        cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
                         if (states.dashActive)
                         {
                             states.dashActive = false;
                             states.lagDashCooldown = 1.0f;
                             dashActivated = false;
+                        }
+                    }
+                    else
+                    {
+                        tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, front.normal, Vector3.up);
+                        if (tempAngle < 90 && tempAngle > -90)
+                        {
+                            cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
+                            moveCamera = true;
+                            if (camera != null)
+                                camera.ignoreInput = true;
                         }
                     }
                     states.climbHit = front;
@@ -153,14 +184,33 @@ namespace PreServer
                 float angle = Vector3.Angle(under.normal, Vector3.up);
                 if (angle >= 70 && angle <= 90 && (under.transform != states.climbHit.transform || under.normal != states.climbHit.normal))
                 {
-                    if (Vector3.Angle(under.normal, states.climbHit.normal) > 45)
+                    angle = Vector3.Angle(under.normal, states.climbHit.normal);
+                    bool angleOver = angle > 45;
+                    if (angleOver)
                     {
                         states.rigid.velocity = Vector3.zero;
+                        moveCamera = true;
+                        if (camera != null)
+                            camera.ignoreInput = true;
+                        //camera angle is the amount the camera needs to move, tempAngle is the starting point
+                        tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, under.normal, Vector3.up);
+                        cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
                         if (states.dashActive)
                         {
                             states.dashActive = false;
                             states.lagDashCooldown = 1.0f;
                             dashActivated = false;
+                        }
+                    }
+                    else
+                    {
+                        tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, under.normal, Vector3.up);
+                        if (tempAngle < 90 && tempAngle > -90)
+                        {
+                            cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
+                            moveCamera = true;
+                            if (camera != null)
+                                camera.ignoreInput = true;
                         }
                     }
                     states.climbHit = under;
@@ -202,7 +252,6 @@ namespace PreServer
                 states.climbState = StateManager.ClimbState.NONE;
                 states.isJumping = true;
             }
-            Debug.DrawRay(targetPos, states.climbHit.normal * 3f, Color.yellow);
             if (!underHit && !frontHit)
             {
                 states.climbState = StateManager.ClimbState.NONE;
@@ -296,7 +345,7 @@ namespace PreServer
 
             if (!inPos)
             {
-                t += delta;
+                t += delta * (dashActivated ? 4 : 1);
                 Vector3 tp = Vector3.Lerp(startPos, targetPos, t);
                 states.transform.position = tp;
             }
@@ -309,6 +358,26 @@ namespace PreServer
                 inPos = false;
             }
             //Debug.Log(Time.frameCount + " || inPos = " + inPos + " inRot = " + inRot);
+        }
+
+        public override void OnFixed(StateManager states)
+        {
+            base.OnFixed(states);
+
+            if (moveCamera)
+            {
+                if (camera != null && tempAngle < 180 && tempAngle > -180)
+                {
+                    camera.AddToYaw((cameraAngle * Time.deltaTime * 4));
+                    tempAngle -= (cameraAngle * Time.deltaTime * 4);
+                }
+                else
+                {
+                    moveCamera = false;
+                    if (camera != null)
+                        camera.ignoreInput = false;
+                }
+            }
         }
 
         Vector3 PosWithOffset(Vector3 origin, Vector3 target)
@@ -328,6 +397,9 @@ namespace PreServer
                 states.dashActive = false;
                 states.lagDashCooldown = 1.0f;
             }
+            moveCamera = false;
+            if (camera != null)
+                camera.ignoreInput = false;
         }
     }
 }

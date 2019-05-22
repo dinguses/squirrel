@@ -15794,6 +15794,7 @@ MonoBehaviour:
   rotationSmoothTime: 0.12
   pitchMinMax: {x: 0, y: 35}
   camFollowSpeed: 9
+  currentRotation: {x: 0, y: 0, z: 0}
 --- !u!1 &1036360135
 GameObject:
   m_ObjectHideFlags: 0
@@ -33570,6 +33571,7 @@ MonoBehaviour:
   minSlideAngle: 35
   maxSlideAngle: 70
   lagDashCooldown: 0
+  cam: {fileID: 1033597012}
   climbState: 0
 --- !u!4 &2013423612
 Transform:
