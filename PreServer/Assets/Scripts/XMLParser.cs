@@ -8,71 +8,80 @@ namespace PreServer
 {
     public class XMLParser : MonoBehaviour
     {
-        private string fileName;
-        private XmlDocument xmlDoc;
+        private XmlDocument actionsDoc;
         private XmlDocument usernameDoc;
 
         private List<NPCAction> npcActions;
         private List<NPCUsername> npcUsernames;
 
-        private TextAsset xmlFile;
-        private TextAsset usernamesFile;
+        private TextAsset actionsTextAsset;
+        private TextAsset usernamesTextAsset;
+
+        private bool resetXML = true;
 
         void Awake()
         {
-            //fileName = "Assets/Resources/npcActions.xml";
             npcActions = new List<NPCAction>();
             npcUsernames = new List<NPCUsername>();
 
-            xmlFile = (TextAsset) Resources.Load("npcActions");
-            usernamesFile = (TextAsset)Resources.Load("npcUsernames");
+            actionsTextAsset = (TextAsset) Resources.Load("npcActions");
+            usernamesTextAsset = (TextAsset)Resources.Load("npcUsernames");
+
+            if (!System.IO.File.Exists(Application.persistentDataPath + "/npcActions.xml") || resetXML)
+            {
+                string xmlFileString = actionsTextAsset.text;
+                System.IO.File.WriteAllText(Application.persistentDataPath + "/npcActions.xml", xmlFileString);
+            }
+
+            if (!System.IO.File.Exists(Application.persistentDataPath + "/npcUsernames.xml") || resetXML)
+            {
+                string usernamesFileString = usernamesTextAsset.text;
+                System.IO.File.WriteAllText(Application.persistentDataPath + "/npcUsernames.xml", usernamesFileString);
+            }
+
         }
 
-        public void UpdateXML()
+        public void UpdateAction(int actionId)
         {
-            var test = xmlDoc.SelectSingleNode("//action[@id='0']/@gen");
-            test.Value = "1";
-            xmlDoc.Save("Assets/Resources/npcActions.xml");
+            XmlNode actionNode = actionsDoc.SelectSingleNode("//action[@id='"+actionId+"']/@gen");
+            actionNode.Value = "1";
+            actionsDoc.Save(Application.persistentDataPath + "/npcActions.xml");
+        }
+
+        public void UpdateUsername(string userName)
+        {
+            XmlNode usernameNode = usernameDoc.SelectSingleNode("//un[@name='"+userName+"']/@gen");
+            usernameNode.Value = "1";
+            usernameDoc.Save(Application.persistentDataPath + "/npcUsernames.xml");
         }
 
         public List<NPCUsername> ParseUsernames()
         {
-            LoadUsernameXML();
-            ReadUsernameXML();
+            LoadUsernames();
+            ReadUsernames();
             return npcUsernames;
         }
 
-        /*public List<string> ParseTxt()
+        public List<NPCAction> ParseActions()
         {
-            var test = usernamesFile.text;
-            string[] stringSeparators = new string[] { "\r\n" };
-            var test2 = test.Split(stringSeparators, StringSplitOptions.None);
-
-            npcUsernames = new List<string>(test2);
-
-            return npcUsernames;
-        }*/
-
-        public List<NPCAction> ParseXML()
-        {
-            LoadXML();
-            ReadXML();
+            LoadActions();
+            ReadActions();
             return npcActions;
         }
 
-        private void LoadUsernameXML()
+        private void LoadUsernames()
         {
             usernameDoc = new XmlDocument();
-            usernameDoc.LoadXml(usernamesFile.text);
+            usernameDoc.Load(Application.persistentDataPath + "/npcUsernames.xml");
         }
 
-        private void LoadXML()
+        private void LoadActions()
         {
-            xmlDoc = new XmlDocument();
-            xmlDoc.LoadXml(xmlFile.text);
+            actionsDoc = new XmlDocument();
+            actionsDoc.Load(Application.persistentDataPath + "/npcActions.xml");
         }
 
-        private void ReadUsernameXML()
+        private void ReadUsernames()
         {
             foreach (XmlElement node in usernameDoc.SelectNodes("usernames/un"))
             {
@@ -84,9 +93,9 @@ namespace PreServer
             }
         }
 
-        private void ReadXML()
+        private void ReadActions()
         {
-            foreach (XmlElement node in xmlDoc.SelectNodes("actions/action"))
+            foreach (XmlElement node in actionsDoc.SelectNodes("actions/action"))
             {
                 NPCAction newAction = new NPCAction(int.Parse(node.GetAttribute("id")));
                 List<NPCStep> steps = new List<NPCStep>();
@@ -103,12 +112,12 @@ namespace PreServer
                     {
                         case "move":
                             MoveStep moveStep = new MoveStep();
-                            moveStep.destination = new Vector3(int.Parse(stepsNode.GetAttribute("x")), int.Parse(stepsNode.GetAttribute("y")), int.Parse(stepsNode.GetAttribute("z")));
+                            moveStep.destination = new Vector3(float.Parse(stepsNode.GetAttribute("x")), float.Parse(stepsNode.GetAttribute("y")), float.Parse(stepsNode.GetAttribute("z")));
                             steps.Add(moveStep);
                             break;
                         case "wait":
                             WaitStep waitStep = new WaitStep();
-                            waitStep.seconds = int.Parse(stepsNode.GetAttribute("time"));
+                            waitStep.seconds = float.Parse(stepsNode.GetAttribute("time"));
                             steps.Add(waitStep);
                             break;
                         case "msg":

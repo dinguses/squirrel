@@ -181,6 +181,9 @@ namespace PreServer
                 {
                     states.climbHit = under;
                     states.climbState = StateManager.ClimbState.EXITING;
+
+                    states.anim.SetBool(states.hashes.isClimbing, false);
+
                     return;
                 }
                 else if (angle > 90)

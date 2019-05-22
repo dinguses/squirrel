@@ -81,6 +81,8 @@ namespace PreServer
             Debug.DrawRay(states.mTransform.position, currentVelocity);
 
             states.rigid.velocity = /*states.transform.TransformDirection(*/currentVelocity/*)*/;
+
+            states.anim.SetBool(states.hashes.isClimbing, false);
         }
     }
 }

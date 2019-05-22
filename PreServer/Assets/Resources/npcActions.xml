@@ -1,9 +1,10 @@
 <!--?xml version="1.0" encoding="UTF-8"?-->
 <actions>
-  <action id="0" gen="1">
+  <action id="0" gen="0">
     <reqs>
       <req id="0" value="Gunch" />
       <req id="1" value="f" />
+      <req id="2" value="t" />
     </reqs>
     <steps>
       <step type="move" x="-36" y="0" z="-20" />
@@ -17,7 +18,17 @@
     </reqs>
     <steps>
       <step type="move" x="-44" y="0" z="44" />
-      <step type="msg" words="OH SONNIC I FOUND YOU, MY SWEET BOY" />
+      <step type="msg" words="Oh god sonic, I'm so glad I found you" />
+      <step type="wait" time="1" />
+      <step type="move" x="-52" y="0" z="44" />
+      <step type="msg" words="Oh shit" />
+      <step type="msg" words="holy shit, what is that?" />
+      <step type="msg" words="god is dead and we killed him" />
+      <step type="wait" time="4" />
+      <step type="move" x="-44" y="0" z="44" />
+      <step type="wait" time="2" />
+      <step type="msg" words="goodbye old friend" />
+      <step type="wait" time="8" />
     </steps>
   </action>
   <action id="2" gen="0">
@@ -27,22 +38,37 @@
     </reqs>
     <steps>
       <step type="move" x="40" y="0" z="-26" />
+      <step type="msg" words="big fart" />
+      <step type="wait" time="8" />
+      <step type="msg" words="love that toilet." />
+      <step type="wait" time="20" />
+      <step type="msg" words="*chef kiss*" />
+      <step type="wait" time="30" />
     </steps>
   </action>
   <action id="3" gen="0">
     <steps>
       <step type="move" x="7" y="0" z="14" />
+      <step type="msg" words="crunkus" />
+      <step type="wait" time="4" />
+      <step type="move" x="9" y="0" z="14" />
+      <step type="wait" time="4" />
     </steps>
   </action>
   <action id="4" gen="0">
     <steps>
+      <step type="wait" time="4" />
       <step type="move" x="17" y="0" z="-24" />
+      <step type="msg" words="don't look at me" />
+      <step type="wait" time="4" />
     </steps>
   </action>
   <action id="5" gen="0">
     <steps>
       <step type="move" x="44" y="0" z="60" />
+      <step type="msg" words="ther'es nothing here" />
       <step type="move" x="47" y="0" z="20" />
+      <step type="msg" words="nothing here either" />
     </steps>
   </action>
   <action id="6" gen="0">
@@ -53,6 +79,39 @@
       <step type="msg" words="whoa" />
       <step type="wait" time="4" />
       <step type="move" x="47" y="0" z="20" />
+    </steps>
+  </action>
+  <action id="7" gen="0">
+    <steps>
+      <step type="wait" time="30" />
+      <step type="move" x="87" y="0" z="-24" />
+      <step type="wait" time="16" />
+    </steps>
+  </action>
+  <action id="8" gen="0">
+    <reqs>
+      <req id="0" value="WaitingEnthusiast" />
+      <req id="1" value="f" />
+    </reqs>
+    <steps>
+      <step type="move" x="7" y="0" z="-50" />
+      <step type="wait" time="15" />
+      <step type="msg" words="Love to wait." />
+      <step type="wait" time="15" />
+      <step type="msg" words="Just standing around and waiting." />
+      <step type="wait" time="15" />
+      <step type="move" x="7" y="0" z="-51" />
+      <step type="msg" words="Sometimes I move very slightly." />
+      <step type="wait" time="15" />
+    </steps>
+  </action>
+  <action id="9" gen="0">
+    <reqs>
+      <req id="0" value="PersonNine" />
+      <req id="1" value="m" />
+    </reqs>
+    <steps>
+      <step type="wait" time="180" />
     </steps>
   </action>
 </actions>

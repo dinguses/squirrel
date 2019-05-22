@@ -1464,6 +1464,7 @@ MonoBehaviour:
   destination: {x: 0, y: 0, z: 0}
   waitTime: 0
   message: 
+  userNameToUse: 
   stepInProg: 0
   userName: {fileID: 114897264502452514}
   msg: {fileID: 114943529103275694}
@@ -1472,6 +1473,7 @@ MonoBehaviour:
   navMeshAgent: {fileID: 0}
   loopStep: 0
   doneWaiting: 0
+  spawnerManager: {fileID: 0}
 --- !u!114 &114897264502452514
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1524,7 +1526,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 32
+  m_fontStyle: 0
   m_textAlignment: 258
   m_isAlignmentEnumConverted: 1
   m_characterSpacing: 0
@@ -1647,7 +1649,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 32
+  m_fontStyle: 0
   m_textAlignment: 258
   m_isAlignmentEnumConverted: 1
   m_characterSpacing: 0
