@@ -17,6 +17,7 @@ MonoBehaviour:
   jump: {fileID: 11400000, guid: 75dca79deb892994d91b0608b66d8ecc, type: 2}
   restart: {fileID: 11400000, guid: 2cc5ef643be0b8742a422306ae00ab31, type: 2}
   run: {fileID: 11400000, guid: a6044b203337a84488af7cf2ea41e66d, type: 2}
+  runAxis: {fileID: 11400000, guid: ffea166c159827b4da7da6f12f9c376e, type: 2}
   zoom: {fileID: 11400000, guid: 948bd0bba30a8ea45addb935e9e12453, type: 2}
   dash: {fileID: 11400000, guid: 39ba31729367c6b418bbbf7249d36b79, type: 2}
   playerStates: {fileID: 11400000, guid: bc4b3acd689f45a42a3c3c018826b50c, type: 2}

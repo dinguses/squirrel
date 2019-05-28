@@ -9,7 +9,7 @@ namespace PreServer
     {
         public override bool CheckCondition(StateManager state)
         {
-            return state.dashActive && (state.isGrounded || state.dashInAirCounter == 0);
+            return state.dashActive/* && (state.isGrounded || state.dashInAirCounter == 0)*/;
         }
     }
 }

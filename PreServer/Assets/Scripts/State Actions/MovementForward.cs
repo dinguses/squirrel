@@ -30,7 +30,7 @@ namespace PreServer
             RaycastHit testHit;
 
             //Debug.DrawRay(origin2, -Vector3.up, Color.red);
-            Vector3 targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * movementSpeed;
+            Vector3 targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * movementSpeed * states.groundSpeedMult;
 
             Vector3 dir = -Vector3.up;
 
@@ -208,10 +208,10 @@ namespace PreServer
             #endregion
 
             //(Just for moving quickly in Debug - NOT how it will be done later in game)
-            if (states.isRun)
-            {
-                targetVelocity = targetVelocity * 5;
-            }
+            //if (states.isRun)
+            //{
+            //    targetVelocity = targetVelocity * 5;
+            //}
 
             
             states.targetVelocity = targetVelocity;

@@ -77,6 +77,7 @@ namespace PreServer
         public Text inGrindZoneText;
         public Text newColliderText;
         public Image dashCooldown;
+        public Image speedHack;
 
         public bool stepUp;
         public bool stepUpJump;
@@ -132,7 +133,15 @@ namespace PreServer
         float length = 0;
         [HideInInspector]
         public float lagDashCooldown = 0;
-
+        public float speedHackAmount { get; set; }
+        float _groundSpeedMult = 1f;
+        float _airSpeedMult = 1f;
+        float _climbSpeedMult = 1f;
+        float _slideSpeedMult = 1f;
+        public float groundSpeedMult { get { return _groundSpeedMult; } }
+        public float airSpeedMult { get { return _airSpeedMult; } }
+        public float climbSpeedMult { get { return _climbSpeedMult; } }
+        public float slideSpeedMult { get { return _slideSpeedMult; } }
         private void Start()
         {
             climbHit = new RaycastHit();
@@ -172,6 +181,7 @@ namespace PreServer
             currentHitBox = new BoxCollider();
             newHitBox = new BoxCollider();
             exitingGrind = false;
+            speedHackAmount = 2f;
         }
 
         public float GetLength()
@@ -194,7 +204,7 @@ namespace PreServer
                 currentState.FixedTick(this);
             }
         }
-
+        bool runRanOut = false;
         private void Update()
         {
             delta = Time.deltaTime;
@@ -218,39 +228,6 @@ namespace PreServer
             {
                 currentState.Tick(this);
             }
-
-            #region UI
-            groundAngle.text = "Ground Angle: " + Vector3.Angle(groundNormal, Vector3.up).ToString("F2");
-            playerAngle.text = "Player Angle: " + Vector3.Angle(mTransform.up, Vector3.up).ToString("F2");
-
-            PlayerVolX.text = "X: " + rigid.velocity.x.ToString("F2");
-            PlayerVolY.text = "Y: " + rigid.velocity.y.ToString("F2");
-            PlayerVolZ.text = "Z: " + rigid.velocity.z.ToString("F2");
-
-            PlayerPosX.text = "X: " + mTransform.position.x.ToString("F2");
-            PlayerPosY.text = "Y: " + mTransform.position.y.ToString("F2");
-            PlayerPosZ.text = "Z: " + mTransform.position.z.ToString("F2");
-
-            TargetVolX.text = "X: " + targetVelocity.x.ToString("F2");
-            TargetVolY.text = "Y: " + targetVelocity.y.ToString("F2");
-            TargetVolZ.text = "Z: " + targetVelocity.z.ToString("F2");
-
-            inGrindZoneText.text = "inGrindZone - " + inGrindZone;
-
-            if (newHitBox == new BoxCollider())
-            {
-                newColliderText.text = "newCollider - new box";
-            }
-            else if (newHitBox == null)
-            {
-                newColliderText.text = "newCollider - null";
-            }
-            else
-            {
-                newColliderText.text = "newCollider - " + newHitBox.name;
-            }
-            dashCooldown.fillAmount = 1 - lagDashCooldown;
-            #endregion
 
             //TODO: make this better
             #region upIdle
@@ -306,6 +283,66 @@ namespace PreServer
                 if (lagDashCooldown < 0)
                     lagDashCooldown = 0;
             }
+            if (isRun && !runRanOut)
+            {
+                speedHackAmount -= delta;
+                if (speedHackAmount <= 0)
+                {
+                    speedHackAmount = 0;
+                    runRanOut = true;
+                }
+                _groundSpeedMult = 2.5f;
+                _airSpeedMult = 2f;
+                _climbSpeedMult = 2f;
+                _slideSpeedMult = 2f;
+            }
+            else if(speedHackAmount < 2f)
+            {
+                speedHackAmount += runRanOut ? delta * 0.5f : delta;
+                if (speedHackAmount >= 2f)
+                {
+                    speedHackAmount = 2f;
+                    runRanOut = false;
+                }
+                _groundSpeedMult = 1f;
+                _airSpeedMult = 1f;
+                _climbSpeedMult = 1f;
+                _slideSpeedMult = 1f;
+            }
+
+            #region UI
+            groundAngle.text = "Ground Angle: " + Vector3.Angle(groundNormal, Vector3.up).ToString("F2");
+            playerAngle.text = "Player Angle: " + Vector3.Angle(mTransform.up, Vector3.up).ToString("F2");
+
+            PlayerVolX.text = "X: " + rigid.velocity.x.ToString("F2");
+            PlayerVolY.text = "Y: " + rigid.velocity.y.ToString("F2");
+            PlayerVolZ.text = "Z: " + rigid.velocity.z.ToString("F2");
+
+            PlayerPosX.text = "X: " + mTransform.position.x.ToString("F2");
+            PlayerPosY.text = "Y: " + mTransform.position.y.ToString("F2");
+            PlayerPosZ.text = "Z: " + mTransform.position.z.ToString("F2");
+
+            TargetVolX.text = "X: " + targetVelocity.x.ToString("F2");
+            TargetVolY.text = "Y: " + targetVelocity.y.ToString("F2");
+            TargetVolZ.text = "Z: " + targetVelocity.z.ToString("F2");
+
+            inGrindZoneText.text = "inGrindZone - " + inGrindZone;
+
+            if (newHitBox == new BoxCollider())
+            {
+                newColliderText.text = "newCollider - new box";
+            }
+            else if (newHitBox == null)
+            {
+                newColliderText.text = "newCollider - null";
+            }
+            else
+            {
+                newColliderText.text = "newCollider - " + newHitBox.name;
+            }
+            dashCooldown.fillAmount = 1 - lagDashCooldown;
+            speedHack.fillAmount = speedHackAmount / 2f;
+            #endregion
         }
 
         public void StepUpTest()
@@ -637,7 +674,7 @@ namespace PreServer
             if (Physics.Raycast(topRay, mTransform.forward, out climbHit, 1, Layers.ignoreLayersController))
             {
                 float angle = Vector3.Angle(climbHit.normal, Vector3.up);
-                if (angle >= 70 && angle <= 90/* && (prevClimbT != climbHit.transform || isGrounded)*/)
+                if (angle >= 70 && angle <= 90 && climbHit.transform.tag == "Climb"/* && (prevClimbT != climbHit.transform || isGrounded)*/)
                 {
                     climbState = ClimbState.ENTERING;
                     prevClimbT = climbHit.transform;
@@ -917,7 +954,12 @@ namespace PreServer
 
         public bool CanDash()
         {
-            return !isSliding && (climbState == ClimbState.NONE || climbState == ClimbState.CLIMBING) && (isGrounded || dashInAirCounter == 0) && lagDashCooldown <= 0; ;
+            return !isSliding && (climbState == ClimbState.NONE || climbState == ClimbState.CLIMBING)/* && (isGrounded || dashInAirCounter == 0)*/ && lagDashCooldown <= 0;
+        }
+
+        public bool CanRun()
+        {
+            return !dashActive && (climbState == ClimbState.NONE || climbState == ClimbState.CLIMBING)/* && (isGrounded || dashInAirCounter == 0)*/ && !runRanOut;
         }
 
         private void OnDrawGizmos()
