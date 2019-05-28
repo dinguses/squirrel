@@ -5,6 +5,6 @@ namespace PreServer
 {
     public class WaitStep : NPCStep
     {
-        public int seconds;
+        public float seconds;
     }
 }

@@ -678,6 +678,8 @@ namespace PreServer
                 {
                     climbState = ClimbState.ENTERING;
                     prevClimbT = climbHit.transform;
+
+                    anim.SetBool(hashes.isClimbing, true);
                 }
             }
         }

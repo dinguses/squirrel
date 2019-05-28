@@ -39,6 +39,8 @@ namespace PreServer
         public bool loopStep = false;
         public bool doneWaiting = false;
 
+        public SpawnerManager spawnerManager;
+
         public void SetUp(NPCAction action, string un)
         {
             npcTransform = this.transform;
@@ -47,7 +49,8 @@ namespace PreServer
             hashes = new AnimHashes();
             navMeshAgent = GetComponent<NavMeshAgent>();
 
-
+            GameObject spawner = GameObject.Find("NPC_Spawner");
+            spawnerManager = spawner.GetComponent<SpawnerManager>();
 
             userName.text = un;
 
@@ -115,6 +118,7 @@ namespace PreServer
                 Vector3 nmaPos = navMeshAgent.transform.position;
                 Vector3 destPos = ms.destination;
 
+                // TODO: this could probably just check the remaining distance
                 if (FastApprox(nmaPos.x, destPos.x, 1.0f) && FastApprox(nmaPos.y, destPos.y, 1.0f) && FastApprox(nmaPos.z, destPos.z, 1.0f))
                 {
                     navMeshAgent.isStopped = true;
@@ -131,6 +135,8 @@ namespace PreServer
             if (currStepNum == (steps.Count - 1))
             {
                 Destroy(npcTransform.root.gameObject);
+
+                spawnerManager.numNPCs--;
             }
 
             // Otherwise, increment to next step, set loop to false, and execute NextStep()
@@ -143,7 +149,7 @@ namespace PreServer
         }
 
         // For "wait" commands
-        IEnumerator Wait(int numSecs)
+        IEnumerator Wait(float numSecs)
         {
             yield return new WaitForSeconds(numSecs);
             msg.text = "";
