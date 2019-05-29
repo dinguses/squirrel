@@ -3079,7 +3079,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 127
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!64 &229448212
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -8103,7 +8103,7 @@ Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: pb_Mesh89040
+  m_Name: pb_Mesh6786
   serializedVersion: 9
   m_SubMeshes:
   - serializedVersion: 2
@@ -10035,7 +10035,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!64 &529758166
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -16342,7 +16342,7 @@ Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: pb_Mesh89556
+  m_Name: pb_Mesh7278
   serializedVersion: 9
   m_SubMeshes:
   - serializedVersion: 2
@@ -18634,6 +18634,7 @@ MonoBehaviour:
   rotationSmoothTime: 0.12
   pitchMinMax: {x: 0, y: 35}
   camFollowSpeed: 9
+  ignoreInput: 0
 --- !u!1 &1036360135
 GameObject:
   m_ObjectHideFlags: 0
@@ -25759,6 +25760,7 @@ MonoBehaviour:
   hairScales: []
   glassesScale: {x: 0, y: 0, z: 0}
   maxNPCs: 10
+  spawnIDfirst: 1
 --- !u!4 &1465164456
 Transform:
   m_ObjectHideFlags: 0

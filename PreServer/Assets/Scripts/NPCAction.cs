@@ -9,6 +9,7 @@ namespace PreServer
         public int id;
         public List<NPCStep> steps;
         public Dictionary<int, string> reqs;
+        public List<int> pals;
 
         public NPCAction(int Id)
         {

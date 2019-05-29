@@ -71,6 +71,8 @@ namespace PreServer
             {
                 if (timer > dashTime && states.dashActive && states.CanDash() && !dashActivated)
                 {
+                    states.anim.CrossFade(states.hashes.squ_dash, 0.01f);
+
                     //Debug.Log("Adding velocity 9");
                     states.rigid.velocity = states.transform.forward * dashSpeed;
                     timer = 0;

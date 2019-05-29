@@ -14,6 +14,7 @@ namespace PreServer
 
         public List<NPCAction> npcActions;
         public List<NPCUsername> randomUsernames;
+        public List<NPCAction> palsToGen;
 
         public Texture[] skintones;
         public Texture[] eyeColors;
@@ -42,6 +43,8 @@ namespace PreServer
 
         public int maxNPCs = 9;
 
+        public bool spawnIDfirst = true;
+
         void Start()
         {
             spawner = gameObject.transform;
@@ -50,6 +53,8 @@ namespace PreServer
 
             npcActions = xmlParser.ParseActions();
             randomUsernames = xmlParser.ParseUsernames();
+
+            palsToGen = new List<NPCAction>();
 
             skintones = Resources.LoadAll<Texture>("NPC/Textures/Skin");
             eyeColors = Resources.LoadAll<Texture>("NPC/Textures/Eyes");
@@ -111,8 +116,43 @@ namespace PreServer
 
             if (numNPCs < maxNPCs)
             {
-                // Generate an action from the list of actions for this spawner
-                NPCAction action = npcActions[Random.Range(0, npcActions.Count)];
+                NPCAction action;
+
+                // If there's no multi-person conversations missing their participants
+                if (palsToGen.Count == 0)
+                {
+                    // Generate an action from the list of actions for this spawner
+                    if (spawnIDfirst)
+                    {
+                        action = npcActions[10];
+                        spawnIDfirst = false;
+                    }
+                    else
+                    {
+                        action = npcActions[Random.Range(0, npcActions.Count)];
+                    }
+
+
+                    // Pals?
+                    if (action.pals.Count > 0)
+                    {
+                        // Add pals to the waiting list
+                        foreach (int palID in action.pals)
+                        {
+                            var pal = npcActions.FirstOrDefault(w => w.id == palID);
+                            palsToGen.Add(pal);
+                        }
+                    }
+                }
+                else
+                {
+                    var bunko = palsToGen;
+                    action = npcActions.FirstOrDefault(w => w.id == palsToGen[0].id);
+                    palsToGen.RemoveAt(0);
+                }
+
+                // Remove from actions list
+                // TODO: does this need to be removed? or just marked
                 npcActions.Remove(action);
 
                 // Update the action to "generated"
@@ -158,6 +198,7 @@ namespace PreServer
 
             // Create an NPC from Prefab and locate the bones we'll need for attatching objects and such
             GameObject newNPC = Instantiate(Resources.Load<GameObject>(isMale ? "NPC/MALE_NPC" : "NPC/FEMALE_NPC"), spawner.position, spawner.rotation);
+            newNPC.name = "NPC_" + action.id.ToString();
             Transform root = newNPC.transform.Find("Squ_People3:root");
             Transform rootHead = root.transform.Find("Squ_People3:pelvis").transform.Find("Squ_People3:spine_01")
                 .transform.Find("Squ_People3:spine_02").transform.Find("Squ_People3:spine_03").transform.Find("Squ_People3:neck_01")

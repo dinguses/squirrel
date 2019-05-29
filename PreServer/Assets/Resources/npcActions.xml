@@ -114,4 +114,47 @@
       <step type="wait" time="180" />
     </steps>
   </action>
+  <action id="10" gen="0">
+    <reqs>
+      <req id="0" value="Multi-Convo 1" />
+    </reqs>
+    <pals>
+      <pal id="11" />
+      <pal id="12" />
+    </pals>
+    <steps>
+      <step type="wait" time="1" />
+      <step type="move" x="25" y="0" z="-25" />
+      <step type="msg" waitFor="11,12" words="All my friends are here!" />
+      <step type="wait" time="300" />
+    </steps>
+  </action>
+  <action id="11" gen="0">
+    <reqs>
+      <req id="0" value="Multi-Convo 2" />
+    </reqs>
+    <pals>
+      <pal id="10" />
+      <pal id="12" />
+    </pals>
+    <steps>
+      <step type="wait" time="7" />
+      <step type="move" x="25" y="0" z="-25" />
+      <step type="wait" time="300" />
+    </steps>
+  </action>
+  <action id="12" gen="0">
+    <reqs>
+      <req id="0" value="Multi-Convo 3" />
+    </reqs>
+    <pals>
+      <pal id="10" />
+      <pal id="11" />
+    </pals>
+    <steps>
+      <step type="wait" time="7" />
+      <step type="move" x="25" y="0" z="-25" />
+      <step type="wait" time="300" />
+    </steps>
+  </action>
 </actions>

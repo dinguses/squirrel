@@ -39,6 +39,8 @@ namespace PreServer
         public bool loopStep = false;
         public bool doneWaiting = false;
 
+        public bool waitingForPals = false;
+
         public SpawnerManager spawnerManager;
 
         public void SetUp(NPCAction action, string un)
@@ -61,13 +63,16 @@ namespace PreServer
 
         void Update()
         {
+            // If there's steps going on
             if (steps != null)
             {
+                // Rotate Username and Message to face player camera
                 Vector3 userNameEuler = userName.transform.rotation.eulerAngles;
                 userNameEuler.y = cam.value.transform.rotation.eulerAngles.y;
                 userName.transform.rotation = Quaternion.Euler(userNameEuler);
                 msg.transform.rotation = Quaternion.Euler(userNameEuler);
 
+                // If the current step needs to be looped
                 if (loopStep)
                 {
                     LoopStep();
@@ -102,8 +107,15 @@ namespace PreServer
 
                 anim.CrossFade(hashes.npc_idle, 0.02f);
 
-                msg.text = ms.msg;
-                StartCoroutine(Wait(5));
+                if (ms.waitForPals.Count > 0)
+                {
+                    waitingForPals = true;
+                }
+                else
+                {
+                    msg.text = ms.msg;
+                    StartCoroutine(Wait(5));
+                }
             }
 
             loopStep = true;
@@ -124,6 +136,48 @@ namespace PreServer
                     navMeshAgent.isStopped = true;
 
                     StepOver();
+                }
+            }
+
+            else if (currStep is MsgStep)
+            {
+                if (waitingForPals)
+                {
+                    MsgStep ms = (MsgStep)currStep;
+
+                    bool allPalsHere = false;
+
+                    foreach (int pal in ms.waitForPals)
+                    {
+                        GameObject bbb = GameObject.Find("NPC_" + pal);
+
+                        if (bbb != null)
+                        {
+                            var b = bbb.transform.position;
+
+                            var a = npcTransform.position;
+
+                            if (FastApprox(a.x, b.x, 5.0f) && FastApprox(a.y, b.y, 5.0f) && FastApprox(a.z, b.z, 5.0f))
+                            {
+                                allPalsHere = true;
+                            }
+                            else
+                            {
+                                allPalsHere = false;
+                            }
+                        }
+                        else
+                        {
+                            allPalsHere = false;
+                        }
+                    }
+
+                    if (allPalsHere)
+                    {
+                        waitingForPals = false;
+                        msg.text = ms.msg;
+                        StartCoroutine(Wait(5));
+                    }
                 }
             }
 

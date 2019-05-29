@@ -23,6 +23,12 @@ namespace PreServer
         public override void OnEnter(StateManager states)
         {
             base.OnEnter(states);
+
+            if (states.isGrounded)
+                states.anim.CrossFade(states.hashes.squ_dash, 0.01f);
+            else
+                states.anim.CrossFade(states.hashes.squ_dash_air, 0.01f);
+
             states.dashInAirCounter++;
             states.rigid.useGravity = false;
             states.rigid.velocity = states.transform.forward * dashSpeed;
@@ -125,6 +131,8 @@ namespace PreServer
             states.rigid.velocity = Vector3.zero;
             timer = 0;
             states.lagDashCooldown = 1.0f;
+
+            //states.anim.CrossFade(states.hashes.sq, 0.2f);
         }
     }
 }

@@ -100,10 +100,16 @@ namespace PreServer
                 NPCAction newAction = new NPCAction(int.Parse(node.GetAttribute("id")));
                 List<NPCStep> steps = new List<NPCStep>();
                 Dictionary<int, string> reqs = new Dictionary<int, string>();
+                List<int> pals = new List<int>();
 
                 foreach (XmlElement reqsNode in node.SelectNodes("reqs/req"))
                 {
                     reqs.Add(int.Parse(reqsNode.GetAttribute("id")), reqsNode.GetAttribute("value"));
+                }
+
+                foreach (XmlElement palsNode in node.SelectNodes("pals/pal"))
+                {
+                    pals.Add(int.Parse(palsNode.GetAttribute("id")));
                 }
 
                 foreach (XmlElement stepsNode in node.SelectNodes("steps/step"))
@@ -123,6 +129,19 @@ namespace PreServer
                         case "msg":
                             MsgStep msgStep = new MsgStep();
                             msgStep.msg = stepsNode.GetAttribute("words");
+                            string waitForString = stepsNode.GetAttribute("waitFor");
+
+                            List<int> palsList = new List<int>();
+
+                            if (!waitForString.Equals(""))
+                            {
+                                palsList = new List<int>(Array.ConvertAll(waitForString.Split(','), int.Parse));
+                            }
+
+                            msgStep.waitForPals = palsList;
+
+                            //msgStep.waitForPals = (stepsNode.GetAttribute("waitForPals") == "t" ? true : false);
+
                             steps.Add(msgStep);
                             break;
                         default:
@@ -132,6 +151,7 @@ namespace PreServer
 
                 newAction.steps = steps;
                 newAction.reqs = reqs;
+                newAction.pals = pals;
                 npcActions.Add(newAction);
             }
         }
