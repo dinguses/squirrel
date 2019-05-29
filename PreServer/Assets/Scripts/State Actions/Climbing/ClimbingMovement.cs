@@ -110,7 +110,7 @@ namespace PreServer
                 frontHit = true;
                 float angle = Vector3.Angle(front.normal, Vector3.up);
                 //can climb if the angle is between 70 and 90, and it is a different surface, might need to adjust
-                if (angle >= 70 && angle <= 90 && (front.transform != states.climbHit.transform || front.normal != states.climbHit.normal))
+                if (angle >= 70 && angle <= 90 && front.transform.tag == "Climb" && (front.transform != states.climbHit.transform || front.normal != states.climbHit.normal))
                 {
                     angle = Vector3.Angle(front.normal, states.climbHit.normal);
                     bool angleOver = angle > 45;
@@ -161,7 +161,7 @@ namespace PreServer
                     states.climbState = StateManager.ClimbState.EXITING;
                     return;
                 }
-                else if (angle > 90)
+                else if (angle > 90 || front.transform.tag != "Climb")
                 {
                     states.rigid.velocity = Vector3.zero;
                     states.mTransform.rotation = prevRotation;
@@ -184,7 +184,7 @@ namespace PreServer
             {
                 underHit = true;
                 float angle = Vector3.Angle(under.normal, Vector3.up);
-                if (angle >= 70 && angle <= 90 && (under.transform != states.climbHit.transform || under.normal != states.climbHit.normal))
+                if (angle >= 70 && angle <= 90 && under.transform.tag == "Climb" && (under.transform != states.climbHit.transform || under.normal != states.climbHit.normal))
                 {
                     angle = Vector3.Angle(under.normal, states.climbHit.normal);
                     bool angleOver = angle > 45;
@@ -246,6 +246,12 @@ namespace PreServer
                     states.isJumping = true;
                     return;
                 }
+                else if (under.transform.tag != "Climb")
+                {
+                    states.rigid.velocity = Vector3.zero;
+                    states.mTransform.rotation = prevRotation;
+                    return;
+                }
             }
             else
             {
@@ -304,7 +310,7 @@ namespace PreServer
             Vector3 testOrigin = states.mTransform.position + (states.mTransform.forward * .75f);
             testOrigin.y += .5f;
             //Debug.DrawRay(origin2, -Vector3.up, Color.red);
-            Vector3 targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * climbSpeed;
+            Vector3 targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * climbSpeed * states.climbSpeedMult;
             //if (transitioning)
             //    targetVelocity = Quaternion.Inverse(targetRot) * targetVelocity;
             Vector3 currentVelocity = states.rigid.velocity;
@@ -347,7 +353,7 @@ namespace PreServer
 
             if (!inPos)
             {
-                t += delta * (dashActivated ? 4 : 1);
+                t += delta * (dashActivated ? 4 : states.isRun ? states.climbSpeedMult : 1);
                 Vector3 tp = Vector3.Lerp(startPos, targetPos, t);
                 states.transform.position = tp;
             }

@@ -25,7 +25,7 @@ namespace PreServer
         public override void Execute(StateManager states)
         {
             Vector3 currentVelocity = states.rigid.velocity;
-            Vector3 targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * movementSpeed;
+            Vector3 targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * movementSpeed * states.airSpeedMult;
 
             extraGrav = upwardsGravity;
 

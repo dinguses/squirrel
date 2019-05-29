@@ -39,7 +39,7 @@ namespace PreServer
             targetVelocity = currentVelocity;
             //currentVelocity.x = 0;
             //This is causing the player move up the high slope, but why?
-            targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * movementSpeed;
+            targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * movementSpeed * states.slideSpeedMult;
             //float angle = 0;
             //if (states.middle != null)
             //    angle = states.middle.transform.eulerAngles.y;

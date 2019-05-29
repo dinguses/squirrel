@@ -11,6 +11,7 @@ TagManager:
   - root
   - head
   - head2
+  - Climb
   layers:
   - Default
   - TransparentFX

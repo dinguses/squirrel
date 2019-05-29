@@ -13,6 +13,7 @@ namespace PreServer
         public BoolVariable jump;
         public BoolVariable restart;
         public BoolVariable run;
+        public FloatVariable runAxis;
         public BoolVariable zoom;
         public BoolVariable dash;
 
@@ -38,8 +39,12 @@ namespace PreServer
 
                 playerStates.value.isJumping = jump.value;
                 playerStates.value.isRestart = restart.value;
-                playerStates.value.isRun = run.value;
-                if(!playerStates.value.dashActive && playerStates.value.CanDash())
+                if (playerStates.value.CanRun())
+                    playerStates.value.isRun = (playerStates.value.isRun ? (run.value || runAxis.value > 0) : ((run.value || runAxis.value > 0) && playerStates.value.speedHackAmount > 0.25f));
+                else
+                    playerStates.value.isRun = false;
+
+                if (!playerStates.value.dashActive && playerStates.value.CanDash())
                     playerStates.value.dashActive = dash.value;
             }
         }
