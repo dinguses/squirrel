@@ -131,7 +131,7 @@ namespace PreServer
             states.rigid.velocity = Vector3.zero;
             timer = 0;
             states.lagDashCooldown = 1.0f;
-
+            states.speedHackRecover = 0.1f;
             //states.anim.CrossFade(states.hashes.sq, 0.2f);
         }
     }

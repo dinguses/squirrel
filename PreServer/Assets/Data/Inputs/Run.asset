@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65739c68bb981ca45bf047f8b66ef863, type: 3}
   m_Name: Run
   m_EditorClassIdentifier: 
-  targetString: Run
+  targetString: RunCont
   value: 0
   variable: {fileID: 11400000, guid: ffea166c159827b4da7da6f12f9c376e, type: 2}

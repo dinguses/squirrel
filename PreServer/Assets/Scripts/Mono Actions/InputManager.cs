@@ -40,8 +40,13 @@ namespace PreServer
                 playerStates.value.isJumping = jump.value;
                 playerStates.value.isRestart = restart.value;
                 if (playerStates.value.CanRun())
-                    playerStates.value.isRun = (playerStates.value.isRun ? (run.value || runAxis.value > 0) : ((run.value || runAxis.value > 0) && playerStates.value.speedHackAmount > 0.25f));
-                else
+				{
+                    if (!playerStates.value.isRun && (playerStates.value.currentState.name == "On Air" || playerStates.value.currentState.name == "LagDash"))
+                        playerStates.value.isRun = false;
+                    else
+                        playerStates.value.isRun = (playerStates.value.isRun ? (run.value || runAxis.value > 0) : ((run.value || runAxis.value > 0) && playerStates.value.speedHackAmount > 0.25f));
+                }
+				else
                     playerStates.value.isRun = false;
 
                 if (!playerStates.value.dashActive && playerStates.value.CanDash())

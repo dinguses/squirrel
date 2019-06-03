@@ -57,7 +57,8 @@ namespace PreServer
 
         public override void OnExit(StateManager states)
         {
-
+            if (!states.isRun)
+                states.speedHackRecover = 0.1f;
         }
     }
 }

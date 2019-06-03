@@ -164,7 +164,7 @@ namespace PreServer
                 else if (angle > 90 || front.transform.tag != "Climb")
                 {
                     states.rigid.velocity = Vector3.zero;
-                    states.mTransform.rotation = prevRotation;
+                    //states.mTransform.rotation = prevRotation;
                 }
             }
 

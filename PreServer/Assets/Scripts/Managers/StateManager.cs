@@ -134,6 +134,7 @@ namespace PreServer
         [HideInInspector]
         public float lagDashCooldown = 0;
         public float speedHackAmount { get; set; }
+        public float speedHackRecover = 0;
         float _groundSpeedMult = 1f;
         float _airSpeedMult = 1f;
         float _climbSpeedMult = 1f;
@@ -142,6 +143,12 @@ namespace PreServer
         public float airSpeedMult { get { return _airSpeedMult; } }
         public float climbSpeedMult { get { return _climbSpeedMult; } }
         public float slideSpeedMult { get { return _slideSpeedMult; } }
+        [HideInInspector]
+        public bool jumpFromClimb;
+        [HideInInspector]
+        public float jumpFromClimbTimer = 0;
+        [HideInInspector]
+        public Quaternion jumpFromClimbTarget;
         private void Start()
         {
             climbHit = new RaycastHit();
@@ -308,6 +315,12 @@ namespace PreServer
                 _airSpeedMult = 1f;
                 _climbSpeedMult = 1f;
                 _slideSpeedMult = 1f;
+            }
+            if (speedHackRecover > 0)
+            {
+                speedHackRecover -= delta;
+                if(speedHackRecover < 0)
+                    speedHackRecover = 0;
             }
 
             #region UI
@@ -961,7 +974,7 @@ namespace PreServer
 
         public bool CanRun()
         {
-            return !dashActive && (climbState == ClimbState.NONE || climbState == ClimbState.CLIMBING)/* && (isGrounded || dashInAirCounter == 0)*/ && !runRanOut;
+            return !dashActive && (climbState == ClimbState.NONE || climbState == ClimbState.CLIMBING)/* && (isGrounded || dashInAirCounter == 0)*/ && !runRanOut && speedHackRecover <= 0;
         }
 
         private void OnDrawGizmos()
