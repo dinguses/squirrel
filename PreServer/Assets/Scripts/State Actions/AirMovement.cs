@@ -30,7 +30,7 @@ namespace PreServer
             extraGrav = upwardsGravity;
 
             // Is jump being pressed?
-            if (Input.GetKeyUp("joystick button 3") || Input.GetKeyUp("space"))
+            if (Input.GetKeyUp("joystick button 3") || Input.GetKeyUp("joystick button 0") || Input.GetKeyUp("space"))
             {
                 // was <= 10, noticed it was broken after Camera
                 // Needs to be at least a minimum jump
