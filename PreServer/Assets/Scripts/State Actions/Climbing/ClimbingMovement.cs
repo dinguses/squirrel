@@ -63,6 +63,9 @@ namespace PreServer
 
             if (transitioning)
             {
+                // Wrap around anim here
+                // top is in entering/exiting climb
+
                 Transfer(states);
                 //Rotate(states);
                 Move(states);
