@@ -211,7 +211,8 @@ namespace PreServer
                 currentState.FixedTick(this);
             }
         }
-        bool runRanOut = false;
+        public bool runRanOut = false;
+        bool prevRunState = false;
         private void Update()
         {
             delta = Time.deltaTime;
@@ -290,39 +291,7 @@ namespace PreServer
                 if (lagDashCooldown < 0)
                     lagDashCooldown = 0;
             }
-            if (isRun && !runRanOut)
-            {
-                speedHackAmount -= delta;
-                if (speedHackAmount <= 0)
-                {
-                    speedHackAmount = 0;
-                    runRanOut = true;
-                }
-                _groundSpeedMult = 2.5f;
-                _airSpeedMult = 2f;
-                _climbSpeedMult = 2f;
-                _slideSpeedMult = 2f;
-            }
-            else if(speedHackAmount < 2f)
-            {
-                speedHackAmount += runRanOut ? delta * 0.5f : delta;
-                if (speedHackAmount >= 2f)
-                {
-                    speedHackAmount = 2f;
-                    runRanOut = false;
-                }
-                _groundSpeedMult = 1f;
-                _airSpeedMult = 1f;
-                _climbSpeedMult = 1f;
-                _slideSpeedMult = 1f;
-            }
-            if (speedHackRecover > 0)
-            {
-                speedHackRecover -= delta;
-                if(speedHackRecover < 0)
-                    speedHackRecover = 0;
-            }
-
+            SpeedHackCooldown();
             #region UI
             groundAngle.text = "Ground Angle: " + Vector3.Angle(groundNormal, Vector3.up).ToString("F2");
             playerAngle.text = "Player Angle: " + Vector3.Angle(mTransform.up, Vector3.up).ToString("F2");
@@ -356,6 +325,69 @@ namespace PreServer
             dashCooldown.fillAmount = 1 - lagDashCooldown;
             speedHack.fillAmount = speedHackAmount / 2f;
             #endregion
+        }
+
+        public bool pauseSpeedHackTimer = false;
+        void SpeedHackCooldown()
+        {     
+            //If I'm running and the run meter hasn't been depleted
+            if (isRun && !runRanOut)
+            {
+                //if(isGrounded || climbState == ClimbState.CLIMBING)
+                //Deplete the meter a little, starting a run will deplete a more of the bar to avoid spamming the run button
+                speedHackAmount -= prevRunState ? delta : .075f;
+                //if the meter is depleted, then run ran out and you can't activate it until it refills
+                if (speedHackAmount <= 0)
+                {
+                    speedHackAmount = 0;
+                    runRanOut = true;
+                }
+                //update the movement multipliers
+                _groundSpeedMult = 2.5f;
+                _airSpeedMult = 2.5f;
+                _climbSpeedMult = 2f;
+                _slideSpeedMult = 2f;
+            }
+            else if (speedHackAmount < 2f)
+            {
+                if(!pauseSpeedHackTimer)
+                    speedHackAmount += runRanOut ? delta * 0.5f : dashActive ? 0 : delta;
+                if (speedHackAmount >= 2f)
+                {
+                    speedHackAmount = 2f;
+                    runRanOut = false;
+                }
+                _groundSpeedMult = 1f;
+                if (!isSliding && !dashActive)
+                {
+                    if (_airSpeedMult > 1f)
+                    {
+                        _airSpeedMult -= delta * 4f;
+                        if (_airSpeedMult < 1f)
+                            _airSpeedMult = 1f;
+                    }
+                }
+                else
+                {
+                    _airSpeedMult = 1f;
+                }
+                _climbSpeedMult = 1f;
+                _slideSpeedMult = 1f;
+            }
+            else
+            {
+                if (_airSpeedMult != 1f)
+                {
+                    _airSpeedMult = 1f;
+                }
+            }
+            if (speedHackRecover > 0)
+            {
+                speedHackRecover -= delta;
+                if (speedHackRecover < 0)
+                    speedHackRecover = 0;
+            }
+            prevRunState = isRun;
         }
 
         public void StepUpTest()
@@ -974,7 +1006,7 @@ namespace PreServer
 
         public bool CanRun()
         {
-            return !dashActive && (climbState == ClimbState.NONE || climbState == ClimbState.CLIMBING)/* && (isGrounded || dashInAirCounter == 0)*/ && !runRanOut && speedHackRecover <= 0;
+            return !isSliding && !dashActive && (isGrounded || climbState == ClimbState.CLIMBING)/* && (isGrounded || dashInAirCounter == 0)*/ && !runRanOut /*&& speedHackRecover <= 0*/;
         }
 
         private void OnDrawGizmos()

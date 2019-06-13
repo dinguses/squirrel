@@ -45,7 +45,7 @@ namespace PreServer
             states.isGrounded = false;
             states.dashInAirCounter = 0;
             dash = false;
-            timer = dashTime;
+            timer = 0;
             dashActivated = false;
             moveCamera = false;
             if (camera != null)
@@ -69,13 +69,26 @@ namespace PreServer
             }
             else
             {
-                if (timer > dashTime && states.dashActive && states.CanDash() && !dashActivated)
+                if (timer <= 0 && states.dashActive && states.CanDash() && !dashActivated)
                 {
                     states.anim.CrossFade(states.hashes.squ_dash, 0.01f);
 
                     //Debug.Log("Adding velocity 9");
                     states.rigid.velocity = states.transform.forward * dashSpeed;
-                    timer = 0;
+                    if (states.isRun)
+                    {
+                        timer = 0.225f;
+                        states.speedHackAmount -= 0.2f;
+                        if (states.speedHackAmount <= 0)
+                        {
+                            states.speedHackAmount = 0;
+                            states.runRanOut = true;
+                        }
+                    }
+                    else
+                    {
+                        timer = 0.15f;
+                    }
                     dashActivated = true;
                 }
                 if (!states.dashActive)
@@ -85,8 +98,8 @@ namespace PreServer
                 }
                 CheckRaycast(states);
             }
-            timer += Time.deltaTime;
-            if (timer > dashTime && states.dashActive && dashActivated)
+            timer -= Time.deltaTime;
+            if (timer < 0 && states.dashActive && dashActivated)
             {
                 states.dashActive = false;
                 states.rigid.velocity = Vector3.zero;

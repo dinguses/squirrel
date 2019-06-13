@@ -44,7 +44,7 @@ namespace PreServer
                     if (!playerStates.value.isRun && (playerStates.value.currentState.name == "On Air" || playerStates.value.currentState.name == "LagDash"))
                         playerStates.value.isRun = false;
                     else
-                        playerStates.value.isRun = (playerStates.value.isRun ? (run.value || runAxis.value > 0) : ((run.value || runAxis.value > 0) && playerStates.value.speedHackAmount > 0.25f));
+                        playerStates.value.isRun = (playerStates.value.isRun ? (run.value || runAxis.value > 0) : ((run.value || runAxis.value > 0)/* && playerStates.value.speedHackAmount > 0.25f*/));
                 }
 				else
                     playerStates.value.isRun = false;

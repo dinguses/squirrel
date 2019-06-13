@@ -30,6 +30,8 @@ namespace PreServer
         public override void OnEnter(StateManager states)
         {
             states.climbState = StateManager.ClimbState.NONE;
+            if(states.isRun)
+                states.pauseSpeedHackTimer = true;
         }
 
         public override void OnUpdate(StateManager states)
@@ -59,6 +61,8 @@ namespace PreServer
         {
             if (!states.isRun)
                 states.speedHackRecover = 0.1f;
+            if(!states.dashActive)
+                states.pauseSpeedHackTimer = false;
         }
     }
 }

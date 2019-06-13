@@ -31,6 +31,20 @@ namespace PreServer
 
             states.dashInAirCounter++;
             states.rigid.useGravity = false;
+            if (states.isRun)
+            {
+                dashTime = 0.225f;
+                states.speedHackAmount -= 0.2f;
+                if (states.speedHackAmount <= 0)
+                {
+                    states.speedHackAmount = 0;
+                    states.runRanOut = true;
+                }
+            }
+            else
+            {
+                dashTime = 0.15f;
+            }
             states.rigid.velocity = states.transform.forward * dashSpeed;
             //Debug.Log("LagDash Setting Velocity to: " + states.rigid.velocity);
             states.rigid.drag = 0;
