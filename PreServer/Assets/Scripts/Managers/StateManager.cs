@@ -712,11 +712,10 @@ namespace PreServer
         Transform prevClimbT;
         void CheckForClimb()
         {
-            var topFloat = .6f;
-            var topRay = mTransform.position + (mTransform.forward * 1.25f) + (Vector3.up * topFloat);
+            Vector3 topRay = mTransform.position + (mTransform.forward * 0.9f) + (mTransform.up * 0.5f);
 
             //Debug.DrawRay(topRay, mTransform.forward, Color.blue);
-            if (Physics.Raycast(topRay, mTransform.forward, out climbHit, 1, Layers.ignoreLayersController))
+            if (Physics.SphereCast(topRay, 0.3f, mTransform.forward, out climbHit, 1, Layers.ignoreLayersController))
             {
                 float angle = Vector3.Angle(climbHit.normal, Vector3.up);
                 if (angle >= 70 && angle <= 90 && climbHit.transform.tag == "Climb"/* && (prevClimbT != climbHit.transform || isGrounded)*/)
@@ -1011,6 +1010,12 @@ namespace PreServer
 
         private void OnDrawGizmos()
         {
+
+            //Visualize climbHit
+            //var topFloat = .5f;
+            //var topRay = transform.position + (transform.forward * .9f) + (transform.up * topFloat);
+            //Gizmos.DrawWireSphere(topRay + transform.forward, 0.3f);
+
             //// Setup origin points for three different ground checking vector3s. One in middle of player, one in front, and one in back
             //Vector3 middleOrigin = transform.position;
             //Vector3 frontOrigin = transform.position;
