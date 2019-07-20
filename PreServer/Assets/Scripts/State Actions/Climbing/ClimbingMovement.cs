@@ -66,6 +66,9 @@ namespace PreServer
                 // Wrap around anim here
                 // top is in entering/exiting climb
 
+                //states.anim.SetBool(states.hashes.climbCorner, true);
+                
+
                 Transfer(states);
                 //Rotate(states);
                 Move(states);
@@ -169,11 +172,13 @@ namespace PreServer
                     climbRight = Vector3.Cross(states.climbHit.normal, Vector3.up);
                     climbUp = states.climbHit.normal;
                     transitioning = true;
+                    states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
                     return;
                 }
                 else if (angle < 70)
                 {
                     states.climbHit = front;
+                    //states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
                     states.climbState = StateManager.ClimbState.EXITING;
                     return;
                 }
@@ -243,6 +248,7 @@ namespace PreServer
                     climbRight = Vector3.Cross(states.climbHit.normal, Vector3.up);
                     climbUp = states.climbHit.normal;
                     transitioning = true;
+                    states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
                     return;
                 }
                 else if (angle < 70)
@@ -250,6 +256,7 @@ namespace PreServer
                     states.climbHit = under;
                     states.climbState = StateManager.ClimbState.EXITING;
 
+                    states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
                     states.anim.SetBool(states.hashes.isClimbing, false);
 
                     return;

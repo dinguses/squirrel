@@ -447,14 +447,14 @@ namespace PreServer
             {
                 stepUp = true;
                 frontCollider.enabled = false;
-                frontColliderJump.enabled = true;
+                //frontColliderJump.enabled = true;
             }
             else
             {
                 //states.stepUpDelay = true;
                 stepUp = false;
                 frontCollider.enabled = true;
-                frontColliderJump.enabled = false;
+                //frontColliderJump.enabled = false;
             }
         }
 

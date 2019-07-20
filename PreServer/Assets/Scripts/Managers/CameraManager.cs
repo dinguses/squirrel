@@ -21,6 +21,7 @@ namespace PreServer
         float yaw;
         float pitch;
         public bool ignoreInput = false;
+        public bool ignoreMouse = false;
         public float GetYaw()
         {
             return yaw;
@@ -40,12 +41,22 @@ namespace PreServer
         {
             if (!ignoreInput)
             {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-                yaw += (Input.GetAxis("RightStickHorizontal") + (Input.GetAxis("Mouse XX") * .2f)) * mouseSens;
-                pitch -= (Input.GetAxis("RightStickVertical") + (Input.GetAxis("Mouse YY") * .2f)) * mouseSens;
-                pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
+                if (ignoreMouse)
+                {
+                    yaw += (Input.GetAxis("RightStickHorizontal")) * mouseSens;
+                    pitch -= (Input.GetAxis("RightStickVertical")) * mouseSens;
+                    pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
+                }
+                else
+                {
+                    Cursor.lockState = CursorLockMode.Locked;
+                    Cursor.visible = false;
+                    yaw += (Input.GetAxis("RightStickHorizontal") + (Input.GetAxis("Mouse XX") * .2f)) * mouseSens;
+                    pitch -= (Input.GetAxis("RightStickVertical") + (Input.GetAxis("Mouse YY") * .2f)) * mouseSens;
+                    pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
+                }
             }
+
             currentRotation = Vector3.SmoothDamp(currentRotation, new Vector3(pitch, yaw), ref rotationSmoothVelocity, rotationSmoothTime);
             cam.value.transform.eulerAngles = currentRotation;
 

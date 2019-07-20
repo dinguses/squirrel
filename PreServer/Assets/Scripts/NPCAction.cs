@@ -15,5 +15,10 @@ namespace PreServer
         {
             id = Id;
         }
+
+        public NPCAction()
+        {
+
+        }
     }
 }

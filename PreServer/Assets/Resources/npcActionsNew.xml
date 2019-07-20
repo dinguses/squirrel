@@ -1,0 +1,209 @@
+<!--?xml version="1.0" encoding="UTF-8"?-->
+<actions>
+  <action id="0" gen="0">
+    <reqs>
+      <req id="0" value="tails_nutting" />
+      <req id="1" value="f" />
+      <req id="2" value="t" />
+    </reqs>
+    <steps>
+      <step type="move" point="sonic_000" />
+      <step type="wait" time="13" />
+      <step type="move" point="sonic_001" />
+      <step type="wait" time="13" />
+      <step type="move" point="sonic_002" />
+      <step type="wait" time="13" />
+      <step type="move" point="sonic_003" />
+      <step type="wait" time="13" />
+      <step type="move" point="sonic_004" />
+      <step type="wait" time="13" />
+      <step type="move" point="sonic_005" />
+      <step type="wait" time="13" />
+    </steps>
+  </action>
+  <action id="1" gen="0">
+    <reqs>
+      <req id="0" value="toilet_lover" />
+      <req id="1" value="m" />
+      <req id="2" value="t" />
+    </reqs>
+    <steps>
+      <step type="move" point="toilet_000" />
+      <step type="wait" time="3" />
+      <step type="msg" words="Wow, what a nice toilet!" />
+      <step type="msg" words="Really makes you want to see it from a slightly different angle!" />
+      <step type="move" point="toilet_001" />
+      <step type="wait" time="2" />
+      <step type="msg" words="Ah, really hits the spot!" />
+      <step type="wait" time="5" />
+      <step type="move" point="toilet_000" />
+      <step type="msg" words="Can't beat the classic angle though." />
+      <step type="wait" time="10" />
+      <step type="msg" words="*fart*" />
+    </steps>
+  </action>
+  <action id="2" gen="0">
+    <reqs>
+      <req id="0" value="FartGuy" />
+      <req id="1" value="m" />
+    </reqs>
+    <steps>
+      <step type="move" point="toilet_002" />
+      <step type="msg" words="big fart" />
+      <step type="wait" time="8" />
+      <step type="msg" words="love that toilet." />
+      <step type="wait" time="20" />
+      <step type="msg" words="*chef kiss*" />
+      <step type="wait" time="30" />
+    </steps>
+  </action>
+  <action id="3" gen="0">
+    <steps>
+      <step type="wait" time="4" />
+      <step type="move" point="misc_000" />
+      <step type="msg" words="crunkus" />
+      <step type="wait" time="45" />
+      <step type="move" point="misc_001" />
+      <step type="wait" time="45" />
+    </steps>
+  </action>
+  <action id="4" gen="0">
+    <steps>
+      <step type="wait" time="4" />
+      <step type="move" point="misc_002" />
+      <step type="msg" words="don't look at me" />
+      <step type="wait" time="4" />
+    </steps>
+  </action>
+  <action id="5" gen="0">
+    <steps>
+      <step type="move" point="misc_003" />
+      <step type="msg" words="ther'es nothing here" />
+      <step type="move" point="misc_004" />
+      <step type="msg" words="nothing here either" />
+    </steps>
+  </action>
+  <action id="6" gen="0">
+    <steps>
+      <step type="wait" time="6" />
+      <step type="move" point="misc_005" />
+      <step type="wait" time="2" />
+      <step type="msg" words="whoa" />
+      <step type="wait" time="4" />
+      <step type="move" point="misc_006" />
+    </steps>
+  </action>
+  <action id="7" gen="0">
+    <reqs>
+      <req id="0" value="geyserGUY" />
+      <req id="1" value="m" />
+    </reqs>
+    <steps>
+      <step type="wait" time="10" />
+      <step type="move" point="geyser_005" />
+      <step type="wait" time="20" />
+      <step type="msg" words="geyser" />
+      <step type="wait" time="15" />
+      <step type="msg" words="erupt pls" />
+      <step type="move" point="geyser_000" />
+      <step type="wait" time="305" />
+    </steps>
+  </action>
+  <action id="8" gen="0">
+    <reqs>
+      <req id="0" value="waterfan" />
+      <req id="1" value="f" />
+    </reqs>
+    <steps>
+      <step type="wait" time="4" />
+      <step type="move" point="geyser_000" />
+      <step type="wait" time="10" />
+      <step type="move" point="geyser_001" />
+      <step type="wait" time="60" />
+      <step type="move" point="sonic_000" />
+      <step type="wait" time="10" />
+      <step type="move" point="geyser_002" />
+    </steps>
+  </action>
+  <action id="9" gen="0">
+    <steps>
+      <step type="wait" time="2" />
+      <step type="move" point="geyser_003" />
+      <step type="wait" time="25" />
+      <step type="move" point="geyser_004" />
+      <step type="wait" time="30" />
+      <step type="move" point="sonic_002" />
+      <step type="wait" time="5" />
+      <step type="move" point="sonic_007" />
+      <step type="wait" time="60" />
+    </steps>
+  </action>
+  <action id="10" gen="0">
+    <steps>
+      <step type="wait" time="20" />
+      <step type="move" point="geyser_007" />
+      <step type="wait" time="11" />
+      <step type="move" point="geyser_008" />
+      <step type="wait" time="100" />
+      <step type="move" point="toilet_002" />
+      <step type="wait" time="5" />
+      <step type="move" point="sonic_007" />
+      <step type="msg" words="oh" />
+    </steps>
+  </action>
+  <action id="11" gen="0">
+    <steps>
+      <step type="wait" time="2" />
+      <step type="move" point="misc_008" />
+      <step type="wait" time="40" />
+      <step type="move" point="geyser_006" />
+      <step type="wait" time="55" />
+      <step type="move" point="geyser_005" />
+      <step type="wait" time="40" />
+    </steps>
+  </action>
+  <action id="12" gen="0">
+    <steps>
+      <step type="wait" time="360" />
+    </steps>
+  </action>
+  <action id="13" gen="0">
+    <reqs>
+      <req id="0" value="SittingSteph" />
+      <req id="1" value="f" />
+    </reqs>
+    <pals>
+      <pal id="14" />
+    </pals>
+    <steps>
+      <step type="move" point="geyser_011" />
+      <step type="use" obj="pt000_2" />
+      <step type="wait" time="3" />
+      <step type="msg" words="Hello!" />
+      <step type="wait" time="3" />
+      <step type="use" obj="stop" />
+      <step type="wait" time="3" />
+      <step type="move" point="geyser_008" />
+    </steps>
+  </action>
+  <action id="14" gen="0">
+    <reqs>
+      <req id="0" value="sally" />
+      <req id="1" value="m" />
+    </reqs>
+    <pals>
+      <pal id="13" />
+    </pals>
+    <steps>
+      <step type="move" point="geyser_011" />
+      <step type="wait" time="1" />
+      <step type="use" obj="pt000_3" />
+      <step type="wait" time="3" />
+      <step type="msg" words="hey from me as well!" />
+      <step type="wait" time="3" />
+      <step type="use" obj="stop" />
+      <step type="wait" time="3" />
+      <step type="move" point="geyser_008" />
+    </steps>
+  </action>
+</actions>

@@ -12,6 +12,8 @@ TagManager:
   - head
   - head2
   - Climb
+  - exclude
+  - sitPoint
   layers:
   - Default
   - TransparentFX

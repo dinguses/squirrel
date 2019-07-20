@@ -24,7 +24,7 @@ namespace PreServer
             npcActions = new List<NPCAction>();
             npcUsernames = new List<NPCUsername>();
 
-            actionsTextAsset = (TextAsset) Resources.Load("npcActions");
+            actionsTextAsset = (TextAsset) Resources.Load("npcActionsNew");
             usernamesTextAsset = (TextAsset)Resources.Load("npcUsernames");
 
             if (!System.IO.File.Exists(Application.persistentDataPath + "/npcActions.xml") || resetXML)
@@ -118,7 +118,7 @@ namespace PreServer
                     {
                         case "move":
                             MoveStep moveStep = new MoveStep();
-                            moveStep.destination = new Vector3(float.Parse(stepsNode.GetAttribute("x")), float.Parse(stepsNode.GetAttribute("y")), float.Parse(stepsNode.GetAttribute("z")));
+                            moveStep.pointName = stepsNode.GetAttribute("point");
                             steps.Add(moveStep);
                             break;
                         case "wait":
@@ -143,6 +143,11 @@ namespace PreServer
                             //msgStep.waitForPals = (stepsNode.GetAttribute("waitForPals") == "t" ? true : false);
 
                             steps.Add(msgStep);
+                            break;
+                        case "use":
+                            UseStep useStep = new UseStep();
+                            useStep.objToUse = stepsNode.GetAttribute("obj");
+                            steps.Add(useStep);
                             break;
                         default:
                             break;

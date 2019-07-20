@@ -12,6 +12,9 @@ namespace PreServer
         public Transform spawner;
         public XMLParser xmlParser;
 
+        public Dictionary<string, Vector3> npcPoints;
+        public List<string> npcPointNames;
+
         public List<NPCAction> npcActions;
         public List<NPCUsername> randomUsernames;
         public List<NPCAction> palsToGen;
@@ -43,13 +46,17 @@ namespace PreServer
 
         public int maxNPCs = 9;
 
-        public bool spawnIDfirst = true;
+        public bool spawnIDfirst;
+
+        public int IDToSpawnFirst;
 
         void Start()
         {
             spawner = gameObject.transform;
             numNPCs = 0;
             xmlParser = GetComponent<XMLParser>();
+
+            npcPoints = LoadNpcPoints();
 
             npcActions = xmlParser.ParseActions();
             randomUsernames = xmlParser.ParseUsernames();
@@ -101,9 +108,28 @@ namespace PreServer
             glassesScale = new Vector3(0.9675938f, 1, 1);
         }
 
+        public Dictionary<string, Vector3> LoadNpcPoints()
+        {
+            Dictionary<string, Vector3> npcPointsList = new Dictionary<string, Vector3>();
+
+            GameObject travelPointsObject = GameObject.Find("NPC_Travel_Points");
+            List<Transform> npcPointsInScene = new List<Transform>(travelPointsObject.GetComponentsInChildren<Transform>());
+
+            foreach (Transform npcPointInScene in npcPointsInScene)
+            {
+                if (npcPointInScene.tag != "exclude")
+                {
+                    npcPointsList.Add(npcPointInScene.name, npcPointInScene.position);
+                    npcPointNames.Add(npcPointInScene.name);
+                }
+            }
+
+            return npcPointsList;
+        }
+
         void Update()
         {
-            if (Random.Range(0, 1000) >= 999)
+            if (Random.Range(0, 1000) >= 900)
             {
                 CreateNPC();
             }
@@ -121,32 +147,42 @@ namespace PreServer
                 // If there's no multi-person conversations missing their participants
                 if (palsToGen.Count == 0)
                 {
-                    // Generate an action from the list of actions for this spawner
-                    if (spawnIDfirst)
+                    // Make a completely random NPC
+                    if (Random.Range(0, 2) == 0 && !spawnIDfirst)
                     {
-                        action = npcActions[10];
-                        spawnIDfirst = false;
+                        RandomNPC();
+                        return;
                     }
+
+                    // Make an NPC 
                     else
                     {
-                        action = npcActions[Random.Range(0, npcActions.Count)];
-                    }
-
-
-                    // Pals?
-                    if (action.pals.Count > 0)
-                    {
-                        // Add pals to the waiting list
-                        foreach (int palID in action.pals)
+                        // Generate an action from the list of actions for this spawner
+                        if (spawnIDfirst)
                         {
-                            var pal = npcActions.FirstOrDefault(w => w.id == palID);
-                            palsToGen.Add(pal);
+                            action = npcActions[IDToSpawnFirst];
+                            spawnIDfirst = false;
+                        }
+                        else
+                        {
+                            action = npcActions[Random.Range(0, npcActions.Count)];
+                        }
+
+
+                        // Pals?
+                        if (action.pals.Count > 0)
+                        {
+                            // Add pals to the waiting list
+                            foreach (int palID in action.pals)
+                            {
+                                var pal = npcActions.FirstOrDefault(w => w.id == palID);
+                                palsToGen.Add(pal);
+                            }
                         }
                     }
                 }
                 else
                 {
-                    var bunko = palsToGen;
                     action = npcActions.FirstOrDefault(w => w.id == palsToGen[0].id);
                     palsToGen.RemoveAt(0);
                 }
@@ -162,24 +198,66 @@ namespace PreServer
                 if (action.reqs.ContainsKey(1))
                 {
                     if (action.reqs[1].Equals("m"))
-                        SpawnNPC(action, true);
+                        SpawnNPC(action, false, true);
                     else
-                        SpawnNPC(action, false);
+                        SpawnNPC(action, false, false);
                 }
                 else
                 {
                     if (Random.Range(0, 2) == 0)
-                        SpawnNPC(action, true);
+                        SpawnNPC(action, false, true);
                     else
-                        SpawnNPC(action, false);
+                        SpawnNPC(action, false, false);
                 }
-
-                // Update npc count
-                numNPCs++;
             }
         }
 
-        public void SpawnNPC(NPCAction action, bool isMale)
+        void RandomNPC()
+        {
+            NPCAction randomAction = new NPCAction();
+
+            var numSteps = Random.Range(5, 25);
+            List<NPCStep> steps = new List<NPCStep>();
+
+            // Initial Wait Step
+            WaitStep initialWait = new WaitStep();
+            initialWait.seconds = Random.Range(1, 2);
+
+            steps.Add(initialWait);
+
+            for (int i = 0; i < numSteps; i++)
+            {
+                // Move Step
+                if (Random.Range(0, 2) == 0 || i == 0)
+                {
+                    // TODO: System for somewhat prioritizing another point in the same cluster for the next move or two
+
+                    MoveStep moveStep = new MoveStep();
+                    moveStep.pointName = npcPointNames[Random.Range(0, npcPointNames.Count)];
+
+                    steps.Add(moveStep);
+                }
+
+                // Wait Step
+                else
+                {
+                    WaitStep waitStep = new WaitStep();
+                    waitStep.seconds = Random.Range(1, 300);
+
+                    steps.Add(waitStep);
+                }
+            }
+
+            WaitStep finalWait = new WaitStep();
+            finalWait.seconds = Random.Range(1, 301);
+            steps.Add(finalWait);
+            randomAction.steps = steps;
+            randomAction.reqs = new Dictionary<int, string>();
+
+            SpawnNPC(randomAction, true, finalWait.seconds % 2 == 0 ? true : false);
+        }
+
+        public void SpawnNPC(NPCAction action, bool isRandom, bool isMale)
         {
             //If there is a premium requirement in the NPCAction, set it, if not, 1 in X chance of being a premium NPC
             bool premium;
@@ -198,7 +276,13 @@ namespace PreServer
 
             // Create an NPC from Prefab and locate the bones we'll need for attatching objects and such
             GameObject newNPC = Instantiate(Resources.Load<GameObject>(isMale ? "NPC/MALE_NPC" : "NPC/FEMALE_NPC"), spawner.position, spawner.rotation);
-            newNPC.name = "NPC_" + action.id.ToString();
+
+            // If NPC is random, they have no ID
+            if (isRandom)
+                newNPC.name = "NPC_RAND_" + 0;
+            else
+                newNPC.name = "NPC_" + action.id.ToString();
+
             Transform root = newNPC.transform.Find("Squ_People3:root");
             Transform rootHead = root.transform.Find("Squ_People3:pelvis").transform.Find("Squ_People3:spine_01")
                 .transform.Find("Squ_People3:spine_02").transform.Find("Squ_People3:spine_03").transform.Find("Squ_People3:neck_01")
@@ -443,6 +527,7 @@ namespace PreServer
 
             // Set manager steps 
             NPCManager manager = newNPC.GetComponent<NPCManager>();
+            manager.isRandom = isRandom;
 
             string userName = "";
 
@@ -459,6 +544,9 @@ namespace PreServer
 
                 xmlParser.UpdateUsername(userName);
             }
+
+            // Update npc count
+            numNPCs++;
 
             manager.SetUp(action, userName);
         }
