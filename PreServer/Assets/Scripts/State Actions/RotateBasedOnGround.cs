@@ -87,7 +87,7 @@ namespace PreServer
                 bool didHit;
                 Vector3 dir = Quaternion.AngleAxis(states.transform.rotation.eulerAngles.y, Vector3.up) * Vector3.forward;
                 Debug.DrawRay(origin, -dir * 0.6f, Color.green);
-                didHit = Physics.Raycast(origin, -dir, out hit, 0.6f, Layers.ignoreLayersController);
+                didHit = Physics.Raycast(origin, -dir, out hit, 0.6f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore);
 
 
                 //if (didFrontHit)

@@ -30,7 +30,7 @@ namespace PreServer
             Debug.DrawRay(origin2, -Vector3.up, Color.red);
             //Vector3 targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * movementSpeed;
 
-            if (Physics.Raycast(origin, -Vector3.up, out hit, 1, Layers.ignoreLayersController))
+            if (Physics.Raycast(origin, -Vector3.up, out hit, 1, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
                 //float y = hit.point.y;
 
@@ -40,7 +40,7 @@ namespace PreServer
 
                 //frontY = y - states.mTransform.position.y;
 
-                if (Physics.Raycast(origin2, -Vector3.up, out hit2, 1, Layers.ignoreLayersController))
+                if (Physics.Raycast(origin2, -Vector3.up, out hit2, 1, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                 {
                     if (hit.normal != hit2.normal)
                         states.rotateFast = false;

@@ -20,16 +20,83 @@ namespace PreServer
         Vector3 rotationSmoothVelocity;
         float yaw;
         float pitch;
-        public bool ignoreInput = false;
+        public bool ignoreInput
+        {
+            get { return _ignoreInput; }
+            set
+            {
+                if(!inCameraZone || value)
+                    _ignoreInput = value;
+            }
+        }
+        bool _ignoreInput = false;
         public bool ignoreMouse = false;
+        public bool inCameraZone
+        {
+            get { return _inCameraZone; }
+            set
+            {
+                _inCameraZone = value;
+                ignoreInput = value;
+            }
+        }
+        bool _inCameraZone = false;
+
+        public bool ignorePitch
+        {
+            get { return _ignorePitch; }
+            set
+            {
+                if (!inCameraZone || value)
+                    _ignorePitch = value;
+            }
+        }
+        bool _ignorePitch = false;
+
+        public bool ignoreYaw
+        {
+            get { return _ignoreYaw; }
+            set
+            {
+                if (!inCameraZone || value)
+                    _ignoreYaw = value;
+            }
+        }
+        bool _ignoreYaw = false;
+
+        public bool onRails
+        {
+            get { return _onRails; }
+            set
+            {
+                _onRails = value;
+            }
+        }
+        bool _onRails = false;
+
         public float GetYaw()
         {
             return yaw;
         }
 
-        public void AddToYaw(float val)
+        public void AddToYaw(float val, bool fromCameraZone = false)
         {
-            yaw += val;
+            if(!inCameraZone || fromCameraZone)
+                yaw += val;
+        }
+
+        public float GetPitch()
+        {
+            return pitch;
+        }
+
+        public void AddToPitch(float val, bool fromCameraZone = false)
+        {
+            if (!inCameraZone || fromCameraZone)
+            {
+                pitch += val;
+                pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
+            }
         }
 
         public void SetCurrentRotation(Vector3 v)
@@ -43,26 +110,27 @@ namespace PreServer
             {
                 if (ignoreMouse)
                 {
-                    yaw += (Input.GetAxis("RightStickHorizontal")) * mouseSens;
-                    pitch -= (Input.GetAxis("RightStickVertical")) * mouseSens;
-                    pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
+                    yaw += ignoreYaw ? 0 : (Input.GetAxis("RightStickHorizontal")) * mouseSens;
+                    pitch -= ignorePitch ? 0 : (Input.GetAxis("RightStickVertical")) * mouseSens;
                 }
                 else
                 {
                     Cursor.lockState = CursorLockMode.Locked;
                     Cursor.visible = false;
-                    yaw += (Input.GetAxis("RightStickHorizontal") + (Input.GetAxis("Mouse XX") * .2f)) * mouseSens;
-                    pitch -= (Input.GetAxis("RightStickVertical") + (Input.GetAxis("Mouse YY") * .2f)) * mouseSens;
-                    pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
+                    yaw += ignoreYaw ? 0 : (Input.GetAxis("RightStickHorizontal") + (Input.GetAxis("Mouse XX") * .2f)) * mouseSens;
+                    pitch -= ignorePitch ? 0 : (Input.GetAxis("RightStickVertical") + (Input.GetAxis("Mouse YY") * .2f)) * mouseSens;
                 }
+                pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
             }
 
-            currentRotation = Vector3.SmoothDamp(currentRotation, new Vector3(pitch, yaw), ref rotationSmoothVelocity, rotationSmoothTime);
-            cam.value.transform.eulerAngles = currentRotation;
+            if (!onRails)
+            {
+                currentRotation = Vector3.SmoothDamp(currentRotation, new Vector3(pitch, yaw), ref rotationSmoothVelocity, rotationSmoothTime);
+                cam.value.transform.eulerAngles = currentRotation;
 
-
-            Vector3 targetPosition = Vector3.Lerp(cam.value.transform.position, player.position, Time.deltaTime * camFollowSpeed);
-            cam.value.transform.position = targetPosition;
+                Vector3 targetPosition = Vector3.Lerp(cam.value.transform.position, player.position, Time.deltaTime * camFollowSpeed);
+                cam.value.transform.position = targetPosition;
+            }
             //Debug.Log("CameraManager currentRotation: " + currentRotation);
         }
     }

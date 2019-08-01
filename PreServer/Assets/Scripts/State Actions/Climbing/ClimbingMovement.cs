@@ -124,7 +124,7 @@ namespace PreServer
 
             Debug.DrawRay(topRay, states.transform.forward * 0.75f, Color.blue);
             //Raycast in front of the squirrel, used to check if we've hit a ceiling, ground, or another climb-able surface
-            if (Physics.Raycast(topRay, states.transform.forward, out front, 0.75f, Layers.ignoreLayersController))
+            if (Physics.Raycast(topRay, states.transform.forward, out front, 0.75f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
                 frontHit = true;
                 float angle = Vector3.Angle(front.normal, Vector3.up);
@@ -201,7 +201,7 @@ namespace PreServer
 
             // Draw the rays
             Debug.DrawRay(frontOrigin, dir * 1.5f, Color.green);
-            if (Physics.Raycast(frontOrigin, dir, out under, 1.5f, Layers.ignoreLayersController))
+            if (Physics.Raycast(frontOrigin, dir, out under, 1.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
                 underHit = true;
                 float angle = Vector3.Angle(under.normal, Vector3.up);
