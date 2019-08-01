@@ -84,7 +84,7 @@ namespace PreServer
         public override void OnUpdate(StateManager states)
         {
             base.OnUpdate(states);
-            if(timer > dashTime)
+            if(timer > dashTime || states.climbState != StateManager.ClimbState.NONE)
             {
                 states.dashActive = false;
             }

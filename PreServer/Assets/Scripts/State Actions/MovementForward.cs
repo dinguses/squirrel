@@ -41,7 +41,7 @@ namespace PreServer
             Debug.DrawRay(origin2, dir, Color.cyan);
 
             // Raycast from first origin point
-            if (Physics.Raycast(origin, dir, out hit, 1, Layers.ignoreLayersController))
+            if (Physics.Raycast(origin, dir, out hit, 1, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
                 // Store y position of hit point
                 float y = hit.point.y;
@@ -57,7 +57,7 @@ namespace PreServer
                     states.backupGroundNormal = hit.normal;
                 }
 
-                if (Physics.Raycast(testOrigin, dir, out testHit, 1, Layers.ignoreLayersController))
+                if (Physics.Raycast(testOrigin, dir, out testHit, 1, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                 {
 
                 }
@@ -67,7 +67,7 @@ namespace PreServer
                 frontY = y - states.mTransform.position.y;
 
                 // Second Raycast from second origin point
-                if (Physics.Raycast(origin2, dir, out hit2, 1, Layers.ignoreLayersController))
+                if (Physics.Raycast(origin2, dir, out hit2, 1, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                 {
                     // If front hit is on a different ground than second hit, most likeley moving between two different grounds
                     // If so, shouldn't rotate quickly

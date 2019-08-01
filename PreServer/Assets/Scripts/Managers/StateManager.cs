@@ -21,10 +21,6 @@ namespace PreServer
         [HideInInspector]
         public Animator anim;
         public CapsuleCollider frontCollider;
-        public CapsuleCollider backCollider;
-
-        public CapsuleCollider frontColliderJump;
-        public CapsuleCollider backColliderJump;
 
         public CapsuleCollider grindCollider;
 
@@ -430,17 +426,17 @@ namespace PreServer
                 Debug.DrawRay(topRayLong, mTransform.forward, Color.blue);
             }
 
-            if (Physics.Raycast(bottomRay, mTransform.forward, out hitBottom, 1, Layers.ignoreLayersController))
+            if (Physics.Raycast(bottomRay, mTransform.forward, out hitBottom, 1, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                 bottomHit = true;
             else
                 bottomHit = false;
 
-            if (Physics.Raycast(topRay, mTransform.forward, out hitTop, 1, Layers.ignoreLayersController))
+            if (Physics.Raycast(topRay, mTransform.forward, out hitTop, 1, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                 topHit = true;
             else
                 topHit = false;
 
-            if (Physics.Raycast(topRayLong, mTransform.forward, out hitTopLong, 1, Layers.ignoreLayersController))
+            if (Physics.Raycast(topRayLong, mTransform.forward, out hitTopLong, 1, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                 topHitLong = true;
             else
                 topHitLong = false;
@@ -515,7 +511,7 @@ namespace PreServer
             frontSliding = false;
             middleSliding = false;
             backSliding = false;
-            if (Physics.Raycast(frontOrigin, dir, out frontHit, dis + 0.3f, Layers.ignoreLayersController))
+            if (Physics.Raycast(frontOrigin, dir, out frontHit, dis + 0.3f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
                 frontNormal = frontHit.normal;
                 angle = Vector3.Angle(frontHit.normal, Vector3.up);
@@ -533,7 +529,7 @@ namespace PreServer
                 front = null;
             }
 
-            if (Physics.SphereCast(middleOrigin, 0.3f, dir, out middleHit, dis, Layers.ignoreLayersController))
+            if (Physics.SphereCast(middleOrigin, 0.3f, dir, out middleHit, dis, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
                 middleNormal = middleHit.normal;
                 angle = Vector3.Angle(middleHit.normal, Vector3.up);
@@ -547,7 +543,7 @@ namespace PreServer
                 middle = null;
             }
 
-            if (Physics.SphereCast(backOrigin, 0.3f, dir, out backHit, dis, Layers.ignoreLayersController))
+            if (Physics.SphereCast(backOrigin, 0.3f, dir, out backHit, dis, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
                 backNormal = backHit.normal;
                 angle = Vector3.Angle(backHit.normal, Vector3.up);
@@ -576,7 +572,7 @@ namespace PreServer
             else
                 isGrounded = false;
 
-            if ((CheckGrounded(frontCollider) || CheckGrounded(backCollider)) && (!front && !middle && !back) && !isGrounded && bottomHit)
+            if (CheckGrounded(frontCollider) && (!front && !middle && !back) && !isGrounded && bottomHit)
             {
                 float timeDifference = Time.realtimeSinceStartup - timeSinceJump;
 
@@ -593,13 +589,13 @@ namespace PreServer
 
             //isGrounded = (CheckGrounded(frontCollider) || CheckGrounded(backCollider));
             //isColidingInAir = (CheckGrounded(frontCollider) || CheckGrounded(backCollider));
-            if (Physics.Raycast(middleOrigin, dir, out middleHit, dis + 0.3f, Layers.ignoreLayersController))
+            if (Physics.Raycast(middleOrigin, dir, out middleHit, dis + 0.3f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
                 angle = Vector3.Angle(middleHit.normal, Vector3.up);
                 if (angle > 35 && angle < 70)
                     middleSliding = true;
             }
-            if (Physics.Raycast(backOrigin, dir, out backHit, dis + 0.3f, Layers.ignoreLayersController))
+            if (Physics.Raycast(backOrigin, dir, out backHit, dis + 0.3f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
                 angle = Vector3.Angle(backHit.normal, Vector3.up);
                 if (angle > 35 && angle < 70)
@@ -631,7 +627,7 @@ namespace PreServer
         bool CheckGrounded(CapsuleCollider col)
         {
             //return Physics.CheckBox(new Vector3(col.bounds.center.x, col.bounds.center.y - (col.bounds.size.y - (col.bounds.size.y * 0.5f)), col.bounds.center.z), new Vector3(col.bounds.size.x * 1.5f, col.bounds.size.y * 0.5f, col.bounds.size.z * 1.5f) * 0.5f, col.transform.rotation, groundLayer);
-            return Physics.CheckCapsule(col.bounds.center, new Vector3(col.bounds.center.x, col.bounds.min.y, col.bounds.center.z), col.radius * 0.9f, groundLayer);
+            return Physics.CheckCapsule(col.bounds.center, new Vector3(col.bounds.center.x, col.bounds.min.y, col.bounds.center.z), col.radius * 0.9f, groundLayer, QueryTriggerInteraction.Ignore);
         }
         /// <summary>
         /// Updates animator's isGrounded
@@ -718,7 +714,7 @@ namespace PreServer
             Vector3 topRay = mTransform.position + (mTransform.forward * 0.9f) + (mTransform.up * 0.5f);
 
             //Debug.DrawRay(topRay, mTransform.forward, Color.blue);
-            if (Physics.SphereCast(topRay, 0.3f, mTransform.forward, out climbHit, 1, Layers.ignoreLayersController))
+            if (Physics.SphereCast(topRay, 0.3f, mTransform.forward, out climbHit, 1, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
                 float angle = Vector3.Angle(climbHit.normal, Vector3.up);
                 if (angle >= 70 && angle <= 90 && climbHit.transform.tag == "Climb"/* && (prevClimbT != climbHit.transform || isGrounded)*/)
@@ -772,7 +768,7 @@ namespace PreServer
 
             if ((frontSliding || middleSliding || backSliding))
             {
-                bool backCastHit = Physics.Raycast(origin, -slideDirection, out hit, GetLength() * 0.65f, Layers.ignoreLayersController);
+                bool backCastHit = Physics.Raycast(origin, -slideDirection, out hit, GetLength() * 0.65f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore);
                 if (backCastHit)
                 {
                     float angle = Vector3.Angle(hit.normal, Vector3.up);

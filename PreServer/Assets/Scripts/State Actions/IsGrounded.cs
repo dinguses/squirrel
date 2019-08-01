@@ -64,7 +64,7 @@ namespace PreServer
             //if (states.isGrounded)
             //{
                 float angle = 0;
-                if (Physics.SphereCast(middleOrigin, 0.3f, dir, out middleHit, dis, Layers.ignoreLayersController))
+                if (Physics.SphereCast(middleOrigin, 0.3f, dir, out middleHit, dis, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                 {
                     states.middleNormal = middleHit.normal;
                     //states.middle = middleHit.transform.gameObject;
@@ -79,7 +79,7 @@ namespace PreServer
                     states.middle = null;
                 }
 
-                if (Physics.Raycast(frontOrigin, dir, out frontHit, dis + 0.3f, Layers.ignoreLayersController))
+                if (Physics.Raycast(frontOrigin, dir, out frontHit, dis + 0.3f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                 {
                     states.frontNormal = frontHit.normal;
                     //states.front = frontHit.transform.gameObject;
@@ -94,7 +94,7 @@ namespace PreServer
                     states.front = null;
                 }
 
-                if (Physics.SphereCast(backOrigin, 0.3f, dir, out backHit, dis, Layers.ignoreLayersController))
+                if (Physics.SphereCast(backOrigin, 0.3f, dir, out backHit, dis, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                 {
                     states.backNormal = backHit.normal;
                     //states.back = backHit.transform.gameObject;
@@ -155,11 +155,10 @@ namespace PreServer
             //    //states.isGrounded = false;
             //}
             //}
-            bool front, back;
+            bool front;
             front = isGrounded(states.frontCollider);
-            back = isGrounded(states.backCollider);
-            Debug.Log(Time.frameCount + " || Is Grounded Front is: " + front + " Back is: " + back);
-            states.isGrounded = (front || back);
+            Debug.Log(Time.frameCount + " || Is Grounded Front is: " + front);
+            states.isGrounded = (front);
         }
 
         //Checks to see if the collider is interacting with anything on the default layer '0'

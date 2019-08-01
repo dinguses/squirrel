@@ -100,7 +100,7 @@ namespace PreServer
             Debug.DrawRay(origin, dir * dis, Color.blue);
 
             // If player is directly above a slope
-            if (Physics.Raycast(origin, dir, out hit, dis, Layers.ignoreLayersController))
+            if (Physics.Raycast(origin, dir, out hit, dis, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
                 // Get player's angle
                 float angle = Vector3.Angle(hit.normal, Vector3.up);

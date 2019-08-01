@@ -15,7 +15,6 @@ namespace PreServer
         public override void Execute(StateManager states)
         {
             states.frontCollider.enabled = status;
-            states.backCollider.enabled = status;
         }
     }
 }
