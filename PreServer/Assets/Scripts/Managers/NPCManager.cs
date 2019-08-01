@@ -46,7 +46,6 @@ namespace PreServer
         public List<Vector3> ziggyPoints;
         public float speedHold;
         public int runLikelihood;
-        bool[] testBoolArray = new bool[101];
 
         public bool isRandom = false;
 
@@ -72,19 +71,7 @@ namespace PreServer
 
             rotateTowards = false;
 
-            runLikelihood = Random.Range(100, 101);
-
-            
-
-            for (int i = 0; i < 101; i++)
-            {
-                if (runLikelihood > i)
-                    testBoolArray[i] = true;
-                else
-                    testBoolArray[i] = false;
-            }
-
-            var sadkjfj = testBoolArray;
+            runLikelihood = Random.Range(0, 101);
 
             NextStep();
 
@@ -214,7 +201,7 @@ namespace PreServer
                 destination = ziggyPoints[0];
 
 
-                if (testBoolArray[Random.Range(0, testBoolArray.Length)])
+                if (Random.Range(0, 101) <= runLikelihood)
                 {
                     anim.CrossFade(hashes.npc_run, 0.02f);
                     navMeshAgent.speed = 9.0f;
