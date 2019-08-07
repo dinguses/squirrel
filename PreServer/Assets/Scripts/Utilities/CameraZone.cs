@@ -20,9 +20,18 @@ namespace PreServer
         float distFromStart = 0;
         bool triggered = false;
         int currentPoint = 0;
+        //public CameraZoneSection[] sections;
+        //List<Collider> colliders;
+        int colCount;
         // Start is called before the first frame update
         void Start()
         {
+            //for(int i = 0; i < sections.Length; ++i)
+            //{
+            //    sections[i].enter += OnSectionTriggerEnter;
+            //    sections[i].exit += OnSectionTriggerExit;
+            //}
+            //colliders = new List<Collider>();
             cameraMan = Camera.main.transform.parent.GetComponent<CameraManager>();
             if (OnRails())
             {
@@ -75,7 +84,7 @@ namespace PreServer
             if (OnRails() && triggered)
             {
                 Vector3 playerPosition = GetPoint(cameraMan.player.position, start.position, end.position);
-                //Debug.DrawRay(playerPosition, Vector3.right * 4f, Color.black);
+                Debug.DrawRay(playerPosition, Vector3.right * 4f, Color.black);
                 distFromStart = Vector3.Distance(start.position, playerPosition) / totalDist;
                 for (int i = 0; i < distances.Length; ++i)
                 {
@@ -101,21 +110,64 @@ namespace PreServer
             return a + Vector3.Project(p - a, b - a);
         }
 
+        void OnSectionTriggerEnter(Collider col)
+        {
+            //if (colliders.Contains(col))
+            //    return;
+            //colliders.Add(col);
+            //if (!triggered)
+            //{
+            //    Debug.Log("Trigger Enter");
+            //    if (cameraMan != null)
+            //    {
+            //        cameraMan.inCameraZone = true;
+            //        cameraMan.onRails = OnRails();
+            //    }
+            //    //camera angle is the amount the camera needs to move, tempAngle is the starting point
+            //    tempAngle = Vector3.SignedAngle(cameraMan.transform.forward, transform.forward, Vector3.up);
+            //    cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
+            //    moveCamera = true;
+            //    triggered = true;
+            //}
+        }
+
+        void OnSectionTriggerExit(Collider col)
+        {
+            //if (!colliders.Contains(col))
+            //    return;
+            //colliders.Remove(col);
+            //if (colliders.Count == 0)
+            //{
+            //    Debug.Log("Trigger Exit");
+            //    if (cameraMan != null)
+            //    {
+            //        cameraMan.inCameraZone = false;
+            //        cameraMan.onRails = false;
+            //    }
+            //    moveCamera = false;
+            //    triggered = false;
+            //}
+        }
+
         private void OnTriggerEnter(Collider other)
         {
             if (other.transform.name == "Squirrel")
             {
-                Debug.Log("Trigger Enter");
-                if (cameraMan != null)
+                colCount++;
+                if (!triggered)
                 {
-                    cameraMan.inCameraZone = true;
-                    cameraMan.onRails = OnRails();
+                    Debug.Log("Trigger Enter");
+                    if (cameraMan != null)
+                    {
+                        cameraMan.inCameraZone = true;
+                        cameraMan.onRails = OnRails();
+                    }
+                    //camera angle is the amount the camera needs to move, tempAngle is the starting point
+                    tempAngle = Vector3.SignedAngle(cameraMan.transform.forward, transform.forward, Vector3.up);
+                    cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
+                    moveCamera = true;
+                    triggered = true;
                 }
-                //camera angle is the amount the camera needs to move, tempAngle is the starting point
-                tempAngle = Vector3.SignedAngle(cameraMan.transform.forward, transform.forward, Vector3.up);
-                cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
-                moveCamera = true;
-                triggered = true;
             }
         }
 
@@ -123,14 +175,18 @@ namespace PreServer
         {
             if (other.transform.name == "Squirrel")
             {
-                Debug.Log("Trigger Exit");
-                if (cameraMan != null)
+                colCount--;
+                if (colCount == 0)
                 {
-                    cameraMan.inCameraZone = false;
-                    cameraMan.onRails = false;
+                    Debug.Log("Trigger Exit");
+                    if (cameraMan != null)
+                    {
+                        cameraMan.inCameraZone = false;
+                        cameraMan.onRails = false;
+                    }
+                    moveCamera = false;
+                    triggered = false;
                 }
-                moveCamera = false;
-                triggered = false;
             }
         }
     }
