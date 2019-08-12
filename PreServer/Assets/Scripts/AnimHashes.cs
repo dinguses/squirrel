@@ -30,6 +30,8 @@ namespace PreServer
         public int climbCorner = Animator.StringToHash("climbCorner");
         public int squ_climb_corner = Animator.StringToHash("squ_climb_corner");
 
+        public int rotate_test = Animator.StringToHash("rotateFloat");
+
         public int npc_idle = Animator.StringToHash("NPC_IDLE");
         public int npc_run = Animator.StringToHash("NPC_RUN");
         public int npc_walk = Animator.StringToHash("NPC_WALK");

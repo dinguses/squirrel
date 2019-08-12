@@ -88,6 +88,8 @@ namespace PreServer
         public Dictionary<int, BoxCollider> grindCenters;
         public Dictionary<string, BoxCollider> grindCenters2;
 
+        public float rotateHOLD = 0;
+
         public Vector3 facingPoint;
         public Vector3 behindPoint;
 
@@ -108,10 +110,12 @@ namespace PreServer
         public float testINT = 0;
         public bool inJoint = false;
 
+        public bool rotateBool = false;
         public bool stayGrinding;
         public bool exitingGrind;
         public BoxCollider currentHitBox;
         public BoxCollider newHitBox;
+        public int coupleAFrames = 0;
 
         public Camera mainCam;
         public Camera mainCam2;
@@ -324,6 +328,15 @@ namespace PreServer
             dashCooldown.fillAmount = 1 - lagDashCooldown;
             speedHack.fillAmount = speedHackAmount / 2f;
             #endregion
+
+            /*if (coupleAFrames >= 1 && coupleAFrames < 15)
+                coupleAFrames++;
+
+            if (coupleAFrames > 12)
+            {
+                frontCollider.enabled = true;
+                grindCollider.enabled = false;
+            }*/
         }
 
         public bool pauseSpeedHackTimer = false;
@@ -445,14 +458,14 @@ namespace PreServer
             if (bottomHit && !topHit && !topHitLong && movementVariables.moveAmount > 0.05f)
             {
                 stepUp = true;
-                frontCollider.enabled = false;
+                //frontCollider.enabled = false;
                 //frontColliderJump.enabled = true;
             }
             else
             {
                 //states.stepUpDelay = true;
                 stepUp = false;
-                frontCollider.enabled = true;
+                //frontCollider.enabled = true;
                 //frontColliderJump.enabled = false;
             }
         }
@@ -801,126 +814,26 @@ namespace PreServer
                 }
             }
 
-            if (other.tag == "Joint")
+            if (other.tag == "joint")
             {
                 inJoint = true;
             }
 
-            // Old
-            /*if (other.tag == "Grind")
-            {
-                //Debug.Log("In grind zone is - " + inGrindZone + " || exiting grind is - " + exitingGrind);
-
-                if (!inGrindZone)
-                {
-                    if (!exitingGrind)
-                    {
-                        inGrindZone = true;
-
-                        GenerateGrindPoints(other);
-                        currentHitBox = (BoxCollider) other;
-
-                        // If there are only 2 grind points
-                        if (grindPoints.Count == 2)
-                        {
-                            var parent = other.gameObject.transform.parent;
-                            var center = parent.GetChild(1);
-                            grindCenter = center.GetComponent<BoxCollider>();
-                        }
-                    }
-                }
-                else
-                {
-                    // If new Grind collider that is not the current one
-                    if (other != currentHitBox)
-                    {
-                        newHitBox = (BoxCollider) other;
-                    }
-                }
-            }
-
-            if (other.tag == "GrindAdditional")
-            {
-                if (!inGrindZone)
-                {
-                    if (!exitingGrind)
-                    {
-                        inGrindZone = true;
-
-                        // Get all colliders in parent (aka the main grind hitbox)
-                        BoxCollider[] parentColliders = other.GetComponentsInParent<BoxCollider>();
-
-                        foreach (BoxCollider bc in parentColliders)
-                        {
-                            // If it's the main grind hitbox
-                            if (bc.tag == "Grind")
-                            {
-                                // Generate the grind points
-                                GenerateGrindPoints(bc);
-                                currentHitBox = (BoxCollider)other;
-                            }
-                        }
-
-                        if (grindPoints.Count == 2)
-                        {
-                            BoxCollider[] allChildren = other.GetComponentsInChildren<BoxCollider>();
-
-                            foreach (BoxCollider child in allChildren)
-                            {
-                                if (child.tag == "GrindCenter")
-                                {
-                                    grindCenter = child;
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    //Debug.Log("Entered the AddColl");
-
-                    // If new Grind collider that is not the current one
-                    if (other != currentHitBox)
-                    {
-                        newHitBox = (BoxCollider)other;
-                    }
-                }
-            }*/
 
             // If player enters grind point
             if (other.tag == "GrindPoint")
             {
                 // Start moving towards next point
-                NextPoint();
+
+
+
+                //Debug.Log("Grind Point hit guh huh");
+                //NextPoint();
             }
         }
 
         void OnTriggerExit(Collider other)
         {
-            /*if ((other.tag == "Grind" || other.tag == "GrindAdditional") && (currentState.stateName == "Grinding" || currentState.stateName == "On Air"))
-            {
-                if (grindPoints.Count == 2)
-                {
-                    PurgeGrindPoints();
-                    inGrindZone = false;
-                    exitingGrind = true;
-                }
-
-                else
-                {
-                    if (newHitBox == new BoxCollider() || newHitBox == null)
-                    {
-                        PurgeGrindPoints();
-                        inGrindZone = false;
-                        exitingGrind = true;
-                    }
-                    else
-                    {
-                        newHitBox = new BoxCollider();
-                    }
-                }
-            }*/
-
             if (other.tag == "Grind" && !inJoint)
             {
                 PurgeGrindPoints();
@@ -928,14 +841,27 @@ namespace PreServer
                 exitingGrind = true;
             }
 
-            if (other.tag == "Joint")
+            if (other.tag == "joint")
             {
                 inJoint = false;
             }
         }
 
+        public void Done180()
+        {
+            //Debug.Log("Done 180");
+            anim.SetBool(hashes.waitForAnimation, false);
+        }
+
+        public void Start180()
+        {
+            rotateHOLD = 0;
+        }
+
         public void NextPoint()
-        {        
+        {
+            Debug.Log("Next Point");
+
             if (grindPoints.Count > 2)
             {
                 if (facingPointPair.Key > behindPointPair.Key)
@@ -959,7 +885,7 @@ namespace PreServer
                 if (facingPointPair.Key < behindPointPair.Key)
                 {
                     var newKey = facingPointPair.Key - 1;
-                    var bungus = grindPoints[facingPointPair.Key - 1];
+                    var bungus = grindPoints[newKey];
 
                     var hold = facingPoint;
                     var holdPair = facingPointPair;
@@ -975,7 +901,7 @@ namespace PreServer
                 }
 
 
-                currentHitBox = newHitBox;
+                //currentHitBox = newHitBox;
                 //newHitBox = new BoxCollider();
             }      
         }

@@ -25,7 +25,9 @@ namespace PreServer
                 state.rigid.useGravity = true;
                 state.anim.SetBool(state.hashes.isGrinding, false);
 
-                state.frontCollider.enabled = true;
+                //GOTO
+                //state.frontCollider.enabled = true;
+                //state.grindCollider.enabled = false;
 
                 state.exitingGrind = false;
                 state.inGrindZone = false;

@@ -14,6 +14,8 @@ namespace PreServer
         {
             states.rigid.drag = 0;
 
+            states.rotateBool = true;
+
             // Get target velocity from player's move amount and current velocity           
             Vector3 targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * 10.5f;
             Vector3 currentVelocity = states.rigid.velocity;

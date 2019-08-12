@@ -25,7 +25,11 @@ namespace PreServer
                 state.exitingGrind = false;
 
                 // re-enable the front collider
-                state.frontCollider.enabled = true;
+                //GOTO
+                //state.frontCollider.enabled = true;
+                //state.grindCollider.enabled = false;
+
+                state.coupleAFrames = 1;
 
                 result = true;
             }
