@@ -27074,6 +27074,10 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 400050, guid: fa0c5cf97512a2d479aa7e25360528f4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 100002, guid: fa0c5cf97512a2d479aa7e25360528f4, type: 3}
       propertyPath: m_Layer
       value: 8
@@ -37852,10 +37856,10 @@ BoxCollider:
   m_GameObject: {fileID: 1938043507}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 1, z: 0.2}
-  m_Center: {x: 0.75, y: 0, z: 0}
+  m_Size: {x: 1.4, y: 1, z: 0.4}
+  m_Center: {x: 0.2, y: 0, z: 0}
 --- !u!65 &1938043510
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -37867,8 +37871,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.375, y: 1, z: 1}
-  m_Center: {x: 0.1875, y: 0, z: 0}
+  m_Size: {x: 0.3, y: 1, z: 1}
+  m_Center: {x: -0.35, y: 0, z: 0}
 --- !u!114 &1938043511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -39885,8 +39889,8 @@ MonoBehaviour:
   idleRand: 0
   randMax: 0
   idleInc: 0
-  inGrindZone: 0
   isSliding: 0
+  inGrindZone: 0
   facingPoint: {x: 0, y: 0, z: 0}
   behindPoint: {x: 0, y: 0, z: 0}
   groundNormal: {x: 0, y: 0, z: 0}
@@ -39897,6 +39901,7 @@ MonoBehaviour:
   angleTest: 0
   grindCenter: {fileID: 0}
   testINT: 0
+  inJoint: 0
   stayGrinding: 0
   exitingGrind: 0
   currentHitBox: {fileID: 0}
@@ -40086,7 +40091,7 @@ GameObject:
   - component: {fileID: 2028093266}
   - component: {fileID: 2028093265}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Cam Zone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
