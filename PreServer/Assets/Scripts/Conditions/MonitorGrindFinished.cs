@@ -29,8 +29,6 @@ namespace PreServer
                 //state.frontCollider.enabled = true;
                 //state.grindCollider.enabled = false;
 
-                state.coupleAFrames = 1;
-
                 result = true;
             }
 

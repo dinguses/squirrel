@@ -23,8 +23,17 @@ namespace PreServer
                 // if grounded, then land
                 if (result)
                 {
+                    bool inMeat = false;
+
+                    if (state.front != null)
+                        inMeat = (state.front.name == "BenchMeat");
+                    if (state.middle != null)
+                        inMeat = (state.middle.name == "BenchMeat");
+                    if (state.back != null)
+                        inMeat = (state.back.name == "BenchMeat");
+
                     // If been in air for at least a certain amt of time, do the long land anim
-                    if (timeDifference > .65f)
+                    if (timeDifference > .65f && !inMeat)
                     {
                         state.anim.CrossFade(state.hashes.Land, .2f);
                     }
@@ -32,6 +41,7 @@ namespace PreServer
                     // If not, quick land
                     else
                     {
+                        Debug.Log("DOING A Quick LAND");
                         state.anim.SetBool(state.hashes.QuickLand, true);
                     }
 

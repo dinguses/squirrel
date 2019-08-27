@@ -23,8 +23,6 @@ namespace PreServer
             // If player is in grind zone and has landed on the ground of the grind
             if (state.inGrindZone && state.isGrounded)
             {
-                Debug.Log(state.coupleAFrames);
-
                 // Go through all grindpoints and find the closest point to the player
                 foreach (KeyValuePair<int, Vector3> grindPoint in state.grindPoints)
                 {
@@ -180,8 +178,6 @@ namespace PreServer
                 //GOTO
                 //state.frontCollider.enabled = false;
                 //state.grindCollider.enabled = true;
-
-                state.coupleAFrames = 0;
 
                 result = true;
 

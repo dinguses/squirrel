@@ -115,7 +115,6 @@ namespace PreServer
         public bool exitingGrind;
         public BoxCollider currentHitBox;
         public BoxCollider newHitBox;
-        public int coupleAFrames = 0;
 
         public Camera mainCam;
         public Camera mainCam2;
@@ -328,15 +327,6 @@ namespace PreServer
             dashCooldown.fillAmount = 1 - lagDashCooldown;
             speedHack.fillAmount = speedHackAmount / 2f;
             #endregion
-
-            /*if (coupleAFrames >= 1 && coupleAFrames < 15)
-                coupleAFrames++;
-
-            if (coupleAFrames > 12)
-            {
-                frontCollider.enabled = true;
-                grindCollider.enabled = false;
-            }*/
         }
 
         public bool pauseSpeedHackTimer = false;
@@ -475,7 +465,7 @@ namespace PreServer
             // Setup origin points for three different ground checking vector3s. One in middle of player, one in front, and one in back
             Vector3 middleOrigin = transform.position;
             Vector3 frontOrigin = transform.position;
-            Vector3 backOrigin = transform.position;
+            Vector3 backOrigin = transform.position + (transform.forward / 4);
 
             middleOrigin += transform.forward;
             frontOrigin += transform.forward + transform.forward / 2;
