@@ -12,7 +12,7 @@ namespace PreServer
         bool moveCamera = false;
         public enum InputLimit { NONE, YAW, PITCH, ALL }
         public InputLimit limit = InputLimit.NONE;
-        public Transform[] points;
+        //public Transform[] points;
         float[] distances;
         public Transform start;
         public Transform end;
@@ -23,6 +23,8 @@ namespace PreServer
         //public CameraZoneSection[] sections;
         //List<Collider> colliders;
         int colCount;
+        public Section[] sections;
+        public bool debug;
         // Start is called before the first frame update
         void Start()
         {
@@ -36,11 +38,11 @@ namespace PreServer
             if (OnRails())
             {
                 totalDist = Vector3.Distance(start.position, end.position);
-                distances = new float[points.Length - 1];
+                distances = new float[sections.Length];
                 float pointsTotalDist = 0;
                 for(int i = 0; i < distances.Length; ++i)
                 {
-                    distances[i] = Vector3.Distance(points[i].position, points[i + 1].position);
+                    distances[i] = Vector3.Distance(sections[i].GetStartPoint().position, sections[i].GetEndPoint().position);
                     pointsTotalDist += distances[i];
                     if(i != 0)
                     {
@@ -56,7 +58,7 @@ namespace PreServer
 
         public bool OnRails()
         {
-            return points != null && points.Length > 0;
+            return sections != null && sections.Length > 0;
         }
 
         // Update is called once per frame
@@ -95,13 +97,14 @@ namespace PreServer
                     }
                 }
                 float lerpAmount = (distFromStart - (currentPoint == 0 ? 0 : distances[currentPoint - 1])) / (distances[currentPoint] - (currentPoint == 0 ? 0 : distances[currentPoint - 1]));
-                Vector3 targetPosition = Vector3.Lerp(points[currentPoint].position, points[currentPoint + 1].position, lerpAmount);
-                Quaternion targetRotation = Quaternion.Lerp(points[currentPoint].rotation, points[currentPoint + 1].rotation, lerpAmount);
-                cameraMan.transform.position = Vector3.Lerp(cameraMan.transform.position, targetPosition, Time.deltaTime * cameraMan.camFollowSpeed);
+                Vector3 targetPosition = sections[currentPoint].GetPoint(lerpAmount); //Vector3.Lerp(points[currentPoint].position, points[currentPoint + 1].position, lerpAmount);
+                Quaternion targetRotation = Quaternion.Lerp(sections[currentPoint].GetStartPoint().rotation, sections[currentPoint].GetEndPoint().rotation, lerpAmount);//Quaternion.Lerp(points[currentPoint].rotation, points[currentPoint + 1].rotation, lerpAmount);
+                cameraMan.transform.position = Vector3.Lerp(cameraMan.transform.position, targetPosition, 1f);
                 cameraMan.transform.rotation = Quaternion.Lerp(cameraMan.transform.rotation, targetRotation, cameraMan.rotationSmoothTime);
                 cameraMan.AddToPitch(targetRotation.eulerAngles.x - cameraMan.GetPitch(), true);
                 cameraMan.AddToYaw(targetRotation.eulerAngles.y - cameraMan.GetYaw(), true);
                 cameraMan.SetCurrentRotation(targetRotation.eulerAngles);
+                Debug.DrawRay(targetPosition, Vector3.up * 5f, Color.yellow);
             }
         }
 
@@ -148,7 +151,7 @@ namespace PreServer
             //    triggered = false;
             //}
         }
-
+        Vector3 camPos;
         private void OnTriggerEnter(Collider other)
         {
             if (other.transform.name == "Squirrel")
@@ -167,6 +170,8 @@ namespace PreServer
                     cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
                     moveCamera = true;
                     triggered = true;
+                    camPos = Camera.main.transform.localPosition;
+                    Camera.main.transform.localPosition = Vector3.zero;
                 }
             }
         }
@@ -186,8 +191,84 @@ namespace PreServer
                     }
                     moveCamera = false;
                     triggered = false;
+                    Camera.main.transform.localPosition = camPos;
                 }
             }
+        }
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.red;
+            if (sections != null && sections.Length > 0 && debug)
+            {
+                float t = 0.01f;
+                Vector3 prevPos;
+                Vector3 currPos;
+                for(int i = 0; i < sections.Length; ++i)
+                {
+                    prevPos = sections[i].points[0].position;
+                    for (int j = 1; j <= 100; ++j)
+                    {
+                        currPos = sections[i].GetPoint(t * j);
+                        Gizmos.DrawLine(prevPos, currPos);
+                        prevPos = currPos;
+                    }
+                }
+            }
+            //if (OnRails())
+            //{
+            //    for (int i = 0; i < points.Length - 1; ++i)
+            //    {
+            //        Gizmos.DrawLine(points[i].position, points[i + 1].position);
+            //    }
+            //}
+        }
+
+        [System.Serializable]
+        public class Section
+        {
+            public Transform[] points;
+            public Vector3 GetPoint(float t)
+            {
+                switch (points.Length)
+                {
+                    case 2:
+                        return CalculateLinearPosition(t, points[0].position, points[1].position);
+                    case 3:
+                        return CalculateQuadraticPosition(t, points[0].position, points[1].position, points[2].position);
+                    case 4:
+                        return CalculateCubicPosition(t, points[0].position, points[1].position, points[2].position, points[3].position);
+                    default:
+                        Debug.Log("Invalid length for the point array, please fix before continuing");
+                        return Vector3.zero;
+                }
+            }
+
+            public Transform GetStartPoint()
+            {
+                return points[0];
+            }
+
+            public Transform GetEndPoint()
+            {
+                return points[points.Length - 1];
+            }
+
+            public Vector3 CalculateLinearPosition(float t, Vector3 p0, Vector3 p1)
+            {
+                return p0 + t * (p1 - p0);
+            }
+
+            public Vector3 CalculateQuadraticPosition(float t, Vector3 p0, Vector3 p1, Vector3 p2)
+            {
+                return Mathf.Pow((1 - t), 2) * p0 + (2 * (1 - t) * t * p1) + Mathf.Pow(t, 2) * p2;
+            }
+
+            public Vector3 CalculateCubicPosition(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
+            {
+                return Mathf.Pow(1 - t, 3) * p0 + (3 * Mathf.Pow(1 - t, 2) * t * p1) + (3 * (1 - t) * Mathf.Pow(t, 2) * p2) + Mathf.Pow(t, 3) * p3;
+            }
+            //public 
         }
     }
 }
