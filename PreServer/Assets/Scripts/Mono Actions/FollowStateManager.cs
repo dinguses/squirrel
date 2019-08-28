@@ -8,7 +8,8 @@ namespace PreServer
     [CreateAssetMenu(menuName = "Actions/Mono Actions/Follow State Manager")]
     public class FollowStateManager : Action
     {
-        public StateManagerVariable stateVariable;
+        //public StateManagerVariable stateVariable;
+        public PlayerManagerVariable pmVariable;
         public TransformVariable currentTransform;
         public FloatVariable delta;
 
@@ -18,7 +19,7 @@ namespace PreServer
 
         public override void Execute()
         {
-            if (stateVariable.value == null)
+            if (pmVariable.value == null)
                 return;
             if (currentTransform.value == null)
                 return;
@@ -34,7 +35,7 @@ namespace PreServer
                     return;
             }*/
 
-            Vector3 targetPosition = Vector3.Lerp(currentTransform.value.position, stateVariable.value.mTransform.position, delta.value * speed);
+            Vector3 targetPosition = Vector3.Lerp(currentTransform.value.position, pmVariable.value.mTransform.position, delta.value * speed);
             currentTransform.value.position = targetPosition;
         }
     }

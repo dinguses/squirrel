@@ -11,8 +11,10 @@ namespace PreServer
     [CreateAssetMenu (menuName = "Conditions/Monitor Grind")]
     public class MonitorGrind : Condition
     {
-        public override bool CheckCondition(StateManager state)
+        public override bool CheckCondition(StateManager sm)
         {
+            PlayerManager state = (PlayerManager)sm;
+
             bool result = false;
             Vector3 closestPointValue = new Vector3(10000, 10000, 10000);
             Vector3 otherPointValue = new Vector3(10000, 10000, 10000);

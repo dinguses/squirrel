@@ -28,8 +28,12 @@ namespace PreServer
         CameraManager camera;
         float cameraAngle = 0;
         float tempAngle = 0;
-        public override void OnEnter(StateManager states)
+        PlayerManager states;
+
+        public override void OnEnter(StateManager sm)
         {
+            states = (PlayerManager)sm;
+
             base.OnEnter(states);
             if(camera == null && cameraTransform != null)
             {
@@ -52,12 +56,12 @@ namespace PreServer
                 camera.ignoreInput = false;
         }
 
-        public override void Execute(StateManager states)
+        public override void Execute(StateManager sm)
         {
 
         }
 
-        public override void OnUpdate(StateManager states)
+        public override void OnUpdate(StateManager sm)
         {
             base.OnUpdate(states);
 
@@ -116,7 +120,7 @@ namespace PreServer
             Debug.DrawRay(states.climbHit.point, states.climbHit.normal * 3f, Color.yellow);
         }
 
-        void CheckRaycast(StateManager states)
+        void CheckRaycast(StateManager sm)
         {
             bool frontHit = false, underHit = false;
             float topFloat = .6f;
@@ -179,7 +183,7 @@ namespace PreServer
                 {
                     states.climbHit = front;
                     //states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
-                    states.climbState = StateManager.ClimbState.EXITING;
+                    states.climbState = PlayerManager.ClimbState.EXITING;
                     return;
                 }
                 else if (angle > 90 || front.transform.tag != "Climb")
@@ -254,7 +258,7 @@ namespace PreServer
                 else if (angle < 70)
                 {
                     states.climbHit = under;
-                    states.climbState = StateManager.ClimbState.EXITING;
+                    states.climbState = PlayerManager.ClimbState.EXITING;
 
                     states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
                     states.anim.SetBool(states.hashes.isClimbing, false);
@@ -265,7 +269,7 @@ namespace PreServer
                 {
                     //states.rigid.velocity = Vector3.zero;
                     //states.mTransform.rotation = prevRotation;
-                    states.climbState = StateManager.ClimbState.NONE;
+                    states.climbState = PlayerManager.ClimbState.NONE;
                     states.isJumping = true;
                     return;
                 }
@@ -280,17 +284,17 @@ namespace PreServer
             {
                 //states.rigid.velocity = Vector3.zero;
                 //states.mTransform.rotation = prevRotation;
-                states.climbState = StateManager.ClimbState.NONE;
+                states.climbState = PlayerManager.ClimbState.NONE;
                 states.isJumping = true;
             }
             if (!underHit && !frontHit)
             {
-                states.climbState = StateManager.ClimbState.NONE;
+                states.climbState = PlayerManager.ClimbState.NONE;
                 states.isJumping = true;
             }
         }
         Quaternion prevRotation;
-        void Rotate(StateManager states)
+        void Rotate(StateManager sm)
         {
             if (cameraTransform.value == null)
                 return;
@@ -328,7 +332,7 @@ namespace PreServer
             states.mTransform.rotation = targetRotation;
         }
 
-        void Move(StateManager states)
+        void Move(StateManager sm)
         {
             Vector3 testOrigin = states.mTransform.position + (states.mTransform.forward * .75f);
             testOrigin.y += .5f;
@@ -350,7 +354,7 @@ namespace PreServer
         Quaternion targetRot;
         public float offsetFromWall = 0.3f;
         float delta;
-        void Transfer(StateManager states)
+        void Transfer(StateManager sm)
         {
             delta = Time.deltaTime * 4;
 
@@ -391,7 +395,7 @@ namespace PreServer
             //Debug.Log(Time.frameCount + " || inPos = " + inPos + " inRot = " + inRot);
         }
 
-        public override void OnFixed(StateManager states)
+        public override void OnFixed(StateManager sm)
         {
             base.OnFixed(states);
 
@@ -419,7 +423,7 @@ namespace PreServer
             return target + offset;
         }
 
-        public override void OnExit(StateManager states)
+        public override void OnExit(StateManager sm)
         {
             base.OnExit(states);
             //states.rigid.velocity = Vector3.zero;

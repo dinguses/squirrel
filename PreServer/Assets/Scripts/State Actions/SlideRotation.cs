@@ -16,12 +16,15 @@ namespace PreServer
         public float speed;
         public float constraint = 60f;
         Quaternion start;
+        PlayerManager states;
 
-        public override void OnEnter(StateManager states)
+        public override void OnEnter(StateManager sm)
         {
+            states = (PlayerManager)sm;
+
             start = states.mTransform.rotation;
         }
-        public override void OnUpdate(StateManager states)
+        public override void OnUpdate(StateManager sm)
         {
             if (cameraTransform.value == null)
                 return;
@@ -53,7 +56,7 @@ namespace PreServer
                 states.mTransform.rotation = targetRotation;
         }
 
-        public override void Execute(StateManager states)
+        public override void Execute(StateManager sm)
         {
             //if (cameraTransform.value == null)
             //    return;

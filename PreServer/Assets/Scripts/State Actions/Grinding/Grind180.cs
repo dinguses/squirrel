@@ -10,8 +10,10 @@ namespace PreServer
     [CreateAssetMenu (menuName = "Actions/State Actions/Grind 180")]
     public class Grind180 : StateActions
     {
-        public override void Execute(StateManager states)
+        public override void Execute(StateManager sm)
         {
+            PlayerManager states = (PlayerManager)sm;
+
             var fart = states.mTransform.rotation.eulerAngles;
 
             var scrung = states.anim.GetFloat(states.hashes.rotate_test);

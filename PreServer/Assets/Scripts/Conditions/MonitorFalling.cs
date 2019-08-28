@@ -11,8 +11,10 @@ namespace PreServer
     [CreateAssetMenu(menuName = "Conditions/Monitor Falling")]
     public class MonitorFalling : Condition
     {
-        public override bool CheckCondition(StateManager state)
+        public override bool CheckCondition(StateManager sm)
         {
+            PlayerManager state = (PlayerManager)sm;
+
             bool result = false;
 
             // If player is not grounded AND is not jumping AND is currently in the Locomotion state, then they must be falling

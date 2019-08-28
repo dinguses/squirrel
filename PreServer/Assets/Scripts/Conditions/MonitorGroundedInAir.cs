@@ -11,8 +11,10 @@ namespace PreServer
     [CreateAssetMenu(menuName = "Conditions/Monitor Grounded In Air")]
     public class MonitorGroundedInAir : Condition
     {
-        public override bool CheckCondition(StateManager state)
+        public override bool CheckCondition(StateManager sm)
         {
+            PlayerManager state = (PlayerManager)sm;
+
             return !state.isColidingInAir;
         }
     }

@@ -15,8 +15,10 @@ namespace PreServer
         public float speed;
 
 
-        public override void Execute(StateManager states)
+        public override void Execute(StateManager sm)
         {
+            PlayerManager states = (PlayerManager)sm;
+
             // The front of the player
             Vector3 reusable = (states.mTransform.position + (states.mTransform.forward));
 

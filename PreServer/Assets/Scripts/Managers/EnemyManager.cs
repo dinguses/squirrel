@@ -1,30 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using UnityEditor;
 
 namespace PreServer
 {
-    public class StateManager : MonoBehaviour
+    public class EnemyManager : MonoBehaviour
     {
         public State currentState;
 
-        public virtual void FixedUpdateParent()
+        /*private void FixedUpdate()
         {
-
-        }
-
-        public virtual void UpdateParent()
-        {
-
-        }
-
-        private void FixedUpdate()
-        {
-            FixedUpdateParent();
-
             if (currentState != null)
             {
                 currentState.FixedTick(this);
@@ -33,12 +18,10 @@ namespace PreServer
 
         private void Update()
         {
-            UpdateParent();
-
             if (currentState != null)
             {
                 currentState.Tick(this);
             }
-        }
+        }*/
     }
 }

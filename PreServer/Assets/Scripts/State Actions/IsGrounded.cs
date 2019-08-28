@@ -14,8 +14,10 @@ namespace PreServer
         public float groundedDis = .8f;
         public float onAirDis = .85f;
         public LayerMask groundLayer;
-        public override void Execute(StateManager states)
+        public override void Execute(StateManager sm)
         {
+            PlayerManager states = (PlayerManager)sm;
+
             // Setup origin points for three different ground checking vector3s. One in middle of player, one in front, and one in back
             Vector3 middleOrigin = states.mTransform.position;
             Vector3 frontOrigin = states.mTransform.position;

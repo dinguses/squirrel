@@ -18,21 +18,24 @@ namespace PreServer
         public float movementSpeed;
         float timer = 0;
         float gravity = 0;
+        PlayerManager states;
 
-        public override void Execute(StateManager states)
+        public override void Execute(StateManager sm)
         {
 
         }
 
-        public override void OnEnter(StateManager states)
+        public override void OnEnter(StateManager sm)
         {
+            states = (PlayerManager)sm;
+
             timer = 0;
             gravity = downwardsGravity;
             //Debug.Log(Time.frameCount + " || Slide Player On State Enter");
         }
         Vector3 currentVelocity;
         Vector3 targetVelocity;
-        public override void OnUpdate(StateManager states)
+        public override void OnUpdate(StateManager sm)
         {
             //need to make a rotate on slide action
             currentVelocity = states.rigid.velocity;
@@ -75,7 +78,7 @@ namespace PreServer
             timer += states.delta;
         }
 
-        public override void OnExit(StateManager states)
+        public override void OnExit(StateManager sm)
         {
             timer = 0;
             gravity = downwardsGravity;

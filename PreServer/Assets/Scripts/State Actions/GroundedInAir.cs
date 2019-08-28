@@ -21,20 +21,23 @@ namespace PreServer
         public LayerMask groundLayer;
         Vector3 currentVelocity;
         Vector3 targetVelocity;
+        PlayerManager states;
 
-        public override void Execute(StateManager states)
+        public override void Execute(StateManager sm)
         {
 
         }
 
-        public override void OnEnter(StateManager states)
+        public override void OnEnter(StateManager sm)
         {
-            states.climbState = StateManager.ClimbState.NONE;
+            states = (PlayerManager)sm;
+
+            states.climbState = PlayerManager.ClimbState.NONE;
             if(states.isRun)
                 states.pauseSpeedHackTimer = true;
         }
 
-        public override void OnUpdate(StateManager states)
+        public override void OnUpdate(StateManager sm)
         {
             if (states.isColidingInAir)
             {
@@ -57,7 +60,7 @@ namespace PreServer
             }
         }
 
-        public override void OnExit(StateManager states)
+        public override void OnExit(StateManager sm)
         {
             if (!states.isRun)
                 states.speedHackRecover = 0.1f;

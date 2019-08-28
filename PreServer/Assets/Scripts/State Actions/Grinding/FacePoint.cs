@@ -10,10 +10,12 @@ namespace PreServer
     [CreateAssetMenu (menuName = "Actions/State Actions/Face Point")]
     public class FacePoint : StateActions
     {
-        public override void Execute(StateManager states)
+        public override void Execute(StateManager sm)
         {
+            PlayerManager states = (PlayerManager)sm;
+
             // The front of the squirrel
-             var reusable = (states.mTransform.position);
+            var reusable = (states.mTransform.position);
 
             // Rotate towards the facing point
             var _direction = (states.facingPoint - reusable).normalized;

@@ -10,8 +10,10 @@ namespace PreServer
     {
         public bool status;
 
-        public override void Execute(StateManager states)
+        public override void Execute(StateManager sm)
         {
+            PlayerManager states = (PlayerManager)sm;
+
             states.anim.SetBool(states.hashes.waitForAnimation, status);
         }
     }

@@ -6,13 +6,13 @@ namespace PreServer
 {
     public class GrindCollider : MonoBehaviour
     {
-        public StateManager sm;
+        public PlayerManager states;
 
         private void OnTriggerEnter(Collider other)
         {
             if (other.name == "GrindCollider")
             {
-                sm.NextPoint();
+                states.NextPoint();
             }
         }
     }

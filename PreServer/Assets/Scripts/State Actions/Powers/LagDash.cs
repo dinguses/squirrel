@@ -20,8 +20,12 @@ namespace PreServer
         RaycastHit hitInfo = new RaycastHit();
         public float dashSpeed = 40f;
         public float dashTime = 0.15f;
-        public override void OnEnter(StateManager states)
+        PlayerManager states;
+
+        public override void OnEnter(StateManager sm)
         {
+            states = (PlayerManager)sm;
+
             base.OnEnter(states);
 
             if (states.isGrounded)
@@ -76,15 +80,15 @@ namespace PreServer
             //}
         }
 
-        public override void Execute(StateManager states)
+        public override void Execute(StateManager sm)
         {
 
         }
         float timer = 0;
-        public override void OnUpdate(StateManager states)
+        public override void OnUpdate(StateManager sm)
         {
             base.OnUpdate(states);
-            if(timer > dashTime || states.climbState != StateManager.ClimbState.NONE)
+            if(timer > dashTime || states.climbState != PlayerManager.ClimbState.NONE)
             {
                 states.dashActive = false;
             }
@@ -94,12 +98,12 @@ namespace PreServer
             //Debug.DrawRay(targetPos, Vector3.up * ff, Color.yellow);
         }
 
-        void CheckRaycast(StateManager states)
+        void CheckRaycast(StateManager sm)
         {
             
         }
         
-        void Transfer(StateManager states)
+        void Transfer(StateManager sm)
         {
             delta = Time.deltaTime * 4;
 
@@ -138,7 +142,7 @@ namespace PreServer
             //Debug.Log(Time.frameCount + " || inPos = " + inPos + " inRot = " + inRot);
         }
 
-        public override void OnExit(StateManager states)
+        public override void OnExit(StateManager sm)
         {
             base.OnExit(states);
             states.rigid.useGravity = true;

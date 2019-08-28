@@ -10,8 +10,10 @@ namespace PreServer
     [CreateAssetMenu(menuName = "Actions/State Actions/Grind Movement")]
     public class GrindMovement : StateActions
     {
-        public override void Execute(StateManager states)
+        public override void Execute(StateManager sm)
         {
+            PlayerManager states = (PlayerManager)sm;
+
             states.rigid.drag = 0;
 
             states.rotateBool = true;

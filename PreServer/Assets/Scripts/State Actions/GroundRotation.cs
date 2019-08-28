@@ -15,8 +15,10 @@ namespace PreServer
         public TransformVariable cameraTransform;
         public float speed;
 
-        public override void Execute(StateManager states)
+        public override void Execute(StateManager sm)
         {
+            PlayerManager states = (PlayerManager)sm;
+
             if (cameraTransform.value == null)
                 return;
 

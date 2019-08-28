@@ -18,7 +18,8 @@ namespace PreServer
         public BoolVariable dash;
         public FloatVariable dashAxis;
 
-        public StateManagerVariable playerStates;
+        //public StateManagerVariable playerStates;
+        public PlayerManagerVariable playerStates;
         public ActionBatch inputUpdateBatch;
 
         public override void Execute()

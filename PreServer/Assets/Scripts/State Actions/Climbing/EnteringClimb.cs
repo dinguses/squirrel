@@ -22,8 +22,12 @@ namespace PreServer
         CameraManager camera;
         float cameraAngle = 0;
         float tempAngle = 0;
-        public override void OnEnter(StateManager states)
+        PlayerManager states;
+
+        public override void OnEnter(StateManager sm)
         {
+            states = (PlayerManager)sm;
+
             if (camera == null && cameraTransform != null)
             {
                 camera = cameraTransform.value.GetComponent<CameraManager>();
@@ -50,7 +54,7 @@ namespace PreServer
             }
         }
 
-        public override void OnFixed(StateManager states)
+        public override void OnFixed(StateManager sm)
         {
             base.OnFixed(states);
 
@@ -70,12 +74,12 @@ namespace PreServer
             }
         }
 
-        public override void Execute(StateManager states)
+        public override void Execute(StateManager sm)
         {
             
         }
 
-        public override void OnUpdate(StateManager states)
+        public override void OnUpdate(StateManager sm)
         {
             base.OnUpdate(states);
             delta = Time.deltaTime * 4;
@@ -104,7 +108,7 @@ namespace PreServer
 
             if(inPos && inRot && !moveCamera)
             {
-                states.climbState = StateManager.ClimbState.CLIMBING;
+                states.climbState = PlayerManager.ClimbState.CLIMBING;
             }
             //Debug.Log(Time.frameCount + " || inPos = " + inPos + " inRot = " + inRot);
         }
@@ -117,7 +121,7 @@ namespace PreServer
             return target + offset;
         }
 
-        public override void OnExit(StateManager states)
+        public override void OnExit(StateManager sm)
         {
             base.OnExit(states);
             states.rigid.velocity = Vector3.zero;

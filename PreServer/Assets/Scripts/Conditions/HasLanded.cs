@@ -10,8 +10,10 @@ namespace PreServer
     [CreateAssetMenu(menuName = "Conditions/Has Landed")]
     public class HasLanded : Condition
     {
-        public override bool CheckCondition(StateManager state)
+        public override bool CheckCondition(StateManager sm)
         {
+            PlayerManager state = (PlayerManager) sm;
+
             // get ammt of time since jump/leaving ground
             float timeDifference = Time.realtimeSinceStartup - state.timeSinceJump;
 

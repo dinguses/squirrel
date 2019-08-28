@@ -18,8 +18,10 @@ namespace PreServer
         float backAngle = 0;
         float middleAngle = 0;
         int count = 0;
-        public override bool CheckCondition(StateManager state)
+        public override bool CheckCondition(StateManager sm)
         {
+            PlayerManager state = (PlayerManager)sm;
+
             //count = 0;
             ////bool result = false;
             ////Vector3 frontOrigin = state.mTransform.position;

@@ -8,8 +8,10 @@ namespace PreServer
     {
         public string targetBool = "waitForAnimation";
 
-        public override bool CheckCondition(StateManager state)
+        public override bool CheckCondition(StateManager sm)
         {
+            PlayerManager state = (PlayerManager)sm;
+
             bool retVal = state.anim.GetBool(targetBool);
             return retVal;
         }

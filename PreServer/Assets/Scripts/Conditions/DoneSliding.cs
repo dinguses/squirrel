@@ -21,8 +21,10 @@ namespace PreServer
 
         bool result = false;
 
-        public override bool CheckCondition(StateManager state)
+        public override bool CheckCondition(StateManager sm)
         {
+            PlayerManager state = (PlayerManager)sm;
+
             //count = 0;
             ////bool result = false;
             ////Vector3 frontOrigin = state.mTransform.position;

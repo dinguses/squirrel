@@ -12,12 +12,14 @@ namespace PreServer
     {
         public StateActions onTrueAction;
 
-        public override bool CheckCondition(StateManager state)
+        public override bool CheckCondition(StateManager sm)
         {
+            PlayerManager state = (PlayerManager)sm;
+
             bool result = state.isJumping;
 
             // If player is jumping AND is grounded
-            if (state.isJumping && (state.isGrounded || state.climbState == StateManager.ClimbState.CLIMBING))
+            if (state.isJumping && (state.isGrounded || state.climbState == PlayerManager.ClimbState.CLIMBING))
             {
                 //TODO: should this go here?
 

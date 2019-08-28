@@ -4,7 +4,8 @@
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -20,5 +21,5 @@ MonoBehaviour:
   zoom: {fileID: 11400000, guid: 948bd0bba30a8ea45addb935e9e12453, type: 2}
   dash: {fileID: 11400000, guid: 39ba31729367c6b418bbbf7249d36b79, type: 2}
   dashAxis: {fileID: 11400000, guid: 56152929dcbed4344b6ae73bb22fe5be, type: 2}
-  playerStates: {fileID: 11400000, guid: bc4b3acd689f45a42a3c3c018826b50c, type: 2}
+  playerStates: {fileID: 11400000, guid: 1b0ef4d7c67778d4b9e2b2bbbaae3c82, type: 2}
   inputUpdateBatch: {fileID: 11400000, guid: 89ae2a91c99ad7e44b3489327bcab0a2, type: 2}

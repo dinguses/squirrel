@@ -6,9 +6,11 @@ namespace PreServer
     [CreateAssetMenu(menuName = "Conditions/Entered Climb")]
     public class EnteredClimb : Condition
     {
-        public override bool CheckCondition(StateManager state)
+        public override bool CheckCondition(StateManager sm)
         {
-            return state.climbState == StateManager.ClimbState.CLIMBING;
+            PlayerManager state = (PlayerManager)sm;
+
+            return state.climbState == PlayerManager.ClimbState.CLIMBING;
         }
     }
 }

@@ -10,8 +10,10 @@ namespace PreServer
     [CreateAssetMenu(menuName = "Actions/State Actions/Anim_UpdateIsGrounded")]
     public class Anim_UpdateIsGround : StateActions
     {
-        public override void Execute(StateManager states)
+        public override void Execute(StateManager sm)
         {
+            PlayerManager states = (PlayerManager)sm;
+
             states.anim.SetBool(states.hashes.isGrounded, states.isGrounded);
 
             float timeDifference = Time.realtimeSinceStartup - states.timeSinceJump;

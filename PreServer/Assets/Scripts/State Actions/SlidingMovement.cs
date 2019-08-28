@@ -16,8 +16,10 @@ namespace PreServer
         public float movementSpeed;
         public float movementTime = 10;
 
-        public override void Execute(StateManager states)
+        public override void Execute(StateManager sm)
         {
+            PlayerManager states = (PlayerManager)sm;
+
             //float frontY = 0;
             RaycastHit hit;
             RaycastHit hit2;

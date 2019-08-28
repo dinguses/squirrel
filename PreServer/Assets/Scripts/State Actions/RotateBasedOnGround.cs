@@ -18,8 +18,10 @@ namespace PreServer
         float middleAngle = 0;
         float backAngle = 0;
         float groundAngle = 0;
-        public override void Execute(StateManager states)
+        public override void Execute(StateManager sm)
         {
+            PlayerManager states = (PlayerManager)sm;
+
             //Too many raycasts
             //Vector3 origin = states.transform.position;
             //origin.y += 0.5f;

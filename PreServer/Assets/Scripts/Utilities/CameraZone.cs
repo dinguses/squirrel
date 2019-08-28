@@ -154,7 +154,7 @@ namespace PreServer
         Vector3 camPos;
         private void OnTriggerEnter(Collider other)
         {
-            if (other.transform.name == "Squirrel")
+            if (other.transform.tag == "Player")
             {
                 colCount++;
                 if (!triggered)
@@ -178,7 +178,7 @@ namespace PreServer
 
         private void OnTriggerExit(Collider other)
         {
-            if (other.transform.name == "Squirrel")
+            if (other.transform.tag == "Player")
             {
                 colCount--;
                 if (colCount == 0)

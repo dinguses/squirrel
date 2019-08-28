@@ -10,8 +10,10 @@ namespace PreServer
     [CreateAssetMenu(menuName = "Conditions/Monitor Grind Finished")]
     public class MonitorGrindFinished : Condition
     {
-        public override bool CheckCondition(StateManager state)
+        public override bool CheckCondition(StateManager sm)
         {
+            PlayerManager state = (PlayerManager)sm;
+
             bool result = false;
 
             // If player has left grind zone, they're no longer grinding

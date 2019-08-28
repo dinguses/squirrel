@@ -12,8 +12,10 @@ namespace PreServer
     {
         public float jumpSpeed;
 
-        public override void Execute(StateManager states)
+        public override void Execute(StateManager sm)
         {
+            PlayerManager states = (PlayerManager)sm;
+
             states.rigid.drag = 0;
             //TODO: May need to revert to old (commented out) system based on feedback
             Vector3 currentVelocity = /*states.transform.InverseTransformDirection(*/states.rigid.velocity/*)*/;
@@ -65,7 +67,7 @@ namespace PreServer
             //    currentVelocity.x = 0;
             //    currentVelocity.z = 0;
             //}
-            if (states.climbState == StateManager.ClimbState.CLIMBING)
+            if (states.climbState == PlayerManager.ClimbState.CLIMBING)
             {
                 currentVelocity += jumpSpeed * ((states.transform.up * 2f) + Vector3.up);
                 currentVelocity.y = jumpSpeed * Vector3.up.y;

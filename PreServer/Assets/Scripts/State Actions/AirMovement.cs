@@ -22,8 +22,10 @@ namespace PreServer
         public float extaGravFull = 3.5f;
         public float rotationConstraint = 70;
 
-        public override void Execute(StateManager states)
+        public override void Execute(StateManager sm)
         {
+            PlayerManager states = (PlayerManager)sm;
+
             Vector3 currentVelocity = states.rigid.velocity;
             Vector3 targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * movementSpeed * states.airSpeedMult;
 
