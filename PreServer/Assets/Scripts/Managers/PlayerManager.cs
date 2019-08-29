@@ -120,7 +120,7 @@ namespace PreServer
         public GameObject front;
         public GameObject middle;
         public GameObject back;
-        public static StateManager ptr;
+        public static PlayerManager ptr;
 
         public float groundedDis = .8f;
         public float onAirDis = .85f;
@@ -566,7 +566,7 @@ namespace PreServer
             else
                 isGrounded = false;
 
-            if (CheckGrounded(frontCollider) && (!front && !middle && !back) && !isGrounded && bottomHit)
+            if (CheckGrounded(frontCollider) && (!front && !middle && !back) && !isGrounded/* && bottomHit*/)
             {
                 float timeDifference = Time.realtimeSinceStartup - timeSinceJump;
 
@@ -615,13 +615,28 @@ namespace PreServer
                 //slideDirection = Vector3.zero;
             }
         }
-
-        //Checks to see if the collider is interacting with anything on the default layer '0'
-        //https://www.youtube.com/watch?v=vdOFUFMiPDU
+        bool didClimbHit = false;
+        float climbAngle = 0;
+        //Checks to see if the face is hitting a slanted wall
         bool CheckGrounded(CapsuleCollider col)
         {
             //return Physics.CheckBox(new Vector3(col.bounds.center.x, col.bounds.center.y - (col.bounds.size.y - (col.bounds.size.y * 0.5f)), col.bounds.center.z), new Vector3(col.bounds.size.x * 1.5f, col.bounds.size.y * 0.5f, col.bounds.size.z * 1.5f) * 0.5f, col.transform.rotation, groundLayer);
-            return Physics.CheckCapsule(col.bounds.center, new Vector3(col.bounds.center.x, col.bounds.min.y, col.bounds.center.z), col.radius * 0.9f, groundLayer, QueryTriggerInteraction.Ignore);
+            //return Physics.CheckCapsule(col.bounds.center, new Vector3(col.bounds.center.x, col.bounds.min.y, col.bounds.center.z), col.radius * 0.9f, groundLayer, QueryTriggerInteraction.Ignore);
+            Vector3 topRay = mTransform.position + (mTransform.forward * 0.9f) + (mTransform.up * 0.5f);
+            if(Physics.SphereCast(topRay, 0.3f, mTransform.forward, out climbHit, 1, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                didClimbHit = true;
+                climbAngle = Vector3.Angle(climbHit.normal, Vector3.up);
+                if (climbAngle >= 70 && climbAngle < 90)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                didClimbHit = false;
+            }
+            return false;
         }
         /// <summary>
         /// Updates animator's isGrounded
@@ -705,13 +720,12 @@ namespace PreServer
         Transform prevClimbT;
         void CheckForClimb()
         {
-            Vector3 topRay = mTransform.position + (mTransform.forward * 0.9f) + (mTransform.up * 0.5f);
+            //Vector3 topRay = mTransform.position + (mTransform.forward * 0.9f) + (mTransform.up * 0.5f);
 
             //Debug.DrawRay(topRay, mTransform.forward, Color.blue);
-            if (Physics.SphereCast(topRay, 0.3f, mTransform.forward, out climbHit, 1, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            if (didClimbHit/*Physics.SphereCast(topRay, 0.3f, mTransform.forward, out climbHit, 1, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore)*/)
             {
-                float angle = Vector3.Angle(climbHit.normal, Vector3.up);
-                if (angle >= 70 && angle <= 90 && climbHit.transform.tag == "Climb"/* && (prevClimbT != climbHit.transform || isGrounded)*/)
+                if (climbAngle >= 70 && climbAngle <= 90 && climbHit.transform.tag == "Climb"/* && (prevClimbT != climbHit.transform || isGrounded)*/)
                 {
                     climbState = ClimbState.ENTERING;
                     prevClimbT = climbHit.transform;
