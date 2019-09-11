@@ -27,12 +27,12 @@ namespace PreServer
             states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity, states.delta * 10.5f);
 
             // If there is a current grind center
-            if (!states.exitingGrind)
+            if (states.grindCenter != null)
             {
                 // Move Player towards center should they not be on it
                 Vector3 grindCenterClosestPoint = states.grindCenter.ClosestPoint(states.mTransform.position);
 
-                states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * 100);
+                states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * 10 * (states.groundSpeedMult * 2));
                 //states.rigid.MovePosition(grindCenterClosestPoint);
 
 

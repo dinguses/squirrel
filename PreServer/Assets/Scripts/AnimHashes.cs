@@ -22,13 +22,16 @@ namespace PreServer
         public int UpIdle = Animator.StringToHash("UpIdle");
         public int isGrinding = Animator.StringToHash("isGrinding");
         public int squ_grind_idle = Animator.StringToHash("squ_grind_idle");
+        public int squ_grind_walk = Animator.StringToHash("squ_grind_walk");
         public int squ_grind_run = Animator.StringToHash("squ_grind_run");
         public int squ_grind_180 = Animator.StringToHash("squ_grind_180");
+        public int squ_ground_180 = Animator.StringToHash("squ_ground_180");
         public int isClimbing = Animator.StringToHash("isClimbing");
         public int squ_dash = Animator.StringToHash("squ_dash");
         public int squ_dash_air = Animator.StringToHash("squ_dash_air");
         public int climbCorner = Animator.StringToHash("climbCorner");
         public int squ_climb_corner = Animator.StringToHash("squ_climb_corner");
+        public int isDashing = Animator.StringToHash("isDashing");
 
         public int rotate_test = Animator.StringToHash("rotateFloat");
 

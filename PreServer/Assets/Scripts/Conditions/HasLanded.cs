@@ -43,7 +43,6 @@ namespace PreServer
                     // If not, quick land
                     else
                     {
-                        Debug.Log("DOING A Quick LAND");
                         state.anim.SetBool(state.hashes.QuickLand, true);
                     }
 

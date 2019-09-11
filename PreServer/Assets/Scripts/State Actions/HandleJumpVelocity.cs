@@ -24,7 +24,15 @@ namespace PreServer
             states.timeSinceJump = Time.realtimeSinceStartup;
             states.isGrounded = false;
 
-            states.anim.CrossFade(states.hashes.jump, 0.2f);
+            //Debug.Log("jumpin");
+            //Debug.Log(states.lagDashCooldown);
+            //Debug.Log(states.dashActive);
+            //Debug.Log(states.CanDash());
+
+            if (!states.dashActive)
+            {
+                states.anim.CrossFade(states.hashes.jump, 0.01f);
+            }
 
             if (currentVelocity.y < -.3f)
             {

@@ -99,7 +99,7 @@ namespace PreServer
             float dis = groundedDis;
             RaycastHit hit;
 
-            Debug.DrawRay(origin, dir * dis, Color.blue);
+            //Debug.DrawRay(origin, dir * dis, Color.blue);
 
             // If player is directly above a slope
             if (Physics.Raycast(origin, dir, out hit, dis, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
@@ -139,7 +139,13 @@ namespace PreServer
                  else
                      test.z -= -.2f;*/
                 test.y = test.y + .1f;
-                states.rigid.position = Vector3.Lerp(states.rigid.position, test + (states.mTransform.forward / 8), states.delta * 10);
+
+                //TODO
+                //I turned this off
+                //states.rigid.position = Vector3.Lerp(states.rigid.position, test + (states.mTransform.forward / 8), states.delta * 10);
+
+
+
                 //states.rigid.velocity = new Vector3(states.rigid.velocity.x, 0, states.rigid.velocity.z);
                 //targetVelocity.y += 1f;
                 //states.rigid.AddRelativeForce(0, 10f, 0);

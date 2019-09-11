@@ -14,6 +14,8 @@ namespace PreServer
         {
             PlayerManager states = (PlayerManager)sm;
 
+            //if (states.inGrindZone)
+
             var fart = states.mTransform.rotation.eulerAngles;
 
             var scrung = states.anim.GetFloat(states.hashes.rotate_test);
@@ -23,7 +25,15 @@ namespace PreServer
 
             states.mTransform.rotation = Quaternion.Euler(fart.x, fart.y + scrung, fart.z);
 
+            //Debug.Log("Grind 180: " + states.mTransform.rotation.eulerAngles.y);
+            var bung = states.mTransform.forward;
+            bung.Normalize();
+            //Debug.Log(bung);
+
             states.rotateHOLD = scrungHOLD;
+
+            //states.movementVariables.horizontal = 0;
+            //states.movementVariables.vertical = 0;
 
             //// If the angle between the player and the new forward point is less than 105 degrees
             //if (states.angleTest < 105/* && states.angleTest < 150*/)

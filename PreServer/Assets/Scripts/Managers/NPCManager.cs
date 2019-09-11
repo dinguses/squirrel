@@ -65,6 +65,9 @@ namespace PreServer
             GameObject spawner = GameObject.Find("NPC_Spawner");
             spawnerManager = spawner.GetComponent<SpawnerManager>();
 
+            var tungus = npcTransform.position;
+            //npcTransform.position = new Vector3(tungus.x, tungus.y - .05f, tungus.z);
+
             userName.text = un;
 
             steps = action.steps;

@@ -3,8 +3,8 @@ using System.Collections;
 
 namespace PreServer
 {
-    [CreateAssetMenu(menuName = "Conditions/Wait for Animation to End")]
-    public class WaitForAnimationToEnd : Condition
+    [CreateAssetMenu(menuName = "Conditions/Wait for Animation to End Grounded")]
+    public class WaitForAnimationToEndGrounded : Condition
     {
         public string targetBool = "waitForAnimation";
 
@@ -12,7 +12,8 @@ namespace PreServer
         {
             PlayerManager state = (PlayerManager)sm;
 
-            bool retVal = (!state.anim.GetBool(targetBool) && state.inGrindZone);
+            //TODO: Fix this, this won't work long-term
+            bool retVal = (!state.anim.GetBool(targetBool) && !state.inGrindZone);
             return retVal;
         }
     }

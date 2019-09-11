@@ -160,22 +160,28 @@ namespace PreServer
                 // No gravity on grinds
                 state.rigid.useGravity = false;
 
+                state.anim.SetBool(state.hashes.isGrinding, true);
+
+                float moveAmount = state.movementVariables.moveAmount;
+                if (moveAmount > 0.1f && moveAmount < 0.3f)
+                {
+                    state.anim.CrossFade(state.hashes.squ_grind_walk, 0.01f);
+                }
+                else if (moveAmount > 0.3f)
+                {
+                    state.anim.CrossFade(state.hashes.squ_grind_run, 0.01f);
+                }
+                else
+                {
+                    state.anim.CrossFade(state.hashes.squ_grind_idle, 0.01f);
+                }
+
+                
                 // Stop the player's previous movement
                 state.movementVariables.moveAmount = 0;
                 state.rigid.velocity = new Vector3(0, 0, 0);
 
 
-                state.anim.SetBool(state.hashes.isGrinding, true);
-
-                float moveAmount = state.movementVariables.moveAmount;
-                if (moveAmount > 0.1f)
-                {
-                    state.anim.CrossFade(state.hashes.squ_grind_run, 0.2f);
-                }
-                else
-                {
-                    state.anim.CrossFade(state.hashes.squ_grind_idle, 0.2f);
-                }
 
                 //GOTO
                 //state.frontCollider.enabled = false;

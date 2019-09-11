@@ -39,8 +39,8 @@ namespace PreServer
             // If player is on a sloped surface, must account for the normal
             dir.z = dir.z - states.groundNormal.z;
 
-            Debug.DrawRay(origin, dir, Color.red);
-            Debug.DrawRay(origin2, dir, Color.cyan);
+            //Debug.DrawRay(origin, dir, Color.red);
+            //Debug.DrawRay(origin2, dir, Color.cyan);
 
             // Raycast from first origin point
             if (Physics.Raycast(origin, dir, out hit, 1, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
@@ -175,8 +175,8 @@ namespace PreServer
                     test.z += .2f;
                 else
                     test.z -= -.2f;*/
-                test.y = test.y + .1f;
-                states.rigid.position = Vector3.Lerp(states.rigid.position, test + (states.mTransform.forward / 8), states.delta * 10);
+                test.y = test.y + .25f;
+                states.rigid.position = Vector3.Lerp(states.rigid.position, test + (states.mTransform.forward / 4), states.delta * 10);
                 //states.rigid.velocity = new Vector3(states.rigid.velocity.x, 0, states.rigid.velocity.z);
                 //targetVelocity.y += 1f;
                 //states.rigid.AddRelativeForce(0, 10f, 0);

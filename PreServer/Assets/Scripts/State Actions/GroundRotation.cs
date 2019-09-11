@@ -30,6 +30,7 @@ namespace PreServer
 
             Vector3 targetDir = test.forward * v;
             targetDir += test.right * h;
+
             targetDir.Normalize();
             targetDir.y = 0;
 
@@ -42,6 +43,21 @@ namespace PreServer
 
             Quaternion tr = Quaternion.LookRotation(targetDir, states.groundNormal);
             Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * states.movementVariables.moveAmount * speed);
+
+            // Rotate 180?
+            if (Vector3.Angle(targetDir, states.mTransform.forward) > 150 && Vector3.Angle(targetDir, states.mTransform.forward) < 210)
+            {
+                //Debug.Log("180!");
+
+                states.anim.SetBool(states.hashes.waitForAnimation, true);
+                states.anim.CrossFade(states.hashes.squ_ground_180, 0.01f);
+                states.rigid.velocity = new Vector3(0, 0, 0);
+
+                //states.storedTargetDir = targetDir;
+            }
+
+
+            //Debug.Log("Ground Rotation target DIR: " + targetDir);
 
             states.mTransform.rotation = targetRotation;
         }

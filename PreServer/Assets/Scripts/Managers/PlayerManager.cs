@@ -114,6 +114,9 @@ namespace PreServer
         public bool exitingGrind;
         public BoxCollider currentHitBox;
         public BoxCollider newHitBox;
+        public SkinnedMeshRenderer testMESH;
+        bool meshActive = true;
+        public Vector3 storedTargetDir;
 
         public Camera mainCam;
         public Camera mainCam2;
@@ -144,6 +147,9 @@ namespace PreServer
         public float airSpeedMult { get { return _airSpeedMult; } }
         public float climbSpeedMult { get { return _climbSpeedMult; } }
         public float slideSpeedMult { get { return _slideSpeedMult; } }
+
+        public object DebugExtension { get; private set; }
+
         [HideInInspector]
         public bool jumpFromClimb;
         [HideInInspector]
@@ -493,9 +499,9 @@ namespace PreServer
             RaycastHit backHit = new RaycastHit();
 
             // Draw the rays
-            Debug.DrawRay(frontOrigin, dir * dis, Color.green);
-            Debug.DrawRay(middleOrigin, dir * dis, Color.yellow);
-            Debug.DrawRay(backOrigin, dir * dis, Color.white);
+            //Debug.DrawRay(frontOrigin, dir * dis, Color.green);
+            //Debug.DrawRay(middleOrigin, dir * dis, Color.yellow);
+            //Debug.DrawRay(backOrigin, dir * dis, Color.white);
 
             // If player is already grounded, check if they should remain
             //if (states.isGrounded)
@@ -620,8 +626,19 @@ namespace PreServer
         //https://www.youtube.com/watch?v=vdOFUFMiPDU
         bool CheckGrounded(CapsuleCollider col)
         {
+            //Debug.DrawLine(mTransform.position, mTransform.position + mTransform.forward, Color.yellow);
+
+            /*DebugExtension.DrawCapsule(
+                 startCapsulePos,
+                 finalCapsulePos,
+                 Color.blue,
+                 col.radius
+            );*/
+
             //return Physics.CheckBox(new Vector3(col.bounds.center.x, col.bounds.center.y - (col.bounds.size.y - (col.bounds.size.y * 0.5f)), col.bounds.center.z), new Vector3(col.bounds.size.x * 1.5f, col.bounds.size.y * 0.5f, col.bounds.size.z * 1.5f) * 0.5f, col.transform.rotation, groundLayer);
             return Physics.CheckCapsule(col.bounds.center, new Vector3(col.bounds.center.x, col.bounds.min.y, col.bounds.center.z), col.radius * 0.9f, groundLayer, QueryTriggerInteraction.Ignore);
+            //return Physics.CheckCapsule(startCapsulePos, finalCapsulePos, col.radius, groundLayer, QueryTriggerInteraction.Ignore);
+            //return Physics.CheckCapsule(mTransform.position + (mTransform.forward / 2), mTransform.position + (mTransform.forward * 2), col.radius, groundLayer, QueryTriggerInteraction.Ignore);
         }
         /// <summary>
         /// Updates animator's isGrounded
@@ -834,9 +851,23 @@ namespace PreServer
             anim.SetBool(hashes.waitForAnimation, false);
         }
 
+        public void Done180Ground()
+        {
+            anim.SetBool(hashes.waitForAnimation, false);
+            //Quaternion tr = Quaternion.LookRotation(storedTargetDir, groundNormal);
+            //Quaternion targetRotation = Quaternion.Slerp(mTransform.rotation, tr, delta * movementVariables.moveAmount * 10);
+            //mTransform.rotation = tr;
+        }
+
         public void Start180()
         {
             rotateHOLD = 0;
+        }
+
+        public void ToggleMeshVisable()
+        {
+            testMESH.gameObject.SetActive(!meshActive);
+            meshActive = !meshActive;
         }
 
         public void NextPoint()

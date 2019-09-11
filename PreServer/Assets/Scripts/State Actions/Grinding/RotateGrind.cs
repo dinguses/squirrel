@@ -58,8 +58,6 @@ namespace PreServer
                 //Debug.Log("GOTTA 180");
                 states.rotateBool = false;
 
-                states.testINT = 0;
-
                 var holdFacing = states.facingPoint;
                 var holdFacingPair = states.facingPointPair;
                 states.facingPoint = states.behindPoint;
