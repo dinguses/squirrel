@@ -83,6 +83,7 @@ namespace PreServer
             base.OnExit(states);
             states.rigid.velocity = Vector3.zero;
             states.rigid.useGravity = true;
+            states.anim.SetBool(states.hashes.isClimbing, false);
         }
     }
 }

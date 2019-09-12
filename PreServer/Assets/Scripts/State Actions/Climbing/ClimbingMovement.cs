@@ -271,6 +271,7 @@ namespace PreServer
                     //states.mTransform.rotation = prevRotation;
                     states.climbState = PlayerManager.ClimbState.NONE;
                     states.isJumping = true;
+                    states.anim.SetBool(states.hashes.isClimbing, false);
                     return;
                 }
                 else if (under.transform.tag != "Climb")
@@ -286,11 +287,13 @@ namespace PreServer
                 //states.mTransform.rotation = prevRotation;
                 states.climbState = PlayerManager.ClimbState.NONE;
                 states.isJumping = true;
+                states.anim.SetBool(states.hashes.isClimbing, false);
             }
             if (!underHit && !frontHit)
             {
                 states.climbState = PlayerManager.ClimbState.NONE;
                 states.isJumping = true;
+                states.anim.SetBool(states.hashes.isClimbing, false);
             }
         }
         Quaternion prevRotation;
