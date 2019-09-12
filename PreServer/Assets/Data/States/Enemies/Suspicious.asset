@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e09f12a9b8fb5e44eb81fa499afbecc4, type: 3}
-  m_Name: Detected
+  m_Name: Suspicious
   m_EditorClassIdentifier: 
   onFixed: []
   onUpdate: []
   onEnter: []
   onExit: []
   actions:
-  - {fileID: 11400000, guid: 0964f62952fcab44d84da5535206fdae, type: 2}
+  - {fileID: 11400000, guid: 41dc96c9c38353c4d86af9de0bc1b549, type: 2}
   stateName: 
-  idCount: 2
+  idCount: 1
   transitions:
-  - id: 1
-    condition: {fileID: 11400000, guid: f979d74f24566014b9b901984f498e9f, type: 2}
+  - id: 0
+    condition: {fileID: 11400000, guid: 88f98790da43b114fa1917c84d2b5961, type: 2}
     targetState: {fileID: 11400000, guid: d78458561297a7e4080eada4f6c0b2fc, type: 2}
     disable: 0

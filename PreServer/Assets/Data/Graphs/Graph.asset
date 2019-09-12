@@ -282,8 +282,8 @@ MonoBehaviour:
     drawNode: {fileID: 11400000, guid: 3de6cb72c5d54a842957b3d8754294e2, type: 2}
     windowRect:
       serializedVersion: 2
-      x: 54
-      y: 532
+      x: 45
+      y: 471
       width: 200
       height: 340
     windowTitle: State
@@ -308,8 +308,8 @@ MonoBehaviour:
     drawNode: {fileID: 11400000, guid: 02d1192eec6276044a75147866515bb8, type: 2}
     windowRect:
       serializedVersion: 2
-      x: 512
-      y: 647
+      x: 569
+      y: 598
       width: 200
       height: 100
     windowTitle: Condition
@@ -496,8 +496,8 @@ MonoBehaviour:
     drawNode: {fileID: 11400000, guid: 3de6cb72c5d54a842957b3d8754294e2, type: 2}
     windowRect:
       serializedVersion: 2
-      x: 446
-      y: 784
+      x: 447
+      y: 794
       width: 200
       height: 480
     windowTitle: State
@@ -897,8 +897,8 @@ MonoBehaviour:
     drawNode: {fileID: 11400000, guid: 02d1192eec6276044a75147866515bb8, type: 2}
     windowRect:
       serializedVersion: 2
-      x: 280
-      y: 625
+      x: 316
+      y: 668
       width: 200
       height: 100
     windowTitle: Condition

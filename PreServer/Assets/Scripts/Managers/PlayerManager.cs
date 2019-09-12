@@ -334,7 +334,7 @@ namespace PreServer
             {
                 //if(isGrounded || climbState == ClimbState.CLIMBING)
                 //Deplete the meter a little, starting a run will deplete a more of the bar to avoid spamming the run button
-                speedHackAmount -= prevRunState ? delta : .075f;
+                //speedHackAmount -= prevRunState ? delta : .075f;
                 //if the meter is depleted, then run ran out and you can't activate it until it refills
                 if (speedHackAmount <= 0)
                 {
