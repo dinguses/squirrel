@@ -163,6 +163,7 @@ namespace PreServer
             states.speedHackRecover = 0.1f;
 
             states.anim.SetBool(states.hashes.isDashing, false);
+            states.testMESH.gameObject.SetActive(true);
 
             //states.anim.CrossFade(states.hashes.sq, 0.2f);
         }

@@ -28,7 +28,7 @@ namespace PreServer
         public int squ_ground_180 = Animator.StringToHash("squ_ground_180");
         public int isClimbing = Animator.StringToHash("isClimbing");
         public int squ_dash = Animator.StringToHash("squ_dash");
-        public int squ_dash_air = Animator.StringToHash("squ_dash_air");
+        public int squ_dash_air = Animator.StringToHash("squ_dash_air2");
         public int climbCorner = Animator.StringToHash("climbCorner");
         public int squ_climb_corner = Animator.StringToHash("squ_climb_corner");
         public int isDashing = Animator.StringToHash("isDashing");

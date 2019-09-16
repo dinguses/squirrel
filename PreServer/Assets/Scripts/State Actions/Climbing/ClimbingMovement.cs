@@ -54,6 +54,8 @@ namespace PreServer
             moveCamera = false;
             if (camera != null)
                 camera.ignoreInput = false;
+
+            states.testMESH.gameObject.SetActive(true);
         }
 
         public override void Execute(StateManager sm)
@@ -276,6 +278,7 @@ namespace PreServer
                 }
                 else if (under.transform.tag != "Climb")
                 {
+
                     states.rigid.velocity = Vector3.zero;
                     states.mTransform.rotation = prevRotation;
                     return;

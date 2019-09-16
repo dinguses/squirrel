@@ -31,6 +31,8 @@ namespace PreServer
             Vector3 targetDir = test.forward * v;
             targetDir += test.right * h;
 
+            var targetDir2 = targetDir;
+
             targetDir.Normalize();
             targetDir.y = 0;
 
@@ -39,15 +41,18 @@ namespace PreServer
 
             states.movementVariables.moveDirection = targetDir;
 
-            targetDir.y = states.mTransform.forward.y;
+            targetDir2.y = -states.mTransform.forward.y;
+
+           // Debug.Log("targetDir2 - " + targetDir2);
+
 
             Quaternion tr = Quaternion.LookRotation(targetDir, states.groundNormal);
             Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * states.movementVariables.moveAmount * speed);
 
             // Rotate 180?
-            if (Vector3.Angle(targetDir, states.mTransform.forward) > 150 && Vector3.Angle(targetDir, states.mTransform.forward) < 210)
+            if (Vector3.Angle(targetDir2, states.mTransform.forward) > 150 && Vector3.Angle(targetDir2, states.mTransform.forward) < 210)
             {
-                //Debug.Log("180!");
+                //Debug.Log(Vector3.Angle(targetDir2, states.mTransform.forward));
 
                 states.anim.SetBool(states.hashes.waitForAnimation, true);
                 states.anim.CrossFade(states.hashes.squ_ground_180, 0.01f);

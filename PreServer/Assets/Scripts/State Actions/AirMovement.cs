@@ -106,7 +106,7 @@ namespace PreServer
             {
                 // Get player's angle
                 float angle = Vector3.Angle(hit.normal, Vector3.up);
-                Debug.Log(angle);
+                //Debug.Log(angle);
                 //Debug.DrawRay(hit.point, hit.normal, Color.red, 3.0f);
                 // when right above slope, pre-rotate towards that slope's angle
                 if (angle <= 35)

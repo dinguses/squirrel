@@ -401,7 +401,7 @@ namespace PreServer
                 topFloatLong = .9f;
             }
 
-            var bottomRay = mTransform.position + (mTransform.forward * 1.25f) + (Vector3.up * bottomFloat);
+            var bottomRay = mTransform.position + (mTransform.forward * 1.25f) /*+ (Vector3.up * bottomFloat)*/;
             var topRay = mTransform.position + (mTransform.forward * 1.25f) + (Vector3.up * topFloat);
             var topRayLong = mTransform.position + (mTransform.forward * 2.5f) + (Vector3.up * topFloatLong);
 
@@ -854,6 +854,71 @@ namespace PreServer
             if (other.tag == "joint")
             {
                 inJoint = false;
+            }
+        }
+
+        public void DashAnimCheckWall()
+        {
+            /*var bottomRay = mTransform.position + (mTransform.forward * 1.25f);
+
+            RaycastHit hitBottom;
+
+            if (Physics.Raycast(bottomRay, mTransform.forward, out hitBottom, 1, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                Debug.Log("setting dashactive to false!");
+                dashActive = false;
+            }*/
+
+            if (bottomHit && dashActive)
+            {
+                testMESH.gameObject.SetActive(true);
+                dashActive = false;
+            }
+        }
+
+        public void DashAnimNotActive()
+        {
+            testMESH.gameObject.SetActive(false);
+        }
+
+        public void DashAnimActive()
+        {
+            testMESH.gameObject.SetActive(true);
+        }
+
+        public void DashAnimMegaForward()
+        {
+            /*if (!bottomHit)
+            {
+                mTransform.position += (mTransform.forward / 2);
+
+            }*/
+        }
+
+        public void DashAnimMegaBackward()
+        {
+            if (!bottomHit)
+            {
+                mTransform.position += mTransform.forward;
+
+            }
+        }
+
+        public void DashAnimForward()
+        {
+            if (!bottomHit)
+            {
+                mTransform.position -= (mTransform.forward / 2);
+
+            }
+        }
+
+        public void DashAnimBackward()
+        {
+            if (!bottomHit)
+            {
+                mTransform.position -= (mTransform.forward / 2);
+
             }
         }
 

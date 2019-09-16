@@ -14,6 +14,8 @@ namespace PreServer
         {
             PlayerManager states = (PlayerManager)sm;
 
+            //Debug.Log(states.groundNormal);
+
             //if (states.inGrindZone)
 
             var fart = states.mTransform.rotation.eulerAngles;
@@ -24,6 +26,8 @@ namespace PreServer
             scrung = scrung - states.rotateHOLD;
 
             states.mTransform.rotation = Quaternion.Euler(fart.x, fart.y + scrung, fart.z);
+
+            //Quaternion tr = 
 
             //Debug.Log("Grind 180: " + states.mTransform.rotation.eulerAngles.y);
             var bung = states.mTransform.forward;
