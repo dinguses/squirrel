@@ -197,7 +197,7 @@ namespace PreServer
 
             // Setup origin points for three different ground checking vector3s. One in middle of player, one in front, and one in back
             Vector3 frontOrigin = states.transform.position;
-            frontOrigin += states.transform.forward + states.transform.forward / 2;
+            frontOrigin += states.transform.forward + states.transform.forward / 2 + (states.transform.up * 0.1f);
             //backOrigin += states.mTransform.forward / 2;
 
             // Origins should be coming from inside of player

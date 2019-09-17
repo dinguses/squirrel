@@ -13,9 +13,10 @@ namespace PreServer
         public float mouseSens = 10;
         public float rotationSmoothTime = .12f;
         public Vector2 pitchMinMax = new Vector2(-35, 35);
-
         public float camFollowSpeed = 9;
-
+        public float camZoomSpeed = 4;
+        public Vector3 camOffset = new Vector3(0, 4, -15);
+        public Transform camTransform;
         Vector3 currentRotation;
         Vector3 rotationSmoothVelocity;
         float yaw;
@@ -104,6 +105,11 @@ namespace PreServer
             currentRotation = v;
         }
 
+        private void Start()
+        {
+            camTransform = Camera.main.transform;
+        }
+
         void FixedUpdate()
         {
             if (!ignoreInput)
@@ -130,6 +136,22 @@ namespace PreServer
 
                 Vector3 targetPosition = Vector3.Lerp(cam.value.transform.position, player.position, Time.deltaTime * camFollowSpeed);
                 cam.value.transform.position = targetPosition;
+
+                //RaycastHit camHit;
+                //Vector3 dir = (camTransform.position - transform.position).normalized;
+                //float distance = Vector3.Distance(transform.position, transform.position + camOffset); 
+                //Debug.DrawRay(transform.position, dir * distance, Color.green);
+                //if(Physics.Raycast(transform.position, dir, out camHit, distance, 1, QueryTriggerInteraction.Ignore))
+                //{
+                //    targetPosition =  camTransform.InverseTransformPoint(camHit.point - (dir * 0.5f));
+                //    Debug.DrawRay(targetPosition + transform.position, Vector3.up * 10f, Color.red, 3f);
+                //    //Debug.Log(targetPosition);
+                //}
+                //else
+                //{
+                targetPosition = Vector3.Lerp(camTransform.localPosition, camOffset, Time.deltaTime * camZoomSpeed);
+                //}
+                camTransform.localPosition = targetPosition;
             }
             //Debug.Log("CameraManager currentRotation: " + currentRotation);
         }

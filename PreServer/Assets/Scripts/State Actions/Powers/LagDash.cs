@@ -164,7 +164,8 @@ namespace PreServer
 
             states.anim.SetBool(states.hashes.isDashing, false);
             states.testMESH.gameObject.SetActive(true);
-
+            if (states.isGrounded)
+                states.pauseSpeedHackTimer = false;
             //states.anim.CrossFade(states.hashes.sq, 0.2f);
         }
     }

@@ -99,8 +99,10 @@ namespace PreServer
                 float lerpAmount = (distFromStart - (currentPoint == 0 ? 0 : distances[currentPoint - 1])) / (distances[currentPoint] - (currentPoint == 0 ? 0 : distances[currentPoint - 1]));
                 Vector3 targetPosition = sections[currentPoint].GetPoint(lerpAmount); //Vector3.Lerp(points[currentPoint].position, points[currentPoint + 1].position, lerpAmount);
                 Quaternion targetRotation = Quaternion.Lerp(sections[currentPoint].GetStartPoint().rotation, sections[currentPoint].GetEndPoint().rotation, lerpAmount);//Quaternion.Lerp(points[currentPoint].rotation, points[currentPoint + 1].rotation, lerpAmount);
-                cameraMan.transform.position = Vector3.Lerp(cameraMan.transform.position, targetPosition, 1f);
+                cameraMan.transform.position = Vector3.Lerp(cameraMan.transform.position, targetPosition, Time.deltaTime * cameraMan.camFollowSpeed);
                 cameraMan.transform.rotation = Quaternion.Lerp(cameraMan.transform.rotation, targetRotation, cameraMan.rotationSmoothTime);
+                Camera.main.transform.localPosition = Vector3.Lerp(Camera.main.transform.localPosition, Vector3.zero, Time.deltaTime * cameraMan.camZoomSpeed);
+
                 cameraMan.AddToPitch(targetRotation.eulerAngles.x - cameraMan.GetPitch(), true);
                 cameraMan.AddToYaw(targetRotation.eulerAngles.y - cameraMan.GetYaw(), true);
                 cameraMan.SetCurrentRotation(targetRotation.eulerAngles);
@@ -151,7 +153,7 @@ namespace PreServer
             //    triggered = false;
             //}
         }
-        Vector3 camPos;
+
         private void OnTriggerEnter(Collider other)
         {
             if (other.transform.tag == "Player")
@@ -170,8 +172,6 @@ namespace PreServer
                     cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
                     moveCamera = true;
                     triggered = true;
-                    camPos = Camera.main.transform.localPosition;
-                    Camera.main.transform.localPosition = Vector3.zero;
                 }
             }
         }
@@ -191,7 +191,6 @@ namespace PreServer
                     }
                     moveCamera = false;
                     triggered = false;
-                    Camera.main.transform.localPosition = camPos;
                 }
             }
         }
