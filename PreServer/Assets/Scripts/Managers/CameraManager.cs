@@ -19,6 +19,8 @@ namespace PreServer
         public Transform camTransform;
         Vector3 currentRotation;
         Vector3 rotationSmoothVelocity;
+        public Vector3 camRel;
+        public bool debugPauseCamLerp;
         float yaw;
         float pitch;
         public bool ignoreInput
@@ -108,8 +110,9 @@ namespace PreServer
         private void Start()
         {
             camTransform = Camera.main.transform;
+            temp = camTransform.position;
         }
-
+        Vector3 temp;
         void FixedUpdate()
         {
             if (!ignoreInput)
@@ -137,21 +140,35 @@ namespace PreServer
                 Vector3 targetPosition = Vector3.Lerp(cam.value.transform.position, player.position, Time.deltaTime * camFollowSpeed);
                 cam.value.transform.position = targetPosition;
 
-                //RaycastHit camHit;
-                //Vector3 dir = (camTransform.position - transform.position).normalized;
-                //float distance = Vector3.Distance(transform.position, transform.position + camOffset); 
-                //Debug.DrawRay(transform.position, dir * distance, Color.green);
-                //if(Physics.Raycast(transform.position, dir, out camHit, distance, 1, QueryTriggerInteraction.Ignore))
-                //{
-                //    targetPosition =  camTransform.InverseTransformPoint(camHit.point - (dir * 0.5f));
-                //    Debug.DrawRay(targetPosition + transform.position, Vector3.up * 10f, Color.red, 3f);
-                //    //Debug.Log(targetPosition);
-                //}
-                //else
-                //{
-                targetPosition = Vector3.Lerp(camTransform.localPosition, camOffset, Time.deltaTime * camZoomSpeed);
-                //}
-                camTransform.localPosition = targetPosition;
+                //Check if the camera is colliding with anything
+                if (Physics.CheckSphere(camTransform.position, 0.5f, 1, QueryTriggerInteraction.Ignore))
+                {
+                    RaycastHit camHit;
+                    Vector3 dir = (camTransform.position - (transform.position + Vector3.up * 0.25f)).normalized;
+                    float distance = Vector3.Distance(transform.position + Vector3.up * 0.25f, transform.position + camOffset);
+                    //Debug.DrawRay(transform.position + Vector3.up * 0.25f, dir * distance, Color.green);
+                    //Debug.DrawLine(transform.position + (Vector3.up * 0.25f), temp, Color.green);
+
+                    //if it is then do a raycast from the player to the max camera position
+                    //if the raycast hits, then move the camera up to the point of contact and move it slightly forward based on distance from the player
+                    if (Physics.Raycast(transform.position + (Vector3.up * 0.25f), dir, out camHit, distance, 1, QueryTriggerInteraction.Ignore))
+                        targetPosition = transform.InverseTransformPoint(camHit.point - (Vector3.Distance(camHit.point, player.position) > 1f ? (dir * 0.3f) : Vector3.zero));
+                    else
+                        targetPosition = Vector3.Lerp(camTransform.localPosition, camOffset, Time.deltaTime * camZoomSpeed);
+                    
+                    //temp = transform.position + targetPosition - dir;
+                    //Debug.DrawRay(camHit.point, camHit.normal * 3f, Color.red);
+                    //Debug.Log(targetPosition);
+                }
+                else
+                {
+                    //temp = Vector3.Lerp(temp, camTransform.position, Time.deltaTime * camZoomSpeed);
+                    targetPosition = Vector3.Lerp(camTransform.localPosition, camOffset, Time.deltaTime * camZoomSpeed);
+                    //Debug.Log(targetPosition);
+                }
+                //Debug.DrawRay(temp, Vector3.up * 3f, Color.yellow);
+                if(!debugPauseCamLerp)
+                    camTransform.localPosition = targetPosition;
             }
             //Debug.Log("CameraManager currentRotation: " + currentRotation);
         }
