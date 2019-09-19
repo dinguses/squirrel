@@ -34,14 +34,17 @@ namespace PreServer
 
             //Debug.Log(states.anim.GetCurrentAnimatorClipInfo(2)[0].clip.name);
             Debug.Log(Time.realtimeSinceStartup - states.timeSinceJump);
+            var time = Time.realtimeSinceStartup - states.timeSinceJump;
 
-            if (Time.realtimeSinceStartup - states.timeSinceJump < 0.01f)
+            if (time < 0.01f || time > .6f)
             {
                 Debug.Log("doing a grounded dash");
                 states.anim.CrossFade(states.hashes.squ_dash, 0.01f);
             }
             else
+            {
                 states.anim.CrossFade(states.hashes.squ_dash_air, 0.01f);
+            }
 
             states.dashInAirCounter++;
             states.rigid.useGravity = false;

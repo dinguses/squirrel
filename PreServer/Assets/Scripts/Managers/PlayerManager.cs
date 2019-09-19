@@ -324,6 +324,12 @@ namespace PreServer
             dashCooldown.fillAmount = 1 - lagDashCooldown;
             speedHack.fillAmount = speedHackAmount / 2f;
             #endregion
+
+            /*if (dashActive && bottomHit)
+            {
+                dashActive = false;
+                testMESH.gameObject.SetActive(true);
+            }*/
         }
 
         public bool pauseSpeedHackTimer = false;
@@ -888,18 +894,18 @@ namespace PreServer
 
         public void DashAnimMegaForward()
         {
-            /*if (!bottomHit)
+            if (!bottomHit)
             {
-                mTransform.position += (mTransform.forward / 2);
+                mTransform.position += mTransform.forward;
 
-            }*/
+            }
         }
 
         public void DashAnimMegaBackward()
         {
             if (!bottomHit)
             {
-                mTransform.position += mTransform.forward;
+                mTransform.position -= mTransform.forward;
 
             }
         }
@@ -908,7 +914,7 @@ namespace PreServer
         {
             if (!bottomHit)
             {
-                mTransform.position -= (mTransform.forward / 2);
+                mTransform.position += (mTransform.forward / 2);
 
             }
         }
