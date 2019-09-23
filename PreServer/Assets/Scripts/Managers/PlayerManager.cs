@@ -137,6 +137,8 @@ namespace PreServer
         public float jumpFromClimbTimer = 0;
         [HideInInspector]
         public Quaternion jumpFromClimbTarget;
+        [HideInInspector]
+        public Vector3 slideMomentum;
 
         private void Start()
         {
@@ -269,7 +271,12 @@ namespace PreServer
                     lagDashCooldown = 0;
             }
             SpeedHackCooldown();
-
+            if (slideMomentum != Vector3.zero)
+            {
+                slideMomentum = Vector3.Lerp(slideMomentum, Vector3.zero, delta * 2f);
+                if (slideMomentum.magnitude <= 0.1f)
+                    slideMomentum = Vector3.zero;
+            }
             #region UI
             //groundAngle.text = "Ground Angle: " + Vector3.Angle(groundNormal, Vector3.up).ToString("F2");
             //playerAngle.text = "Player Angle: " + Vector3.Angle(mTransform.up, Vector3.up).ToString("F2");
@@ -760,6 +767,7 @@ namespace PreServer
                 {
                     float angle = Vector3.Angle(hit.normal, Vector3.up);
                     //If the back cast hit another slide, then you're still in the sliding state
+                    backCastNormal = hit.normal;
                     if (angle > 35 && angle < 70)
                         backCastHit = false;
                 }
@@ -769,6 +777,17 @@ namespace PreServer
             {
                 isSliding = false;
             }
+        }
+
+        Vector3 backCastNormal;
+        public Vector3 BackCastNormal()
+        {
+            return backCastNormal;
+        }
+
+        public Vector3 GetSlideDirection()
+        {
+            return slideDirection;
         }
 
         void OnTriggerEnter(Collider other)

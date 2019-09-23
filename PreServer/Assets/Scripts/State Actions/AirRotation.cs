@@ -29,7 +29,7 @@ namespace PreServer
                 Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, states.jumpFromClimbTarget, states.delta * 10f);
                 states.mTransform.rotation = targetRotation;
                 states.jumpFromClimbTimer += states.delta;
-                if (states.jumpFromClimbTimer > 0.15f)
+                if (states.jumpFromClimbTimer > 0.3f)
                 {
                     states.jumpFromClimb = false;
                 }

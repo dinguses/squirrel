@@ -61,7 +61,7 @@ namespace PreServer
             {
                 
 
-                targetVelocity.y = currentVelocity.y - gravity;
+                targetVelocity -= states.GetSlideDirection() * gravity;
 
                 //Debug.Log(targetVelocity.y);
 
@@ -82,7 +82,55 @@ namespace PreServer
         {
             timer = 0;
             gravity = downwardsGravity;
+            if (states.isGrounded)
+            {
+                Vector3 slideDirection = Vector3.zero;
+                if (GetAngle(states.middle, states.middleNormal))
+                {
+                    Vector3 forward = Vector3.Cross(states.middleNormal, Vector3.up);
+                    slideDirection = Vector3.Cross(forward, states.middleNormal);
+                }
+                else if (GetAngle(states.front, states.frontNormal))
+                {
+                    Vector3 forward = Vector3.Cross(states.frontNormal, Vector3.up);
+                    slideDirection = Vector3.Cross(forward, states.frontNormal);
+                }
+                else if (GetAngle(states.back, states.backNormal))
+                {
+                    Vector3 forward = Vector3.Cross(states.backNormal, Vector3.up);
+                    slideDirection = Vector3.Cross(forward, states.backNormal);
+                }
+                else
+                {
+                    Vector3 forward = Vector3.Cross(states.BackCastNormal(), Vector3.up);
+                    slideDirection = Vector3.Cross(forward, states.BackCastNormal());
+                }
+                //Only happens on flat ground
+                if (slideDirection == Vector3.zero)
+                {
+                    slideDirection = Vector3.Cross(states.BackCastNormal(), Vector3.up);
+                }
+                states.rigid.velocity = currentVelocity;
+                states.slideMomentum = Vector3.Project(currentVelocity, -slideDirection);
+                //states.slideMomentum.y = 0;
+                //Debug.DrawLine(states.transform.position + states.transform.up + states.transform.forward, -slideDirection, Color.cyan, 10f);
+                Debug.DrawRay(states.transform.position + states.transform.up + states.transform.forward, -slideDirection * 5, Color.red, 5f);
+            }
+            //if(Vector3.Angle(states.groundNormal, Vector3.up) > 35)
+            //{
+            //    states.groundNormal = Vector3.zero;
+            //}
             //Debug.Log(Time.frameCount + " || Slide Player On State Exit");
+        }
+
+        bool GetAngle(GameObject obj, Vector3 normal)
+        {
+            if (obj == null)
+                return false;
+            float angle = Vector3.Angle(normal, Vector3.up);
+            if (angle < 35)
+                return true;
+            return false;
         }
     }
 }

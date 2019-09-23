@@ -138,7 +138,7 @@ namespace PreServer
                     float abs = Mathf.Abs(frontY);
 
                     // If player is on any slope
-                    if (abs > 0.02f)
+                    if (abs > 0.02f && states.slideMomentum.magnitude < 0.25f)
                     {
                         //states.rigid.isKinematic = false;
 
@@ -217,7 +217,8 @@ namespace PreServer
 
             
             states.targetVelocity = targetVelocity;
-            states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity, states.delta * movementTime);
+            states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity + states.slideMomentum, states.delta * movementTime);
+            //Debug.Log(states.rigid.velocity);
         }
     }
 }
