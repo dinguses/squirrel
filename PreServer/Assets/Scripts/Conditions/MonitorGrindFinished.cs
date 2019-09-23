@@ -24,12 +24,6 @@ namespace PreServer
 
                 // Grinding is false
                 state.anim.SetBool(state.hashes.isGrinding, false);
-                state.exitingGrind = false;
-
-                // re-enable the front collider
-                //GOTO
-                //state.frontCollider.enabled = true;
-                //state.grindCollider.enabled = false;
 
                 result = true;
             }

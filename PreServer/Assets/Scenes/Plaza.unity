@@ -22896,6 +22896,11 @@ MonoBehaviour:
   rotationSmoothTime: 0.12
   pitchMinMax: {x: 0, y: 35}
   camFollowSpeed: 9
+  camZoomSpeed: 4
+  camOffset: {x: 0, y: 4, z: -15}
+  camTransform: {fileID: 0}
+  camRel: {x: 0, y: 0, z: 0}
+  debugPauseCamLerp: 0
   ignoreMouse: 1
 --- !u!1 &1036360135
 GameObject:
@@ -42360,31 +42365,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 6875418784780974167, guid: de5c63d9750a02c499a3b296f5d8165f,
-        type: 3}
-      propertyPath: dashCooldown
-      value: 
-      objectReference: {fileID: 654067188}
-    - target: {fileID: 6875418784780974167, guid: de5c63d9750a02c499a3b296f5d8165f,
-        type: 3}
-      propertyPath: speedHack
-      value: 
-      objectReference: {fileID: 1133675886}
-    - target: {fileID: 6875418784780974167, guid: de5c63d9750a02c499a3b296f5d8165f,
-        type: 3}
-      propertyPath: mainCam2
-      value: 
-      objectReference: {fileID: 1595751127}
-    - target: {fileID: 6875418784780974167, guid: de5c63d9750a02c499a3b296f5d8165f,
-        type: 3}
-      propertyPath: stepUpJump
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6875418784780974167, guid: de5c63d9750a02c499a3b296f5d8165f,
-        type: 3}
-      propertyPath: testMESH
-      value: 
-      objectReference: {fileID: 592611423}
     - target: {fileID: 6875418784780974160, guid: de5c63d9750a02c499a3b296f5d8165f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -42440,6 +42420,36 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6875418784780974167, guid: de5c63d9750a02c499a3b296f5d8165f,
+        type: 3}
+      propertyPath: dashCooldown
+      value: 
+      objectReference: {fileID: 654067188}
+    - target: {fileID: 6875418784780974167, guid: de5c63d9750a02c499a3b296f5d8165f,
+        type: 3}
+      propertyPath: speedHack
+      value: 
+      objectReference: {fileID: 1133675886}
+    - target: {fileID: 6875418784780974167, guid: de5c63d9750a02c499a3b296f5d8165f,
+        type: 3}
+      propertyPath: mainCam2
+      value: 
+      objectReference: {fileID: 1595751127}
+    - target: {fileID: 6875418784780974167, guid: de5c63d9750a02c499a3b296f5d8165f,
+        type: 3}
+      propertyPath: stepUpJump
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6875418784780974167, guid: de5c63d9750a02c499a3b296f5d8165f,
+        type: 3}
+      propertyPath: testMESH
+      value: 
+      objectReference: {fileID: 592611423}
+    - target: {fileID: 6875418784780974167, guid: de5c63d9750a02c499a3b296f5d8165f,
+        type: 3}
+      propertyPath: playerMesh
+      value: 
+      objectReference: {fileID: 592611423}
     - target: {fileID: 6875418785014232965, guid: de5c63d9750a02c499a3b296f5d8165f,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

@@ -33,12 +33,12 @@ namespace PreServer
             states.anim.SetBool(states.hashes.isDashing, true);
 
             //Debug.Log(states.anim.GetCurrentAnimatorClipInfo(2)[0].clip.name);
-            Debug.Log(Time.realtimeSinceStartup - states.timeSinceJump);
+            //Debug.Log(Time.realtimeSinceStartup - states.timeSinceJump);
             var time = Time.realtimeSinceStartup - states.timeSinceJump;
 
             if (time < 0.01f || time > .6f)
             {
-                Debug.Log("doing a grounded dash");
+                //Debug.Log("doing a grounded dash");
                 states.anim.CrossFade(states.hashes.squ_dash, 0.01f);
             }
             else
@@ -166,7 +166,6 @@ namespace PreServer
             states.speedHackRecover = 0.1f;
 
             states.anim.SetBool(states.hashes.isDashing, false);
-            states.testMESH.gameObject.SetActive(true);
             if (states.isGrounded)
                 states.pauseSpeedHackTimer = false;
             //states.anim.CrossFade(states.hashes.sq, 0.2f);

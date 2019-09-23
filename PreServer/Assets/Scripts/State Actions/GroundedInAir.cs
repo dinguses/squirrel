@@ -52,7 +52,7 @@ namespace PreServer
                 targetVelocity.z = 0;
                 targetVelocity.x = 0;
                 states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity, states.delta * movementTime);
-                gravity += gravityAdditive;
+                gravity += gravityAdditive * states.airSpeedMult;
             }
             else
             {

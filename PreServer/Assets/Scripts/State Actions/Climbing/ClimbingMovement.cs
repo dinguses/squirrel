@@ -55,7 +55,7 @@ namespace PreServer
             if (camera != null)
                 camera.ignoreInput = false;
 
-            states.testMESH.gameObject.SetActive(true);
+            states.playerMesh.gameObject.SetActive(true);
         }
 
         public override void Execute(StateManager sm)
@@ -84,6 +84,7 @@ namespace PreServer
                 if (timer <= 0 && states.dashActive && states.CanDash() && !dashActivated)
                 {
                     states.anim.CrossFade(states.hashes.squ_dash, 0.01f);
+                    states.anim.SetBool(states.hashes.isDashing, true);
 
                     //Debug.Log("Adding velocity 9");
                     states.rigid.velocity = states.transform.forward * dashSpeed;
@@ -115,9 +116,11 @@ namespace PreServer
             {
                 states.dashActive = false;
                 states.rigid.velocity = Vector3.zero;
+                states.anim.SetBool(states.hashes.isDashing, false);
                 //Debug.Log("Dash over");
                 states.lagDashCooldown = 1.0f;
                 dashActivated = false;
+                states.playerMesh.gameObject.SetActive(true);
             }
             Debug.DrawRay(states.climbHit.point, states.climbHit.normal * 3f, Color.yellow);
         }

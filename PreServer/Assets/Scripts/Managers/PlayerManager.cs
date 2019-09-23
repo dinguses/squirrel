@@ -19,10 +19,9 @@ namespace PreServer
         public Rigidbody rigid;
         [HideInInspector]
         public Animator anim;
+
         public CapsuleCollider frontCollider;
-
         public CapsuleCollider grindCollider;
-
 
         public bool rotateFast;
 
@@ -32,16 +31,7 @@ namespace PreServer
         public bool isJumping;
         public bool dashActive;
         public int dashInAirCounter;
-        //bool _isGrounded;
         public bool isGrounded;
-        //{
-        //    get { return _isGrounded; }
-        //    set
-        //    {
-        //        //Debug.Log(Time.frameCount + " || setting isGrounded to: " + value + " was: " + _isGrounded);
-        //        _isGrounded = value;
-        //    }
-        //}
 
         public bool isColidingInAir;
 
@@ -50,7 +40,9 @@ namespace PreServer
 
         [HideInInspector]
         public float timeSinceJump;
+        [HideInInspector]
         public float timeSinceMove;
+        [HideInInspector]
         public float timeSinceSlow;
 
         public Text groundAngle;
@@ -69,13 +61,9 @@ namespace PreServer
         public Text TargetVolY;
         public Text TargetVolZ;
 
-        public Text inGrindZoneText;
-        public Text newColliderText;
         public Image dashCooldown;
         public Image speedHack;
 
-        public bool stepUp;
-        public bool stepUpJump;
         public bool UpIdle;
         public int idleRand;
         public int randMax;
@@ -85,9 +73,8 @@ namespace PreServer
         public bool inGrindZone;
         public Dictionary<int, Vector3> grindPoints;
         public Dictionary<int, BoxCollider> grindCenters;
-        public Dictionary<string, BoxCollider> grindCenters2;
 
-        public float rotateHOLD = 0;
+        public float held180RotationAmt = 0;
 
         public Vector3 facingPoint;
         public Vector3 behindPoint;
@@ -101,25 +88,16 @@ namespace PreServer
         public Vector3 backNormal;
         public Vector3 backupGroundNormal;
 
-        public float angleTest;
-
         public KeyValuePair<int, BoxCollider> grindCenterPair;
-        public KeyValuePair<string, BoxCollider> grindCenterPair2;
         public BoxCollider grindCenter;
-        public float testINT = 0;
         public bool inJoint = false;
 
         public bool rotateBool = false;
-        public bool stayGrinding;
-        public bool exitingGrind;
-        public BoxCollider currentHitBox;
-        public BoxCollider newHitBox;
-        public SkinnedMeshRenderer testMESH;
-        bool meshActive = true;
+        public SkinnedMeshRenderer playerMesh;
         public Vector3 storedTargetDir;
+        public bool dashStarted = false;
 
         public Camera mainCam;
-        public Camera mainCam2;
         public GameObject front;
         public GameObject middle;
         public GameObject back;
@@ -129,9 +107,12 @@ namespace PreServer
         public float onAirDis = .85f;
         public LayerMask groundLayer;
 
+        public bool stepUp;
+        public bool stepUpJump;
         public bool topHitLong = false;
         public bool topHit = false;
         public bool bottomHit = false;
+
         public float minSlideAngle = 35;
         public float maxSlideAngle = 70;
         float length = 0;
@@ -156,6 +137,7 @@ namespace PreServer
         public float jumpFromClimbTimer = 0;
         [HideInInspector]
         public Quaternion jumpFromClimbTarget;
+
         private void Start()
         {
             climbHit = new RaycastHit();
@@ -187,14 +169,10 @@ namespace PreServer
             idleInc = 0;
 
             inGrindZone = false;
-            stayGrinding = false;
 
             grindPoints = new Dictionary<int, Vector3>();
             grindCenters = new Dictionary<int, BoxCollider>();
 
-            currentHitBox = new BoxCollider();
-            newHitBox = new BoxCollider();
-            exitingGrind = false;
             speedHackAmount = 2f;
         }
 
@@ -231,10 +209,10 @@ namespace PreServer
             {
                 SetClimbAnimStates();
             }
+
             //Reset lagdash when squirrel touches the ground
             if (isGrounded && dashInAirCounter != 0)
                 dashInAirCounter = 0;
-
 
             //TODO: make this better
             #region upIdle
@@ -291,6 +269,7 @@ namespace PreServer
                     lagDashCooldown = 0;
             }
             SpeedHackCooldown();
+
             #region UI
             //groundAngle.text = "Ground Angle: " + Vector3.Angle(groundNormal, Vector3.up).ToString("F2");
             //playerAngle.text = "Player Angle: " + Vector3.Angle(mTransform.up, Vector3.up).ToString("F2");
@@ -309,27 +288,20 @@ namespace PreServer
 
             //inGrindZoneText.text = "inGrindZone - " + inGrindZone;
 
-            if (newHitBox == new BoxCollider())
-            {
-               // newColliderText.text = "newCollider - new box";
-            }
-            else if (newHitBox == null)
-            {
-                //newColliderText.text = "newCollider - null";
-            }
-            else
-            {
-                //newColliderText.text = "newCollider - " + newHitBox.name;
-            }
             dashCooldown.fillAmount = 1 - lagDashCooldown;
             speedHack.fillAmount = speedHackAmount / 2f;
             #endregion
 
-            /*if (dashActive && bottomHit)
+            //TODO: try using climbHit instead of bottomHit
+            if (dashActive && didClimbHit && climbState == ClimbState.NONE && dashStarted)
             {
+                Debug.Log("Ending this dash EARLY");
                 dashActive = false;
-                testMESH.gameObject.SetActive(true);
-            }*/
+                playerMesh.gameObject.SetActive(true);
+            }
+
+            if (!dashActive && dashStarted)
+                dashStarted = false;
         }
 
         public bool pauseSpeedHackTimer = false;
@@ -411,10 +383,6 @@ namespace PreServer
             var topRay = mTransform.position + (mTransform.forward * 1.25f) + (Vector3.up * topFloat);
             var topRayLong = mTransform.position + (mTransform.forward * 2.5f) + (Vector3.up * topFloatLong);
 
-            //bool bottomHit;
-            //bool topHit;
-            //bool topHitLong;
-
             RaycastHit hitBottom = new RaycastHit();
             RaycastHit hitTop = new RaycastHit();
             RaycastHit hitTopLong = new RaycastHit();
@@ -451,15 +419,10 @@ namespace PreServer
             if (bottomHit && !topHit && !topHitLong && movementVariables.moveAmount > 0.05f)
             {
                 stepUp = true;
-                //frontCollider.enabled = false;
-                //frontColliderJump.enabled = true;
             }
             else
             {
-                //states.stepUpDelay = true;
                 stepUp = false;
-                //frontCollider.enabled = true;
-                //frontColliderJump.enabled = false;
             }
         }
 
@@ -629,17 +592,11 @@ namespace PreServer
         }
         bool didClimbHit = false;
         float climbAngle = 0;
+
         //Checks to see if the face is hitting a slanted wall
         bool CheckGrounded(CapsuleCollider col)
         {
             //Debug.DrawLine(mTransform.position, mTransform.position + mTransform.forward, Color.yellow);
-
-            /*DebugExtension.DrawCapsule(
-                 startCapsulePos,
-                 finalCapsulePos,
-                 Color.blue,
-                 col.radius
-            );*/
 
             //return Physics.CheckBox(new Vector3(col.bounds.center.x, col.bounds.center.y - (col.bounds.size.y - (col.bounds.size.y * 0.5f)), col.bounds.center.z), new Vector3(col.bounds.size.x * 1.5f, col.bounds.size.y * 0.5f, col.bounds.size.z * 1.5f) * 0.5f, col.transform.rotation, groundLayer);
             //return Physics.CheckCapsule(col.bounds.center, new Vector3(col.bounds.center.x, col.bounds.min.y, col.bounds.center.z), col.radius * 0.9f, groundLayer, QueryTriggerInteraction.Ignore);
@@ -659,6 +616,7 @@ namespace PreServer
             }
             return false;
         }
+
         /// <summary>
         /// Updates animator's isGrounded
         /// </summary>
@@ -815,13 +773,14 @@ namespace PreServer
 
         void OnTriggerEnter(Collider other)
         {
-            // New attempt
+            // Start a grind if you've entered a grind zone and were not already in one
             if (other.tag == "Grind" && !inGrindZone)
             {
                 inGrindZone = true;
 
                 GenerateGrindPoints(other);
 
+                // If it's only a two point grind
                 if (grindPoints.Count == 2)
                 {
                     var grindMaster = other.gameObject.transform.parent.parent;
@@ -834,18 +793,6 @@ namespace PreServer
             {
                 inJoint = true;
             }
-
-
-            // If player enters grind point
-            if (other.tag == "GrindPoint")
-            {
-                // Start moving towards next point
-
-
-
-                //Debug.Log("Grind Point hit guh huh");
-                //NextPoint();
-            }
         }
 
         void OnTriggerExit(Collider other)
@@ -854,7 +801,6 @@ namespace PreServer
             {
                 PurgeGrindPoints();
                 inGrindZone = false;
-                exitingGrind = true;
             }
 
             if (other.tag == "joint")
@@ -863,96 +809,72 @@ namespace PreServer
             }
         }
 
-        public void DashAnimCheckWall()
-        {
-            /*var bottomRay = mTransform.position + (mTransform.forward * 1.25f);
-
-            RaycastHit hitBottom;
-
-            if (Physics.Raycast(bottomRay, mTransform.forward, out hitBottom, 1, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
-            {
-                Debug.Log("setting dashactive to false!");
-                dashActive = false;
-            }*/
-
-            if (bottomHit && dashActive)
-            {
-                testMESH.gameObject.SetActive(true);
-                dashActive = false;
-            }
-        }
-
+        /// <summary>
+        /// Sets player's mesh to not active - for dash animation
+        /// </summary>
         public void DashAnimNotActive()
         {
-            testMESH.gameObject.SetActive(false);
+            if (dashActive)
+                playerMesh.gameObject.SetActive(false);
         }
 
+        /// <summary>
+        /// Sets player's mesh to active - for dash animation
+        /// </summary>
         public void DashAnimActive()
         {
-            testMESH.gameObject.SetActive(true);
+            playerMesh.gameObject.SetActive(true);
         }
 
-        public void DashAnimMegaForward()
+        /// <summary>
+        /// Sets dashStarted to true to guarentee dash always at least starts
+        /// </summary>
+        public void DashSetDashStarted()
         {
-            if (!bottomHit)
-            {
-                mTransform.position += mTransform.forward;
-
-            }
+            dashStarted = true;
         }
 
-        public void DashAnimMegaBackward()
-        {
-            if (!bottomHit)
-            {
-                mTransform.position -= mTransform.forward;
-
-            }
-        }
-
+        /// <summary>
+        /// Moves player forward a bit during dash
+        /// </summary>
         public void DashAnimForward()
         {
             if (!bottomHit)
             {
                 mTransform.position += (mTransform.forward / 2);
-
             }
         }
 
+        /// <summary>
+        /// Moves player back a bit during dash
+        /// </summary>
         public void DashAnimBackward()
         {
             if (!bottomHit)
             {
                 mTransform.position -= (mTransform.forward / 2);
-
             }
         }
 
+        /// <summary>
+        /// When 180 is done, sets the anim boolean to false
+        /// </summary>
         public void Done180()
         {
-            //Debug.Log("Done 180");
             anim.SetBool(hashes.waitForAnimation, false);
         }
 
-        public void Done180Ground()
-        {
-            anim.SetBool(hashes.waitForAnimation, false);
-            //Quaternion tr = Quaternion.LookRotation(storedTargetDir, groundNormal);
-            //Quaternion targetRotation = Quaternion.Slerp(mTransform.rotation, tr, delta * movementVariables.moveAmount * 10);
-            //mTransform.rotation = tr;
-        }
-
+        /// <summary>
+        /// When 180 starts, reset the held 180 amount back to 0
+        /// </summary>
         public void Start180()
         {
-            rotateHOLD = 0;
+            held180RotationAmt = 0;
         }
 
-        public void ToggleMeshVisable()
-        {
-            testMESH.gameObject.SetActive(!meshActive);
-            meshActive = !meshActive;
-        }
-
+        /// <summary>
+        /// Logic for moving to next grind segment
+        /// </summary>
         public void NextPoint()
         {
             Debug.Log("Next Point");
@@ -994,16 +916,11 @@ namespace PreServer
                     grindCenter = grindCenters[trungo];
                     grindCenterPair = new KeyValuePair<int, BoxCollider>(trungo, grindCenter);
                 }
-
-
-                //currentHitBox = newHitBox;
-                //newHitBox = new BoxCollider();
             }
         }
 
         void GenerateGrindPoints(Collider grindColliderGen)
         {
-
             if (grindPoints.Count == 0)
             {
                 var grindMaster = grindColliderGen.gameObject.transform.parent.parent;
@@ -1017,43 +934,13 @@ namespace PreServer
                     grindPoints.Add(i, points.GetChild(i).position);
                 }
 
-                //if (grindPoints.Count > 2)
-                //{
                 var centers = grindMaster.GetChild(1);
 
                 for (int i = 0; i < centers.childCount; i++)
                 {
                     var center = centers.GetChild(i).GetComponent<BoxCollider>();
                     grindCenters.Add(i, center);
-                    //grindCenters2.Add(center.name, center.GetComponent<BoxCollider>());
                 }
-                //}
-
-                /*
-                foreach (Transform child in grindColliderGen.gameObject.transform)
-                {
-                    if (child.tag == "GrindPoint")
-                    {
-                        grindPoints.Add(child.GetSiblingIndex(), child.position);
-                    }
-                
-                }
-
-                if (grindPoints.Count > 2)
-                {
-                    var indexCount = 0;
-
-                    var allColliders = grindColliderGen.gameObject.GetComponentsInChildren<BoxCollider>();
-
-                    foreach (var child in allColliders)
-                    {
-                        if (child.tag == "GrindCenter")
-                        {
-                            grindCenters.Add(indexCount, child);
-                            indexCount++;
-                        }
-                    }
-                }*/
             }
             else
             {
@@ -1066,7 +953,6 @@ namespace PreServer
         {
             grindPoints = new Dictionary<int, Vector3>();
             grindCenters = new Dictionary<int, BoxCollider>();
-            //grindCenters2 = new Dictionary<string, BoxCollider>();
             grindCenter = new BoxCollider();
         }
 

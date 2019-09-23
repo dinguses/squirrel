@@ -63,9 +63,7 @@ namespace PreServer
                 states.facingPoint = states.behindPoint;
                 states.facingPointPair = states.behindPointPair;
                 states.behindPoint = holdFacing;
-                states.behindPointPair = holdFacingPair;
-
-                states.angleTest = 0;          
+                states.behindPointPair = holdFacingPair;       
 
                 states.anim.SetBool(states.hashes.waitForAnimation, true);
 
