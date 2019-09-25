@@ -96,6 +96,7 @@ namespace PreServer
         public SkinnedMeshRenderer playerMesh;
         public Vector3 storedTargetDir;
         public bool dashStarted = false;
+        public bool testRotate = false;
 
         public Camera mainCam;
         public GameObject front;
@@ -795,6 +796,8 @@ namespace PreServer
             // Start a grind if you've entered a grind zone and were not already in one
             if (other.tag == "Grind" && !inGrindZone)
             {
+                Debug.Log("entered grind collider?");
+
                 inGrindZone = true;
 
                 GenerateGrindPoints(other);
@@ -816,8 +819,10 @@ namespace PreServer
 
         void OnTriggerExit(Collider other)
         {
-            if (other.tag == "Grind" && !inJoint)
+            if (other.tag == "Grind" && !inJoint && !testRotate)
             {
+                Debug.Log("purge?");
+
                 PurgeGrindPoints();
                 inGrindZone = false;
             }
@@ -834,7 +839,9 @@ namespace PreServer
         public void DashAnimNotActive()
         {
             if (dashActive)
+            {
                 playerMesh.gameObject.SetActive(false);
+            }
         }
 
         /// <summary>
@@ -880,6 +887,7 @@ namespace PreServer
         /// </summary>
         public void Done180()
         {
+            testRotate = false;
             anim.SetBool(hashes.waitForAnimation, false);
         }
 
@@ -897,6 +905,8 @@ namespace PreServer
         public void NextPoint()
         {
             Debug.Log("Next Point");
+
+            dashActive = false;
 
             if (grindPoints.Count > 2)
             {
@@ -940,6 +950,8 @@ namespace PreServer
 
         void GenerateGrindPoints(Collider grindColliderGen)
         {
+            Debug.Log("generate grind point?");
+
             if (grindPoints.Count == 0)
             {
                 var grindMaster = grindColliderGen.gameObject.transform.parent.parent;

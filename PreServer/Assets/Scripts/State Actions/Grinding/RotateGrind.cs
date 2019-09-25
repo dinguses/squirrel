@@ -57,6 +57,7 @@ namespace PreServer
                 //Debug.Log(states.anim.GetCurrentAnimatorClipInfo(1)[0].clip.name);
                 //Debug.Log("GOTTA 180");
                 states.rotateBool = false;
+                states.testRotate = true;
 
                 var holdFacing = states.facingPoint;
                 var holdFacingPair = states.facingPointPair;

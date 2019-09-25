@@ -36,13 +36,16 @@ namespace PreServer
             //Debug.Log(Time.realtimeSinceStartup - states.timeSinceJump);
             var time = Time.realtimeSinceStartup - states.timeSinceJump;
 
-            if (time < 0.01f || time > .6f)
+            if ((time < 0.01f || time > .6f) && states.isGrounded)
             {
-                //Debug.Log("doing a grounded dash");
+                Debug.Log("doing a grounded dash");
                 states.anim.CrossFade(states.hashes.squ_dash, 0.01f);
+                states.anim.SetBool(states.hashes.groundDash, true);
+                states.anim.SetLayerWeight(2, 0);
             }
             else
             {
+                Debug.Log("doing an air dash");
                 states.anim.CrossFade(states.hashes.squ_dash_air, 0.01f);
             }
 
@@ -164,8 +167,11 @@ namespace PreServer
             timer = 0;
             states.lagDashCooldown = 1.0f;
             states.speedHackRecover = 0.1f;
-
             states.anim.SetBool(states.hashes.isDashing, false);
+            states.anim.SetBool(states.hashes.groundDash, false);
+            states.timeSinceJump = Time.realtimeSinceStartup;
+            states.anim.SetLayerWeight(2, 1);
+            
             if (states.isGrounded)
                 states.pauseSpeedHackTimer = false;
             //states.anim.CrossFade(states.hashes.sq, 0.2f);
