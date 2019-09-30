@@ -54,7 +54,7 @@ namespace PreServer
             moveCamera = false;
             if (camera != null)
                 camera.ignoreInput = false;
-
+            states.rigid.drag = 0;
             states.playerMesh.gameObject.SetActive(true);
         }
 
@@ -140,34 +140,49 @@ namespace PreServer
                 //can climb if the angle is between 70 and 90, and it is a different surface, might need to adjust
                 if (angle >= 70 && angle <= 90 && front.transform.tag == "Climb" && (front.transform != states.climbHit.transform || front.normal != states.climbHit.normal))
                 {
+                    Debug.Log("Front has detected a new climb to transition to");
                     angle = Vector3.Angle(front.normal, states.climbHit.normal);
-                    bool angleOver = angle > 45;
-                    if (angleOver)
+                    //bool angleOver = angle > 45;
+                    states.rigid.velocity = Vector3.zero;
+                    //if (angleOver)
+                    //{
+                    //    moveCamera = true;
+                    //    if (camera != null)
+                    //        camera.ignoreInput = true;
+                    //    //camera angle is the amount the camera needs to move, tempAngle is the starting point
+                    //    tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, front.normal, Vector3.up);
+                    //    cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
+                    //    if (states.dashActive)
+                    //    {
+                    //        states.dashActive = false;
+                    //        states.lagDashCooldown = 1.0f;
+                    //        dashActivated = false;
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, front.normal, Vector3.up);
+                    //    if (tempAngle < 90 && tempAngle > -90)
+                    //    {
+                    //        cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
+                    //        moveCamera = true;
+                    //        if (camera != null)
+                    //            camera.ignoreInput = true;
+                    //    }
+                    //}
+                    if (states.dashActive)
                     {
-                        states.rigid.velocity = Vector3.zero;
+                        states.dashActive = false;
+                        states.lagDashCooldown = 1.0f;
+                        dashActivated = false;
+                    }
+                    tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, front.normal, Vector3.up);
+                    if (tempAngle < 90 && tempAngle > -90)
+                    {
+                        cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
                         moveCamera = true;
                         if (camera != null)
                             camera.ignoreInput = true;
-                        //camera angle is the amount the camera needs to move, tempAngle is the starting point
-                        tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, front.normal, Vector3.up);
-                        cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
-                        if (states.dashActive)
-                        {
-                            states.dashActive = false;
-                            states.lagDashCooldown = 1.0f;
-                            dashActivated = false;
-                        }
-                    }
-                    else
-                    {
-                        tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, front.normal, Vector3.up);
-                        if (tempAngle < 90 && tempAngle > -90)
-                        {
-                            cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
-                            moveCamera = true;
-                            if (camera != null)
-                                camera.ignoreInput = true;
-                        }
                     }
                     states.climbHit = front;
                     startPos = states.transform.position;
@@ -186,6 +201,7 @@ namespace PreServer
                 }
                 else if (angle < 70)
                 {
+                    Debug.Log("Front has detected non-climbable surface, exit the climb");
                     states.climbHit = front;
                     //states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
                     states.climbState = PlayerManager.ClimbState.EXITING;
@@ -193,6 +209,7 @@ namespace PreServer
                 }
                 else if (angle > 90 || front.transform.tag != "Climb")
                 {
+                    Debug.Log("Front has detected a wall that blocks the user and isn't climbable");
                     states.rigid.velocity = Vector3.zero;
                     //states.mTransform.rotation = prevRotation;
                 }
@@ -216,34 +233,49 @@ namespace PreServer
                 float angle = Vector3.Angle(under.normal, Vector3.up);
                 if (angle >= 70 && angle <= 90 && under.transform.tag == "Climb" && (under.transform != states.climbHit.transform || under.normal != states.climbHit.normal))
                 {
+                    Debug.Log("Under has detected a new climb to transition to");
                     angle = Vector3.Angle(under.normal, states.climbHit.normal);
-                    bool angleOver = angle > 45;
-                    if (angleOver)
+                    //bool angleOver = angle > 45;
+                    states.rigid.velocity = Vector3.zero;
+                    //if (angleOver)
+                    //{
+                    //    moveCamera = true;
+                    //    if (camera != null)
+                    //        camera.ignoreInput = true;
+                    //    //camera angle is the amount the camera needs to move, tempAngle is the starting point
+                    //    tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, under.normal, Vector3.up);
+                    //    cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
+                    //    if (states.dashActive)
+                    //    {
+                    //        states.dashActive = false;
+                    //        states.lagDashCooldown = 1.0f;
+                    //        dashActivated = false;
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, under.normal, Vector3.up);
+                    //    if (tempAngle < 90 && tempAngle > -90)
+                    //    {
+                    //        cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
+                    //        moveCamera = true;
+                    //        if (camera != null)
+                    //            camera.ignoreInput = true;
+                    //    }
+                    //}
+                    if (states.dashActive)
                     {
-                        states.rigid.velocity = Vector3.zero;
+                        states.dashActive = false;
+                        states.lagDashCooldown = 1.0f;
+                        dashActivated = false;
+                    }
+                    tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, under.normal, Vector3.up);
+                    if (tempAngle < 90 && tempAngle > -90)
+                    {
+                        cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
                         moveCamera = true;
                         if (camera != null)
                             camera.ignoreInput = true;
-                        //camera angle is the amount the camera needs to move, tempAngle is the starting point
-                        tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, under.normal, Vector3.up);
-                        cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
-                        if (states.dashActive)
-                        {
-                            states.dashActive = false;
-                            states.lagDashCooldown = 1.0f;
-                            dashActivated = false;
-                        }
-                    }
-                    else
-                    {
-                        tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, under.normal, Vector3.up);
-                        if (tempAngle < 90 && tempAngle > -90)
-                        {
-                            cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
-                            moveCamera = true;
-                            if (camera != null)
-                                camera.ignoreInput = true;
-                        }
                     }
                     states.climbHit = under;
                     startPos = states.transform.position;
@@ -262,6 +294,7 @@ namespace PreServer
                 }
                 else if (angle < 70)
                 {
+                    Debug.Log("Under has detected non-climbable surface, exit the climb");
                     states.climbHit = under;
                     states.climbState = PlayerManager.ClimbState.EXITING;
 
@@ -272,6 +305,7 @@ namespace PreServer
                 }
                 else if (angle > 90)
                 {
+                    Debug.Log("Under has detected a wall that blocks the user and isn't climbable");
                     //states.rigid.velocity = Vector3.zero;
                     //states.mTransform.rotation = prevRotation;
                     states.climbState = PlayerManager.ClimbState.NONE;
@@ -282,25 +316,28 @@ namespace PreServer
                 else if (under.transform.tag != "Climb")
                 {
 
+                    Debug.Log("Under has detected a non-climbable surface, stop moving");
                     states.rigid.velocity = Vector3.zero;
-                    states.mTransform.rotation = prevRotation;
+                    //states.mTransform.rotation = prevRotation;
                     return;
                 }
             }
             else
             {
+                Debug.Log("Under isn't hitting anything");
                 //states.rigid.velocity = Vector3.zero;
                 //states.mTransform.rotation = prevRotation;
                 states.climbState = PlayerManager.ClimbState.NONE;
                 states.isJumping = true;
                 states.anim.SetBool(states.hashes.isClimbing, false);
             }
-            if (!underHit && !frontHit)
-            {
-                states.climbState = PlayerManager.ClimbState.NONE;
-                states.isJumping = true;
-                states.anim.SetBool(states.hashes.isClimbing, false);
-            }
+            //if (!underHit && !frontHit)
+            //{
+            //    Debug.Log("Under and front have failed to hit anything, detaching before more problems happen");
+            //    states.climbState = PlayerManager.ClimbState.NONE;
+            //    states.isJumping = true;
+            //    states.anim.SetBool(states.hashes.isClimbing, false);
+            //}
         }
         Quaternion prevRotation;
         void Rotate(StateManager sm)
