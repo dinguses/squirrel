@@ -44,6 +44,8 @@ namespace PreServer
             {
                 t += delta;
                 Vector3 tp = Vector3.Lerp(startPos, targetPos, t);
+                if (t >= 1)
+                    tp = targetPos;
                 states.transform.position = tp;
             }
             if (Vector3.Distance(states.transform.position, targetPos) <= offsetFromWall)
@@ -59,8 +61,14 @@ namespace PreServer
             {
                 if (states.transform.rotation == targetRot)
                     inRot = true;
-                Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, targetRot, t);
-                states.mTransform.rotation = targetRotation;
+                else
+                {
+                    inRot = false;
+                    Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, targetRot, t);
+                    if (t >= 1)
+                        targetRotation = targetRot;
+                    states.mTransform.rotation = targetRotation;
+                }
             }
 
             if (inPos && inRot)

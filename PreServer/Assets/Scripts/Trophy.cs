@@ -61,7 +61,7 @@ public class Trophy : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.transform.name == "Squirrel")
+        if (other.transform.tag == "Player")
         {
             col.enabled = false;
             trophy.SetActive(false);

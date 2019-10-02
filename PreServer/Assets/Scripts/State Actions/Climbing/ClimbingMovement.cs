@@ -29,7 +29,11 @@ namespace PreServer
         float cameraAngle = 0;
         float tempAngle = 0;
         PlayerManager states;
+        float prevAngle = 0;
+        public float minTransferAngle = 30f;
+        bool ignoreGravity = false;
 
+        //Might have to do some readjustments in check raycast when transitioning, still buggy on faces with varying normals
         public override void OnEnter(StateManager sm)
         {
             states = (PlayerManager)sm;
@@ -39,10 +43,7 @@ namespace PreServer
             {
                 camera = cameraTransform.value.GetComponent<CameraManager>();
             }
-            Vector3 v = Vector3.Cross(states.climbHit.normal, Vector3.up);
-            climbForward = Vector3.Cross(v, states.climbHit.normal);
-            climbRight = Vector3.Cross(states.climbHit.normal, Vector3.up);
-            climbUp = states.climbHit.normal;
+
             front = new RaycastHit();
             under = new RaycastHit();
             transitioning = false;
@@ -56,6 +57,7 @@ namespace PreServer
                 camera.ignoreInput = false;
             states.rigid.drag = 0;
             states.playerMesh.gameObject.SetActive(true);
+            CheckUnder();
         }
 
         public override void Execute(StateManager sm)
@@ -81,13 +83,14 @@ namespace PreServer
             }
             else
             {
+                RotateTowardsClimb();
                 if (timer <= 0 && states.dashActive && states.CanDash() && !dashActivated)
                 {
                     states.anim.CrossFade(states.hashes.squ_dash, 0.01f);
                     states.anim.SetBool(states.hashes.isDashing, true);
 
                     //Debug.Log("Adding velocity 9");
-                    states.rigid.velocity = states.transform.forward * dashSpeed;
+                    states.rigid.velocity = states.transform.forward * dashSpeed - (under.normal.normalized * dashSpeed * 0.5f);
                     if (states.isRun)
                     {
                         timer = 0.225f;
@@ -122,54 +125,28 @@ namespace PreServer
                 dashActivated = false;
                 states.playerMesh.gameObject.SetActive(true);
             }
-            Debug.DrawRay(states.climbHit.point, states.climbHit.normal * 3f, Color.yellow);
+            Debug.DrawRay(states.climbHit.point, states.climbHit.normal * 3f, Color.black);
         }
 
+        bool frontHit = false, underHit = false;
         void CheckRaycast(StateManager sm)
         {
-            bool frontHit = false, underHit = false;
-            float topFloat = .6f;
-            Vector3 topRay = states.transform.position + (states.transform.forward * 1.5f) + (states.transform.up * topFloat);
+            float topFloat = .4f;
+            Vector3 frontOrigin = states.transform.position + (states.transform.forward * 1.5f) + (states.transform.up * topFloat);
 
-            Debug.DrawRay(topRay, states.transform.forward * 0.75f, Color.blue);
+            Debug.DrawRay(frontOrigin, states.transform.forward * 0.75f, Color.blue);
             //Raycast in front of the squirrel, used to check if we've hit a ceiling, ground, or another climb-able surface
-            if (Physics.Raycast(topRay, states.transform.forward, out front, 0.75f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(frontOrigin, states.transform.forward, out front, 0.75f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
                 frontHit = true;
                 float angle = Vector3.Angle(front.normal, Vector3.up);
-                //can climb if the angle is between 70 and 90, and it is a different surface, might need to adjust
-                if (angle >= 70 && angle <= 90 && front.transform.tag == "Climb" && (front.transform != states.climbHit.transform || front.normal != states.climbHit.normal))
+                //front has hit a new climb that means the change is a big one, no need to check the angle
+                if (front.transform.tag == "Climb")
                 {
-                    Debug.Log("Front has detected a new climb to transition to");
-                    angle = Vector3.Angle(front.normal, states.climbHit.normal);
-                    //bool angleOver = angle > 45;
+                    ignoreGravity = true;
+                    prevAngle = Vector3.Angle(front.normal, states.climbHit.normal);
                     states.rigid.velocity = Vector3.zero;
-                    //if (angleOver)
-                    //{
-                    //    moveCamera = true;
-                    //    if (camera != null)
-                    //        camera.ignoreInput = true;
-                    //    //camera angle is the amount the camera needs to move, tempAngle is the starting point
-                    //    tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, front.normal, Vector3.up);
-                    //    cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
-                    //    if (states.dashActive)
-                    //    {
-                    //        states.dashActive = false;
-                    //        states.lagDashCooldown = 1.0f;
-                    //        dashActivated = false;
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, front.normal, Vector3.up);
-                    //    if (tempAngle < 90 && tempAngle > -90)
-                    //    {
-                    //        cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
-                    //        moveCamera = true;
-                    //        if (camera != null)
-                    //            camera.ignoreInput = true;
-                    //    }
-                    //}
+                    //Debug.Log("Front are you fucking things up, do I have to fix you?");
                     if (states.dashActive)
                     {
                         states.dashActive = false;
@@ -191,153 +168,137 @@ namespace PreServer
                     t = 0;
                     inPos = false;
                     inRot = false;
-                    Vector3 v = Vector3.Cross(states.climbHit.normal, Vector3.up);
-                    climbForward = Vector3.Cross(v, states.climbHit.normal);
-                    climbRight = Vector3.Cross(states.climbHit.normal, Vector3.up);
-                    climbUp = states.climbHit.normal;
+
                     transitioning = true;
                     states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
                     return;
                 }
-                else if (angle < 70)
+                else
                 {
-                    Debug.Log("Front has detected non-climbable surface, exit the climb");
-                    states.climbHit = front;
-                    //states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
-                    states.climbState = PlayerManager.ClimbState.EXITING;
-                    return;
-                }
-                else if (angle > 90 || front.transform.tag != "Climb")
-                {
-                    Debug.Log("Front has detected a wall that blocks the user and isn't climbable");
-                    states.rigid.velocity = Vector3.zero;
-                    //states.mTransform.rotation = prevRotation;
+                    if (angle < 70)
+                    {
+                        //Debug.Log("Front has detected non-climbable surface, exit the climb");
+                        states.rigid.velocity = Vector3.zero;
+                        states.climbHit = front;
+                        //states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
+                        states.climbState = PlayerManager.ClimbState.EXITING;
+                        return;
+                    }
+                    else
+                    {
+                        //Debug.Log("Front has detected a wall that blocks the user and isn't climbable");
+                        states.rigid.velocity = Vector3.zero;
+                    }
                 }
             }
+            else
+                frontHit = false;
 
-            // Setup origin points for three different ground checking vector3s. One in middle of player, one in front, and one in back
-            Vector3 frontOrigin = states.transform.position;
-            frontOrigin += states.transform.forward + states.transform.forward / 2 + (states.transform.up * 0.1f);
-            //backOrigin += states.mTransform.forward / 2;
 
-            // Origins should be coming from inside of player
+            Vector3 underOrigin = states.transform.position;
+            underOrigin += states.transform.forward + states.transform.forward / 2.0f + (states.transform.up * 0.2f);
 
             // Dir represents the downward direction
             Vector3 dir = -states.transform.forward + (-states.transform.up * 0.5f);
 
             // Draw the rays
-            Debug.DrawRay(frontOrigin, dir * 1.5f, Color.green);
-            if (Physics.Raycast(frontOrigin, dir, out under, 1.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            Debug.DrawRay(underOrigin, dir * 1.6f, Color.green);
+
+            if (Physics.Raycast(underOrigin, dir, out under, 1.6f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
+                //underside has hit something
                 underHit = true;
                 float angle = Vector3.Angle(under.normal, Vector3.up);
-                if (angle >= 70 && angle <= 90 && under.transform.tag == "Climb" && (under.transform != states.climbHit.transform || under.normal != states.climbHit.normal))
+                //If I hit another climb, check if I should transfer to it
+                if(under.transform.tag == "Climb")
                 {
-                    Debug.Log("Under has detected a new climb to transition to");
                     angle = Vector3.Angle(under.normal, states.climbHit.normal);
-                    //bool angleOver = angle > 45;
-                    states.rigid.velocity = Vector3.zero;
-                    //if (angleOver)
-                    //{
-                    //    moveCamera = true;
-                    //    if (camera != null)
-                    //        camera.ignoreInput = true;
-                    //    //camera angle is the amount the camera needs to move, tempAngle is the starting point
-                    //    tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, under.normal, Vector3.up);
-                    //    cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
-                    //    if (states.dashActive)
-                    //    {
-                    //        states.dashActive = false;
-                    //        states.lagDashCooldown = 1.0f;
-                    //        dashActivated = false;
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, under.normal, Vector3.up);
-                    //    if (tempAngle < 90 && tempAngle > -90)
-                    //    {
-                    //        cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
-                    //        moveCamera = true;
-                    //        if (camera != null)
-                    //            camera.ignoreInput = true;
-                    //    }
-                    //}
-                    if (states.dashActive)
-                    {
-                        states.dashActive = false;
-                        states.lagDashCooldown = 1.0f;
-                        dashActivated = false;
-                    }
-                    tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, under.normal, Vector3.up);
-                    if (tempAngle < 90 && tempAngle > -90)
-                    {
-                        cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
-                        moveCamera = true;
-                        if (camera != null)
-                            camera.ignoreInput = true;
-                    }
                     states.climbHit = under;
-                    startPos = states.transform.position;
-                    targetPos = states.climbHit.point + (states.climbHit.normal * offsetFromWall);
-                    targetRot = Quaternion.FromToRotation(states.transform.up, states.climbHit.normal) * states.transform.rotation;
-                    t = 0;
-                    inPos = false;
-                    inRot = false;
-                    Vector3 v = Vector3.Cross(states.climbHit.normal, Vector3.up);
-                    climbForward = Vector3.Cross(v, states.climbHit.normal);
-                    climbRight = Vector3.Cross(states.climbHit.normal, Vector3.up);
-                    climbUp = states.climbHit.normal;
-                    transitioning = true;
-                    states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
-                    return;
-                }
-                else if (angle < 70)
-                {
-                    Debug.Log("Under has detected non-climbable surface, exit the climb");
-                    states.climbHit = under;
-                    states.climbState = PlayerManager.ClimbState.EXITING;
+                    //if(Mathf.Abs(angle - prevAngle) >= minTransferAngle)
+                        //Debug.Log(Mathf.Abs(angle - prevAngle));
+                    //if the angle between the new climb and the current one is greater than the transfer amount, then transfer to it
+                    if (Mathf.Abs(angle - prevAngle) >= minTransferAngle)
+                    {
+                        prevAngle = angle;
+                        //Debug.Log("Under has detected a new climb to transition to");
+                        states.rigid.velocity = Vector3.zero;
 
-                    states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
-                    states.anim.SetBool(states.hashes.isClimbing, false);
+                        //Stop dashing
+                        if (states.dashActive)
+                        {
+                            states.dashActive = false;
+                            states.lagDashCooldown = 1.0f;
+                            dashActivated = false;
+                        }
 
-                    return;
-                }
-                else if (angle > 90)
-                {
-                    Debug.Log("Under has detected a wall that blocks the user and isn't climbable");
-                    //states.rigid.velocity = Vector3.zero;
-                    //states.mTransform.rotation = prevRotation;
-                    states.climbState = PlayerManager.ClimbState.NONE;
-                    states.isJumping = true;
-                    states.anim.SetBool(states.hashes.isClimbing, false);
-                    return;
-                }
-                else if (under.transform.tag != "Climb")
-                {
+                        //Camera rotations, checking if the camera needs to be repositioned based on where it is relative to the climb
+                        tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, under.normal, Vector3.up);
+                        if (tempAngle < 90 && tempAngle > -90)
+                        {
+                            cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
+                            moveCamera = true;
+                            if (camera != null)
+                                camera.ignoreInput = true;
+                        }
 
-                    Debug.Log("Under has detected a non-climbable surface, stop moving");
-                    states.rigid.velocity = Vector3.zero;
-                    //states.mTransform.rotation = prevRotation;
-                    return;
+                        ////Update variables for transfer
+                        startPos = states.transform.position;
+                        targetPos = states.climbHit.point + (states.climbHit.normal * offsetFromWall);
+                        targetRot = Quaternion.FromToRotation(states.transform.up, states.climbHit.normal) * states.transform.rotation;
+                        t = 0;
+                        inPos = false;
+                        inRot = false;
+                        transitioning = true;
+                        states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
+                        return;
+                    }
+
                 }
+                //I didn't hit a climb but I must do something based on the angle of the hit
+                else
+                {
+                    //detach
+                    if (angle < 70)
+                    {
+                        //Debug.Log("Under has detected non-climbable surface, exit the climb");
+                        states.climbHit = under;
+                        states.climbState = PlayerManager.ClimbState.EXITING;
+
+                        states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
+                        states.anim.SetBool(states.hashes.isClimbing, false);
+                        states.rigid.velocity = Vector3.zero;
+
+                        return;
+                    }
+                    ////detach
+                    //else if (angle > 90)
+                    //{
+                    //    Debug.Log("Under has detected a wall that blocks the user and isn't climbable");
+                    //    states.climbState = PlayerManager.ClimbState.NONE;
+                    //    states.isJumping = true;
+                    //    states.anim.SetBool(states.hashes.isClimbing, false);
+                    //    return;
+                    //}
+                    //stop moving
+                    else
+                    {
+
+                        //Debug.Log("Under has detected a non-climbable surface, stop moving");
+                        states.rigid.velocity = Vector3.zero;
+                        return;
+                    }
+                }
+
             }
             else
             {
+                underHit = false;
+                states.rigid.velocity = Vector3.zero;
                 Debug.Log("Under isn't hitting anything");
-                //states.rigid.velocity = Vector3.zero;
-                //states.mTransform.rotation = prevRotation;
                 states.climbState = PlayerManager.ClimbState.NONE;
                 states.isJumping = true;
                 states.anim.SetBool(states.hashes.isClimbing, false);
             }
-            //if (!underHit && !frontHit)
-            //{
-            //    Debug.Log("Under and front have failed to hit anything, detaching before more problems happen");
-            //    states.climbState = PlayerManager.ClimbState.NONE;
-            //    states.isJumping = true;
-            //    states.anim.SetBool(states.hashes.isClimbing, false);
-            //}
         }
         Quaternion prevRotation;
         void Rotate(StateManager sm)
@@ -356,14 +317,18 @@ namespace PreServer
             //rotating climb up and climb right based on camera's position
             Vector3 climbForwardAlt = (Quaternion.AngleAxis(angle, climbUp) * -climbForward);
             Vector3 climbRightAlt = (Quaternion.AngleAxis(angle, climbUp) * -climbRight);
+            if (climbForwardAlt == Vector3.zero)
+                climbForwardAlt = cameraTransform.value.forward;
+            if(climbRightAlt == Vector3.zero)
+                climbRightAlt = cameraTransform.value.right;
 
             Vector3 targetDir = climbForwardAlt * v;
             targetDir += (climbRightAlt * h);
             targetDir.Normalize();
 
             //Debug purposes to visualize the direction
-            //Debug.DrawRay(states.transform.position, climbForwardAlt * 3, Color.blue);
-            //Debug.DrawRay(states.transform.position, climbRightAlt * 3, Color.yellow);
+            Debug.DrawRay(states.transform.position, climbForwardAlt * 3, Color.red);
+            Debug.DrawRay(states.transform.position, climbRightAlt * 3, Color.yellow);
 
             //If there's no input, then don't do anything
             if (targetDir == Vector3.zero)
@@ -378,12 +343,36 @@ namespace PreServer
             states.mTransform.rotation = targetRotation;
         }
 
+        void RotateTowardsClimb()
+        {
+
+            Vector3 center = states.transform.position;
+            center += states.transform.forward + (states.transform.up * 0.1f);
+
+            // Dir represents the downward direction
+            Vector3 dir = -states.transform.up * 0.5f;
+
+            // Draw the rays
+            //Debug.DrawRay(center, dir * 5f, Color.red);
+            RaycastHit hit = new RaycastHit();
+            if (Physics.Raycast(center, dir, out hit, 5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                states.mTransform.rotation = Quaternion.Slerp(states.mTransform.rotation, Quaternion.FromToRotation(states.transform.up, hit.normal) * states.transform.rotation, t * rotationSpeed * (states.dashActive ? 4f : 1f));
+                Vector3 v = Vector3.Cross(hit.normal, Vector3.up);
+                climbForward = Vector3.Cross(v, hit.normal);
+                climbRight = Vector3.Cross(hit.normal, Vector3.up);
+                climbUp = hit.normal;
+            }
+        }
+
         void Move(StateManager sm)
         {
             Vector3 testOrigin = states.mTransform.position + (states.mTransform.forward * .75f);
             testOrigin.y += .5f;
             //Debug.DrawRay(origin2, -Vector3.up, Color.red);
             Vector3 targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * climbSpeed * states.climbSpeedMult;
+            if(!ignoreGravity)
+                targetVelocity -= under.normal.normalized * targetVelocity.magnitude * 0.5f;
             //if (transitioning)
             //    targetVelocity = Quaternion.Inverse(targetRot) * targetVelocity;
             Vector3 currentVelocity = states.rigid.velocity;
@@ -408,8 +397,10 @@ namespace PreServer
             {
                 //Debug.Log(Time.frameCount + " || I am in rotation");
                 transitioning = false;
+                ignoreGravity = false;
                 //Vector3 tp = Vector3.Lerp(startPos, targetPos, 0.99f);
                 states.transform.position = targetPos;
+                CheckUnder();
             }
 
             if (!inRot)
@@ -417,17 +408,24 @@ namespace PreServer
                 if (states.transform.rotation == targetRot)
                 {
                     inRot = true;
-                    states.rigid.velocity += states.transform.forward;
+                    //states.rigid.velocity += states.transform.forward;
                 }
-                Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, targetRot, t);
-                states.mTransform.rotation = targetRotation;
-                //Debug.Log(Time.frameCount + " || still rotating: " + inRot);
+                else
+                {
+                    Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, targetRot, t);
+                    if (t >= 1)
+                        targetRotation = targetRot;
+                    states.mTransform.rotation = targetRotation;
+                }
+                    //Debug.Log(Time.frameCount + " || still rotating: " + inRot);
             }
 
             if (!inPos)
             {
                 t += delta * (dashActivated ? 4 : states.isRun ? states.climbSpeedMult : 1);
                 Vector3 tp = Vector3.Lerp(startPos, targetPos, t);
+                if (t >= 1)
+                    tp = targetPos;
                 states.transform.position = tp;
             }
             if (Vector3.Distance(states.transform.position, targetPos) <= offsetFromWall)
@@ -439,6 +437,24 @@ namespace PreServer
                 inPos = false;
             }
             //Debug.Log(Time.frameCount + " || inPos = " + inPos + " inRot = " + inRot);
+        }
+
+        void CheckUnder()
+        {
+            Vector3 underOrigin = states.transform.position;
+            underOrigin += states.transform.forward + states.transform.forward / 2.1f + (states.transform.up * 0.2f);
+            // Dir represents the downward direction
+            Vector3 dir = -states.transform.forward + (-states.transform.up * 0.5f);
+            if (Physics.Raycast(underOrigin, dir, out under, 1.6f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                states.climbHit = under;
+                prevAngle = 0;
+            }
+            //prevAngle = Vector3.Angle(under.normal, states.climbHit.normal);
+            Vector3 v = Vector3.Cross(states.climbHit.normal, Vector3.up);
+            climbForward = Vector3.Cross(v, states.climbHit.normal);
+            climbRight = Vector3.Cross(states.climbHit.normal, Vector3.up);
+            climbUp = states.climbHit.normal;
         }
 
         public override void OnFixed(StateManager sm)
