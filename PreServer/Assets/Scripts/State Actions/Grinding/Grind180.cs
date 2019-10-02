@@ -14,15 +14,22 @@ namespace PreServer
         {
             PlayerManager states = (PlayerManager)sm;
 
-            Vector3 eulerAngles = states.mTransform.rotation.eulerAngles;
+            if (states.anim.GetBool(states.hashes.waitForAnimation))
+            {
+                Debug.Log(states.testINT);
+                states.testINT++;
 
-            float rotateAmount = states.anim.GetFloat(states.hashes.rotate_test);
-            float currentHold = rotateAmount;
+                Vector3 eulerAngles = states.mTransform.rotation.eulerAngles;
 
-            rotateAmount = rotateAmount - states.held180RotationAmt;
+                float rotateAmount = states.anim.GetFloat(states.hashes.rotate_test);
+                float currentHold = rotateAmount;
 
-            states.mTransform.rotation = Quaternion.Euler(eulerAngles.x, eulerAngles.y + rotateAmount, eulerAngles.z);
-            states.held180RotationAmt = currentHold;
+                rotateAmount = rotateAmount - states.held180RotationAmt;
+
+                states.mTransform.rotation = Quaternion.Euler(eulerAngles.x, eulerAngles.y + rotateAmount, eulerAngles.z);
+                states.held180RotationAmt = currentHold;
+            }
+
         }
     }
 }

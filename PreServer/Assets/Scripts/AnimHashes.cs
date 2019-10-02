@@ -34,6 +34,8 @@ namespace PreServer
         public int isDashing = Animator.StringToHash("isDashing");
         public int groundDash = Animator.StringToHash("groundDash");
         public int airDash = Animator.StringToHash("airDash");
+        public int mirror180 = Animator.StringToHash("mirror180");
+        public int squ_idle = Animator.StringToHash("squ_idle");
 
         public int rotate_test = Animator.StringToHash("rotateFloat");
 

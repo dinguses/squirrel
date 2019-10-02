@@ -76,6 +76,9 @@ namespace PreServer
 
         public float held180RotationAmt = 0;
 
+        public int testINT = 0;
+        public bool ending180Early = false;
+
         public Vector3 facingPoint;
         public Vector3 behindPoint;
 
@@ -94,6 +97,7 @@ namespace PreServer
 
         public bool rotateBool = false;
         public SkinnedMeshRenderer playerMesh;
+        public GameObject bonesTEST;
         public Vector3 storedTargetDir;
         public bool dashStarted = false;
         public bool testRotate = false;
@@ -860,6 +864,19 @@ namespace PreServer
             dashStarted = true;
         }
 
+        public void Check180Rotation()
+        {
+            //Debug.Log(Vector3.Angle(mTransform.forward, storedTargetDir));
+
+            if (Vector3.Angle(mTransform.forward, storedTargetDir) < 10)
+            {
+                Debug.Log("ENDIN THE TURN EARLY");
+                anim.SetBool(hashes.waitForAnimation, false);
+                ending180Early = true;
+                anim.CrossFade(hashes.squ_idle, .2f);
+            }
+        }
+
         /// <summary>
         /// Moves player forward a bit during dash
         /// </summary>
@@ -867,7 +884,8 @@ namespace PreServer
         {
             if (!bottomHit)
             {
-                mTransform.position += (mTransform.forward / 2);
+                //mTransform.position += (mTransform.forward / 2);
+                //bonesTEST.transform.position += (bonesTEST.transform.position / 2);
             }
         }
 
@@ -878,7 +896,8 @@ namespace PreServer
         {
             if (!bottomHit)
             {
-                mTransform.position -= (mTransform.forward / 2);
+               // mTransform.position -= (mTransform.forward / 2);
+                //bonesTEST.transform.position -= (bonesTEST.transform.position / 2);
             }
         }
 
@@ -889,6 +908,7 @@ namespace PreServer
         {
             testRotate = false;
             anim.SetBool(hashes.waitForAnimation, false);
+            anim.SetBool(hashes.mirror180, false);
         }
 
         /// <summary>

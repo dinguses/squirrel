@@ -50,15 +50,27 @@ namespace PreServer
             Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * states.movementVariables.moveAmount * speed);
 
             // Rotate 180?
-            if (Vector3.Angle(targetDir2, states.mTransform.forward) > 150 && Vector3.Angle(targetDir2, states.mTransform.forward) < 210)
+            var testAngle = Vector3.Angle(targetDir2, states.mTransform.forward);
+            var testAngleSide = Vector3.Angle(targetDir2, states.mTransform.right);
+
+            if (testAngle > 120 && testAngle < 240)
             {
-                //Debug.Log(Vector3.Angle(targetDir2, states.mTransform.forward));
+                states.testINT = 0;
+
+                Debug.Log("test angle - " + testAngle);
+                Debug.Log("test angle side - " + testAngleSide);
+
+                // If the player should be rotating to the left
+                if (testAngleSide > 90)
+                {
+                    //states.anim.SetBool(states.hashes.mirror180, true);
+                }
 
                 states.anim.SetBool(states.hashes.waitForAnimation, true);
                 states.anim.CrossFade(states.hashes.squ_ground_180, 0.01f);
                 states.rigid.velocity = new Vector3(0, 0, 0);
 
-                //states.storedTargetDir = targetDir;
+                states.storedTargetDir = targetDir;
             }
 
 
