@@ -196,15 +196,14 @@ namespace PreServer
 
 
             Vector3 underOrigin = states.transform.position;
-            underOrigin += states.transform.forward + states.transform.forward / 2.0f + (states.transform.up * 0.2f);
+            underOrigin += states.transform.forward + states.transform.forward / 1.7f + (states.transform.up * 0.5f);
 
             // Dir represents the downward direction
-            Vector3 dir = -states.transform.forward + (-states.transform.up * 0.5f);
+            Vector3 dir = -states.transform.forward + (-states.transform.up);
 
             // Draw the rays
-            Debug.DrawRay(underOrigin, dir * 1.6f, Color.green);
-
-            if (Physics.Raycast(underOrigin, dir, out under, 1.6f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            Debug.DrawRay(underOrigin, dir * 1.5f, Color.green);
+            if (Physics.Raycast(underOrigin, dir, out under, 1.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
                 //underside has hit something
                 underHit = true;
@@ -347,7 +346,7 @@ namespace PreServer
         {
 
             Vector3 center = states.transform.position;
-            center += states.transform.forward + (states.transform.up * 0.1f);
+            center += states.transform.forward + (states.transform.up * 0.2f);
 
             // Dir represents the downward direction
             Vector3 dir = -states.transform.up * 0.5f;
@@ -442,10 +441,10 @@ namespace PreServer
         void CheckUnder()
         {
             Vector3 underOrigin = states.transform.position;
-            underOrigin += states.transform.forward + states.transform.forward / 2.1f + (states.transform.up * 0.2f);
+            underOrigin += states.transform.forward + states.transform.forward / 1.7f + (states.transform.up * 0.5f);
             // Dir represents the downward direction
-            Vector3 dir = -states.transform.forward + (-states.transform.up * 0.5f);
-            if (Physics.Raycast(underOrigin, dir, out under, 1.6f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            Vector3 dir = -states.transform.forward + (-states.transform.up);
+            if (Physics.Raycast(underOrigin, dir, out under, 1.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
                 states.climbHit = under;
                 prevAngle = 0;
