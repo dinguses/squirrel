@@ -314,6 +314,27 @@ namespace PreServer
 
             if (!dashActive && dashStarted)
                 dashStarted = false;
+
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                var currentScene = SceneManager.GetActiveScene();
+
+                switch (currentScene.name)
+                {
+                    case "TestScene":
+                        SceneManager.LoadScene("Plaza");
+                        break;
+                    case "Plaza":
+                        SceneManager.LoadScene("DEMO");
+                        break;
+                    case "DEMO":
+                        SceneManager.LoadScene("Plaza");
+                        break;
+                    default:
+                        SceneManager.LoadScene("DEMO");
+                        break;
+                }
+            }
         }
 
         public bool pauseSpeedHackTimer = false;

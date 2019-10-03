@@ -64,10 +64,14 @@ namespace PreServer
                 if (testAngleSide > 90)
                 {
                     //states.anim.SetBool(states.hashes.mirror180, true);
+                    states.anim.CrossFade(states.hashes.squ_ground_180_mirror, 0.01f);
+                }
+                else
+                {
+                    states.anim.CrossFade(states.hashes.squ_ground_180, 0.01f);
                 }
 
                 states.anim.SetBool(states.hashes.waitForAnimation, true);
-                states.anim.CrossFade(states.hashes.squ_ground_180, 0.01f);
                 states.rigid.velocity = new Vector3(0, 0, 0);
 
                 states.storedTargetDir = targetDir;
