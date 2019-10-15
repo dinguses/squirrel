@@ -328,12 +328,20 @@ namespace PreServer
                         SceneManager.LoadScene("DEMO");
                         break;
                     case "DEMO":
-                        SceneManager.LoadScene("Plaza");
+                        SceneManager.LoadScene("DEMO 2");
+                        break;
+                    case "DEMO 2":
+                        SceneManager.LoadScene("TestScene");
                         break;
                     default:
                         SceneManager.LoadScene("DEMO");
                         break;
                 }
+            }
+
+            if (Input.GetKeyDown(KeyCode.G))
+            {
+                mTransform.position = new Vector3(51, -4, -29);
             }
         }
 
