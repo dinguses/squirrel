@@ -162,12 +162,12 @@ namespace PreServer
         float startAway;
         void Test2()
         {
-            testYaw += (Input.GetAxis("RightStickHorizontal")) * mouseSens;
+            yaw += (Input.GetAxis("RightStickHorizontal")) * mouseSens;
             distanceUp -= (Input.GetAxis("RightStickVertical"));
             distanceUp = Mathf.Clamp(distanceUp, -10, 10);
             distanceAway = startAway - (startUp >= distanceUp ? startUp - distanceUp : distanceUp - startUp);
             distanceAway = Mathf.Clamp(distanceAway, 5, 15);
-            transform.RotateAround(player.position, Vector3.up, testYaw - prevTestYaw);
+            transform.RotateAround(player.position, Vector3.up, yaw - prevYaw);
             //transform.RotateAround(player.position, camTransform.right, -(testPitch - prevTestPitch));
 
             Vector3 characterOffset = player.position + player.up * 0.25f;
@@ -189,8 +189,8 @@ namespace PreServer
             smoothPosition(transform.position, targetPos);
             //transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * smooth);
             camTransform.LookAt(player);
-            prevTestPitch = testPitch;
-            prevTestYaw = testYaw;
+            prevPitch = pitch;
+            prevYaw = yaw;
         }
 
         void CompensateForWalls(Vector3 fromObject, ref Vector3 toTarget)
@@ -198,7 +198,7 @@ namespace PreServer
             RaycastHit wallHit = new RaycastHit();
             if(Physics.Linecast(fromObject, toTarget, out wallHit, 1, QueryTriggerInteraction.Ignore))
             {
-                toTarget = new Vector3(wallHit.point.x, toTarget.y, wallHit.point.z); //wallHit.point;
+                toTarget = wallHit.point;
             }
         }
 
@@ -207,20 +207,18 @@ namespace PreServer
             transform.position = Vector3.SmoothDamp(fromPos, toPos, ref velocityCamSmooth, camSmoothDampTime);
         }
 
-        float testYaw = 0;
-        float testPitch = 0;
-        float prevTestYaw = 0;
-        float prevTestPitch = 0;
+        float prevYaw = 0;
+        float prevPitch = 0;
         Vector3 testPosition;
         Vector3 playerPrevPosition;        
         void Test()
         {
-            testYaw += (Input.GetAxis("RightStickHorizontal")) * mouseSens;
-            testPitch -= (Input.GetAxis("RightStickVertical")) * mouseSens;
+            //testYaw += (Input.GetAxis("RightStickHorizontal")) * mouseSens;
+            //testPitch -= (Input.GetAxis("RightStickVertical")) * mouseSens;
             //testPitch = Mathf.Clamp(testPitch, pitchMinMax.x, pitchMinMax.y);
 
-            transform.RotateAround(player.position, Vector3.up, testYaw - prevTestYaw);
-            transform.RotateAround(player.position, transform.right, testPitch - prevTestPitch);
+            transform.RotateAround(player.position, Vector3.up, yaw - prevYaw);
+            transform.RotateAround(player.position, transform.right, pitch - prevPitch);
             Vector3 targetPosition = transform.position;
             //Debug.Log(Vector3.Distance(player.position, camTransform.position));
             if (Vector3.Distance(player.position, transform.position) >= 20f/* || Vector3.Distance(player.position, camTransform.position) <= 5f*/)
@@ -249,8 +247,8 @@ namespace PreServer
             transform.position = targetPosition;
             Debug.DrawLine(player.position, camTransform.position, Color.red);
 
-            prevTestPitch = testPitch;
-            prevTestYaw = testYaw;
+            prevPitch = pitch;
+            prevYaw = yaw;
             camTransform.LookAt(player.position);
             playerPrevPosition = player.position;
         }
