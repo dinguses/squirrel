@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   climbSpeed: 5.25
   rotationSpeed: 6
-  cameraTransform: {fileID: 11400000, guid: 74c4d5a43fc4b4947a4d7dc56225221e, type: 2}
+  cameraTransform: {fileID: 11400000, guid: 14fa444e8fc99754c9f013ced74737ae, type: 2}
   dashSpeed: 40
   dashTime: 0.15
   minTransferAngle: 30
