@@ -107,6 +107,7 @@ namespace PreServer
                 cameraMan.AddToYaw(targetRotation.eulerAngles.y - cameraMan.GetYaw(), true);
                 cameraMan.SetCurrentRotation(targetRotation.eulerAngles);
                 Debug.DrawRay(targetPosition, Vector3.up * 5f, Color.yellow);
+                cameraMan.camTransform.LookAt(playerPosition);
             }
         }
 

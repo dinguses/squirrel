@@ -49,7 +49,7 @@ namespace PreServer
             Quaternion tr = Quaternion.LookRotation(targetDir, states.groundNormal);
             Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * states.movementVariables.moveAmount * speed);
 
-            // Rotate 180?
+            //Rotate 180 ?
             var testAngle = Vector3.Angle(targetDir2, states.mTransform.forward);
             var testAngleSide = Vector3.Angle(targetDir2, states.mTransform.right);
 
@@ -72,15 +72,42 @@ namespace PreServer
                 }
 
                 states.anim.SetBool(states.hashes.waitForAnimation, true);
-                states.rigid.velocity = new Vector3(0, 0, 0);
+                states.rigid.velocity = Vector3.zero;
 
                 states.storedTargetDir = targetDir;
             }
-
-
+            //float direction = 0;
+            //float speedOut = 0;
+            //StickToWorldSpace(states.transform, Camera.main.transform, states, ref direction, ref speedOut);
             //Debug.Log("Ground Rotation target DIR: " + targetDir);
-
+            //targetRotation = Quaternion.AngleAxis(direction, states.transform.up);
+            //states.mTransform.forward = targetRotation * states.transform.forward;
             states.mTransform.rotation = targetRotation;
+        }
+
+        public void StickToWorldSpace(Transform root, Transform camera, PlayerManager states, ref float directionOut, ref float speedOut)
+        {
+            Vector3 rootDirection = root.forward;
+            Vector3 stickDirection = new Vector3(states.movementVariables.horizontal, 0, states.movementVariables.vertical);
+
+            speedOut = stickDirection.sqrMagnitude;
+
+            //Get Camera Rotation
+            Vector3 cameraDirection = camera.forward;
+            cameraDirection.y = 0;
+            Quaternion referentialShift = Quaternion.FromToRotation(Vector3.forward, cameraDirection);
+
+            //Convert input in worldspace coordinates
+            Vector3 moveDirection = referentialShift * stickDirection;
+            Vector3 axisSign = Vector3.Cross(moveDirection, rootDirection);
+
+            Debug.DrawRay(new Vector3(root.position.x, root.position.y + 2f, root.position.z), moveDirection, Color.green);
+            Debug.DrawRay(new Vector3(root.position.x, root.position.y + 2f, root.position.z), rootDirection, Color.magenta);
+            Debug.DrawRay(new Vector3(root.position.x, root.position.y + 2f, root.position.z), stickDirection, Color.blue);
+
+            float angleRootToMove = Vector3.Angle(rootDirection, moveDirection) * (axisSign.y >= 0 ? -1f : 1f);
+            angleRootToMove /= 180f;
+            directionOut = angleRootToMove * speed;
         }
     }
 }

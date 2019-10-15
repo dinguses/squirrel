@@ -326,8 +326,8 @@ namespace PreServer
             targetDir.Normalize();
 
             //Debug purposes to visualize the direction
-            Debug.DrawRay(states.transform.position, climbForwardAlt * 3, Color.red);
-            Debug.DrawRay(states.transform.position, climbRightAlt * 3, Color.yellow);
+            //Debug.DrawRay(states.transform.position, climbForwardAlt * 3, Color.red);
+            //Debug.DrawRay(states.transform.position, climbRightAlt * 3, Color.yellow);
 
             //If there's no input, then don't do anything
             if (targetDir == Vector3.zero)
