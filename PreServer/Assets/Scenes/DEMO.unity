@@ -2689,16 +2689,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.x
       value: 6.2910914
       objectReference: {fileID: 0}
-    - target: {fileID: 6875418786272240559, guid: de5c63d9750a02c499a3b296f5d8165f,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: -18.208488
-      objectReference: {fileID: 0}
-    - target: {fileID: 6875418785770391552, guid: de5c63d9750a02c499a3b296f5d8165f,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: -18.208488
-      objectReference: {fileID: 0}
     - target: {fileID: 6875418786197664142, guid: de5c63d9750a02c499a3b296f5d8165f,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2713,6 +2703,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 82.08435
+      objectReference: {fileID: 0}
+    - target: {fileID: 6875418786272240559, guid: de5c63d9750a02c499a3b296f5d8165f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -18.208488
+      objectReference: {fileID: 0}
+    - target: {fileID: 6875418785770391552, guid: de5c63d9750a02c499a3b296f5d8165f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -18.208488
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: de5c63d9750a02c499a3b296f5d8165f, type: 3}
@@ -64003,7 +64003,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebdd5b8632291894da25997fadb2bbb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 11400000, guid: 74c4d5a43fc4b4947a4d7dc56225221e, type: 2}
   player: {fileID: 2073569708}
   mouseSens: 4
   rotationSmoothTime: 0.12
@@ -64011,10 +64010,18 @@ MonoBehaviour:
   camFollowSpeed: 9
   camZoomSpeed: 4
   camOffset: {x: 0, y: 4, z: -15}
-  camTransform: {fileID: 0}
+  camTransform: {fileID: 1595751125}
   camRel: {x: 0, y: 0, z: 0}
   debugPauseCamLerp: 0
+  debugTeleport: 0
+  maxDistance: 3
+  minDistance: 0.5
+  test: {fileID: 0}
   ignoreMouse: 1
+  distanceAway: 15
+  distanceUp: 5
+  smooth: 0
+  follow: {fileID: 0}
 --- !u!1 &1036360135
 GameObject:
   m_ObjectHideFlags: 0
@@ -83753,6 +83760,7 @@ GameObject:
   - component: {fileID: 1595751125}
   - component: {fileID: 1595751127}
   - component: {fileID: 1595751126}
+  - component: {fileID: 1595751128}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -83825,6 +83833,19 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &1595751128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1595751124}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 297290d82bb937a4ba0053f27b62c5ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  transformVariable: {fileID: 11400000, guid: 14fa444e8fc99754c9f013ced74737ae, type: 2}
 --- !u!1 &1597484544
 GameObject:
   m_ObjectHideFlags: 0

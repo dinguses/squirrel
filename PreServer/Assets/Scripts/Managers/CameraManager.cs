@@ -116,7 +116,7 @@ namespace PreServer
             //camTransform.position = transform.position;
             //transform.position = player.position;
             temp = camTransform.position;
-            test.position = temp;
+            //test.position = temp;
             startAway = distanceAway;
             startUp = 0;
         }
