@@ -119,6 +119,11 @@ namespace PreServer
             //test.position = temp;
             startAway = distanceAway;
             startUp = 0;
+            if (!ignoreMouse)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
         }
         Vector3 temp;
         void FixedUpdate()
@@ -133,8 +138,6 @@ namespace PreServer
                 }
                 else
                 {
-                    Cursor.lockState = CursorLockMode.Locked;
-                    Cursor.visible = false;
                     yaw += ignoreYaw ? 0 : (Input.GetAxis("RightStickHorizontal") + (Input.GetAxis("Mouse XX") * .2f)) * mouseSens;
                     pitch -= ignorePitch ? 0 : (Input.GetAxis("RightStickVertical") + (Input.GetAxis("Mouse YY") * .2f)) * mouseSens;
                 }
@@ -146,6 +149,21 @@ namespace PreServer
                 //MoveCamera_Legacy();
                 //Test();
                 Test2();
+            }
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                if(ignoreMouse)
+                {
+                    Cursor.lockState = CursorLockMode.Locked;
+                    Cursor.visible = false;
+                    ignoreMouse = false;
+                }
+                else
+                {
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
+                    ignoreMouse = true;
+                }
             }
             //Debug.Log("CameraManager currentRotation: " + currentRotation);
         }
@@ -162,8 +180,14 @@ namespace PreServer
         float startAway;
         void Test2()
         {
-            yaw += (Input.GetAxis("RightStickHorizontal")) * mouseSens;
-            distanceUp -= (Input.GetAxis("RightStickVertical"));
+            //yaw += (Input.GetAxis("RightStickHorizontal")) * mouseSens;
+            if (!ignoreInput)
+            {
+                if(ignoreMouse)
+                    distanceUp -= ignorePitch ? 0 : Input.GetAxis("RightStickVertical");
+                else
+                    distanceUp -= ignorePitch ? 0 : (Input.GetAxis("RightStickVertical") + (Input.GetAxis("Mouse YY") * .2f));
+            }
             distanceUp = Mathf.Clamp(distanceUp, -10, 10);
             distanceAway = startAway - (startUp >= distanceUp ? startUp - distanceUp : distanceUp - startUp);
             distanceAway = Mathf.Clamp(distanceAway, 5, 15);
