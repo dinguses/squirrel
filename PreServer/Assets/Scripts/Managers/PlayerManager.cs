@@ -145,6 +145,13 @@ namespace PreServer
         [HideInInspector]
         public Vector3 slideMomentum;
 
+        public int numNuts = 0;
+        public Text nutsText;
+        public GameObject barrierText;
+        public GameObject barrier;
+        public bool inSpeedZone = false;
+        public bool speedNutGot = false;
+
         private void Start()
         {
             climbHit = new RaycastHit();
@@ -826,6 +833,34 @@ namespace PreServer
 
         void OnTriggerEnter(Collider other)
         {
+            // Nut (for playtest)
+            if (other.tag == "nut")
+            {
+                if (other.name == "speedNut")
+                {
+                    speedNutGot = true;
+                }
+
+                Destroy(other.gameObject);
+                numNuts++;
+
+                //update canvas text
+                nutsText.text = "Nuts Collected: " + numNuts + "/5";
+
+                if (numNuts == 5)
+                {
+                    // Remove barrier
+                    barrierText.gameObject.SetActive(false);
+                    barrier.SetActive(false);
+                }
+            }
+
+            // SpeedZone (for playtest)
+            if (other.tag == "speedZone")
+            {
+                inSpeedZone = true;
+            }
+
             // Start a grind if you've entered a grind zone and were not already in one
             if (other.tag == "Grind" && !inGrindZone)
             {
@@ -852,6 +887,12 @@ namespace PreServer
 
         void OnTriggerExit(Collider other)
         {
+            // SpeedZone (for playtest)
+            if (other.tag == "speedZone")
+            {
+                inSpeedZone = false;
+            }
+
             if (other.tag == "Grind" && !inJoint && !testRotate)
             {
                 Debug.Log("purge?");
