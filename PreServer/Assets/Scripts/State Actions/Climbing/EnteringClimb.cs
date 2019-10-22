@@ -44,7 +44,7 @@ namespace PreServer
             if (tempAngle < 90 && tempAngle > -90)
             {
                 cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
-                moveCamera = true;
+                //moveCamera = true;
                 if (camera != null)
                     camera.ignoreInput = true;
             }
@@ -58,20 +58,20 @@ namespace PreServer
         {
             base.OnFixed(states);
 
-            if (moveCamera)
-            {
-                if (camera != null && tempAngle < 180 && tempAngle > -180)
-                {
-                    camera.AddToYaw((cameraAngle * Time.deltaTime * 4));
-                    tempAngle -= (cameraAngle * Time.deltaTime * 4);
-                }
-                else
-                {
-                    moveCamera = false;
-                    if (camera != null)
-                        camera.ignoreInput = false;
-                }
-            }
+            //if (moveCamera)
+            //{
+            //    if (camera != null && tempAngle < 180 && tempAngle > -180)
+            //    {
+            //        camera.AddToYaw((cameraAngle * Time.deltaTime * 4));
+            //        tempAngle -= (cameraAngle * Time.deltaTime * 4);
+            //    }
+            //    else
+            //    {
+            //        moveCamera = false;
+            //        if (camera != null)
+            //            camera.ignoreInput = false;
+            //    }
+            //}
         }
 
         public override void Execute(StateManager sm)
