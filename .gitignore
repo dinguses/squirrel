@@ -39,3 +39,15 @@ PreServer/ProjectSettings/VFXManager.asset
 PreServer/ProjectSettings/ProjectVersion.txt
 PreServer/Packages/manifest.json
 PreServer/Packages/manifest.json
+
+# Merge tool test
+*.unity binary
+*.prefab binary
+*.asset binary
+
+[merge]
+tool = unityyamlmerge
+
+[mergetool "unityyamlmerge"]
+trustExitCode = false
+cmd = '<C:\Program Files\Unity>' merge -p "$BASE" "$REMOTE" "$LOCAL" "$MERGED"
