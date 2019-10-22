@@ -118,7 +118,7 @@ namespace PreServer
             temp = camTransform.position;
             //test.position = temp;
             startAway = distanceAway;
-            startUp = 0;
+            startUp = 4;
             if (!ignoreMouse)
             {
                 Cursor.lockState = CursorLockMode.Locked;
@@ -183,16 +183,16 @@ namespace PreServer
             //yaw += (Input.GetAxis("RightStickHorizontal")) * mouseSens;
             if (!ignoreInput)
             {
-                if(ignoreMouse)
-                    distanceUp -= ignorePitch ? 0 : Input.GetAxis("RightStickVertical");
+                if (ignoreMouse)
+                    distanceUp -= ignorePitch ? 0 : Input.GetAxis("RightStickVertical") * 0.5f;
                 else
-                    distanceUp -= ignorePitch ? 0 : (Input.GetAxis("RightStickVertical") + (Input.GetAxis("Mouse YY") * .2f));
+                    distanceUp -= ignorePitch ? 0 : (Input.GetAxis("RightStickVertical") * 0.5f + (Input.GetAxis("Mouse YY") * .2f));
             }
-            distanceUp = Mathf.Clamp(distanceUp, -10, 10);
-            distanceAway = startAway - (startUp >= distanceUp ? startUp - distanceUp : distanceUp - startUp);
-            distanceAway = Mathf.Clamp(distanceAway, 5, 15);
+            distanceUp = Mathf.Clamp(distanceUp, -6, 14);
+            distanceAway = (startAway * (1f - (Mathf.Abs(startUp - distanceUp) / 10f)));
+            distanceAway = Mathf.Clamp(distanceAway, startAway - 10f, startAway);
             transform.RotateAround(player.position, Vector3.up, yaw - prevYaw);
-            //transform.RotateAround(player.position, camTransform.right, -(testPitch - prevTestPitch));
+            //transform.RotateAround(player.position, transform.TransformDirection(Vector3.right), pitch - prevPitch);
 
             Vector3 characterOffset = player.position + player.up * 0.25f;
 
@@ -204,15 +204,17 @@ namespace PreServer
             targetPos = characterOffset + Vector3.up * distanceUp - lookDir * distanceAway;
             //Debug.DrawRay(player.position, player.up * distanceUp, Color.red);
             //Debug.DrawRay(player.position, -1f * player.forward * distanceAway, Color.blue);
-            //if (Physics.CheckSphere(targetPos, 0.5f, 1, QueryTriggerInteraction.Ignore))
-            //{
+            //smoothPosition(transform.position, ref targetPos);
+            Debug.DrawLine(player.position, targetPos, Color.magenta);
+            targetPos = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * camFollowSpeed);
+            if (Physics.CheckSphere(targetPos, 0.3f, 1, QueryTriggerInteraction.Ignore))
+            {
                 CompensateForWalls(characterOffset, ref targetPos);
-            //}
-            //Debug.DrawLine(player.position, targetPos, Color.magenta);
-
-            smoothPosition(transform.position, targetPos);
+                //targetPos += (Vector3.Distance(targetPos, player.position) > 1f ? (lookDir * 0.3f) : Vector3.zero);
+            }
+            transform.position = targetPos;
             //transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * smooth);
-            camTransform.LookAt(player);
+            camTransform.LookAt(characterOffset + (Vector3.Distance(transform.position, player.position) > 2f ? player.up * 3f : Vector3.zero));
             prevPitch = pitch;
             prevYaw = yaw;
         }
@@ -226,9 +228,9 @@ namespace PreServer
             }
         }
 
-        void smoothPosition(Vector3 fromPos, Vector3 toPos)
+        void smoothPosition(Vector3 fromPos, ref Vector3 toPos)
         {
-            transform.position = Vector3.SmoothDamp(fromPos, toPos, ref velocityCamSmooth, camSmoothDampTime);
+            toPos = Vector3.SmoothDamp(fromPos, toPos, ref velocityCamSmooth, camSmoothDampTime);
         }
 
         float prevYaw = 0;
@@ -242,7 +244,7 @@ namespace PreServer
             //testPitch = Mathf.Clamp(testPitch, pitchMinMax.x, pitchMinMax.y);
 
             transform.RotateAround(player.position, Vector3.up, yaw - prevYaw);
-            transform.RotateAround(player.position, transform.right, pitch - prevPitch);
+            transform.RotateAround(player.position, transform.TransformDirection(Vector3.right), pitch - prevPitch);
             Vector3 targetPosition = transform.position;
             //Debug.Log(Vector3.Distance(player.position, camTransform.position));
             if (Vector3.Distance(player.position, transform.position) >= 20f/* || Vector3.Distance(player.position, camTransform.position) <= 5f*/)
@@ -252,11 +254,11 @@ namespace PreServer
                     dir = (player.position - transform.position) * Time.deltaTime;
                 targetPosition += dir;
             }
-            else if (Vector3.Distance(player.position, transform.position) <= 5f/* || Vector3.Distance(player.position, camTransform.position) <= 5f*/)
+            else if (Vector3.Distance(player.position, transform.position) < 15f/* || Vector3.Distance(player.position, camTransform.position) <= 5f*/)
             {
-                Vector3 dir = player.position - playerPrevPosition;
-                if (dir == Vector3.zero)
-                    dir = -(player.position - transform.position) * Time.deltaTime;
+                //Vector3 dir = player.position - playerPrevPosition;
+                //if (dir == Vector3.zero)
+                Vector3 dir = -(player.position - transform.position);
                 targetPosition += dir;
             }
             if (Physics.CheckSphere(targetPosition, 0.5f, 1, QueryTriggerInteraction.Ignore))
