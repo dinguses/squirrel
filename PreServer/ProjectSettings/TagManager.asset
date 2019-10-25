@@ -17,6 +17,7 @@ TagManager:
   - joint
   - nut
   - speedZone
+  - hurty
   layers:
   - Default
   - TransparentFX

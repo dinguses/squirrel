@@ -350,6 +350,14 @@ namespace PreServer
             {
                 mTransform.position = new Vector3(51, -4, -29);
             }
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                mTransform.position = new Vector3(-80f, 30f, 32f);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                mTransform.position = new Vector3(-286f, 22f, 61f);
+            }
         }
 
         public bool pauseSpeedHackTimer = false;
@@ -859,6 +867,12 @@ namespace PreServer
             if (other.tag == "speedZone")
             {
                 inSpeedZone = true;
+            }
+
+            // For the crushers
+            if (other.tag == "hurty")
+            {
+                mTransform.position = new Vector3(-286f, 22f, 61f);
             }
 
             // Start a grind if you've entered a grind zone and were not already in one
