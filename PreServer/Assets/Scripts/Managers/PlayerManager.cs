@@ -366,6 +366,10 @@ namespace PreServer
             {
                 mTransform.position = new Vector3(-536f, 36f, 155f);
             }
+            if (Input.GetKeyDown(KeyCode.Alpha6))
+            {
+                mTransform.position = new Vector3(-534f, 60f, 167);
+            }
         }
 
         public bool pauseSpeedHackTimer = false;
