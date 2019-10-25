@@ -52,6 +52,7 @@ namespace PreServer
         // Update is called once per frame
         void Update()
         {
+            // Speed Nut
             if (!playerManager.speedNutGot)
             {
                 if (playerManager.inSpeedZone)
@@ -61,13 +62,6 @@ namespace PreServer
                     {
                         cage.transform.position = cagePositionUp;
                     }
-
-                    // If crushers need to be primed
-                    if (!crushersPrimed)
-                    {
-                        leftCrusher.transform.position = leftCrusherPrimed;
-                        rightCrusher.transform.position = rightCrusherPrimed;
-                    }
                 }
                 else
                 {
@@ -76,18 +70,6 @@ namespace PreServer
                     {
                         cage.transform.position = cage.transform.position + moveDown;
                     }
-
-                    // crush until fully crushed
-                    if (Vector3.Distance(leftCrusher.transform.position, leftCrusherSprung) >= 0.25f)
-                    {
-                        leftCrusher.transform.position = leftCrusher.transform.position + (leftCrusher.transform.forward / forwardDivider);
-                    }
-
-                    // crush until fully crushed
-                    if (Vector3.Distance(rightCrusher.transform.position, rightCrusherSprung) >= 0.25f)
-                    {
-                        rightCrusher.transform.position = rightCrusher.transform.position + (rightCrusher.transform.forward / forwardDivider);
-                    }
                 }
             }
             else
@@ -95,6 +77,31 @@ namespace PreServer
                 if (Vector3.Distance(cage.transform.position, cagePositionUp) >= 0.05f)
                 {
                     cage.transform.position = cage.transform.position + moveUp;
+                }
+            }
+
+            // Crushers
+            if (playerManager.inSpeedZone)
+            {
+                // If crushers need to be primed
+                if (!crushersPrimed)
+                {
+                    leftCrusher.transform.position = leftCrusherPrimed;
+                    rightCrusher.transform.position = rightCrusherPrimed;
+                }
+            }
+            else
+            {
+                // crush until fully crushed
+                if (Vector3.Distance(leftCrusher.transform.position, leftCrusherSprung) >= 0.25f)
+                {
+                    leftCrusher.transform.position = leftCrusher.transform.position + (leftCrusher.transform.forward / forwardDivider);
+                }
+
+                // crush until fully crushed
+                if (Vector3.Distance(rightCrusher.transform.position, rightCrusherSprung) >= 0.25f)
+                {
+                    rightCrusher.transform.position = rightCrusher.transform.position + (rightCrusher.transform.forward / forwardDivider);
                 }
             }
         }
