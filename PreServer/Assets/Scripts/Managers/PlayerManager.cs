@@ -358,6 +358,14 @@ namespace PreServer
             {
                 mTransform.position = new Vector3(-286f, 22f, 61f);
             }
+            if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                mTransform.position = new Vector3(-433f, 30f, 124f);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha5))
+            {
+                mTransform.position = new Vector3(-536f, 36f, 155f);
+            }
         }
 
         public bool pauseSpeedHackTimer = false;

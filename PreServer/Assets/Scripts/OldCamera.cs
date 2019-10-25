@@ -33,7 +33,7 @@ namespace PreServer
             }
         }
         bool _ignoreInput = false;
-        public bool ignoreMouse = false;
+        public bool ignoreMouse;
         public bool inCameraZone
         {
             get { return _inCameraZone; }
@@ -115,6 +115,22 @@ namespace PreServer
         Vector3 temp;
         void FixedUpdate()
         {
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                if (ignoreMouse)
+                {
+                    Cursor.lockState = CursorLockMode.Locked;
+                    Cursor.visible = false;
+                    ignoreMouse = false;
+                }
+                else
+                {
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
+                    ignoreMouse = true;
+                }
+            }
+
             if (!ignoreInput)
             {
                 if (ignoreMouse)
@@ -124,8 +140,8 @@ namespace PreServer
                 }
                 else
                 {
-                    Cursor.lockState = CursorLockMode.Locked;
-                    Cursor.visible = false;
+                    //Cursor.lockState = CursorLockMode.Locked;
+                    //Cursor.visible = false;
                     yaw += ignoreYaw ? 0 : (Input.GetAxis("RightStickHorizontal") + (Input.GetAxis("Mouse XX") * .2f)) * mouseSens;
                     pitch -= ignorePitch ? 0 : (Input.GetAxis("RightStickVertical") + (Input.GetAxis("Mouse YY") * .2f)) * mouseSens;
                 }

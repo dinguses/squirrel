@@ -7,7 +7,19 @@ namespace PreServer
     public class PlaytestManager : MonoBehaviour
     {
         public PlayerManager playerManager;
-        
+        public OldCamera camera;
+
+        public GameObject controlAsker;
+
+        public GameObject introSignC;
+        public GameObject introSignK;
+        public GameObject sign1C;
+        public GameObject sign1K;
+        public GameObject sign4C;
+        public GameObject sign4K;
+        public GameObject sign5C;
+        public GameObject sign5K;
+
         public GameObject cage;
         public GameObject leftCrusher;
         public GameObject rightCrusher;
@@ -31,6 +43,10 @@ namespace PreServer
         {
             cageIsUp = false;
             crushersPrimed = false;
+
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            camera.ignoreMouse = false;
         }
 
         // Update is called once per frame
@@ -81,6 +97,41 @@ namespace PreServer
                     cage.transform.position = cage.transform.position + moveUp;
                 }
             }
+        }
+
+        public void KeyboardSelected()
+        {
+            // Change out signs
+            introSignC.SetActive(false);
+            introSignK.SetActive(true);
+            sign1C.SetActive(false);
+            sign1K.SetActive(true);
+            sign4C.SetActive(false);
+            sign4K.SetActive(true);
+            sign5C.SetActive(false);
+            sign5K.SetActive(true);
+
+            // Enable mouse
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            camera.ignoreMouse = false;
+
+            ControlsPicked();
+        }
+
+        public void ControllerSelected()
+        {
+            // Disable mouse
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            camera.ignoreMouse = true;
+
+            ControlsPicked();
+        }
+
+        void ControlsPicked()
+        {
+            controlAsker.SetActive(false);
         }
     }
 }
