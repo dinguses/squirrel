@@ -887,6 +887,23 @@ namespace PreServer
                 mTransform.position = new Vector3(-286f, 22f, 61f);
             }
 
+            /*if (other.tag == "GrindCenter")
+            {
+                Debug.Log("in da grind center");
+
+                inGrindZone = true;
+
+                GenerateGrindPoints(other);
+
+                // If it's only a two point grind
+                if (grindPoints.Count == 2)
+                {
+                    var grindMaster = other.gameObject.transform.parent.parent;
+                    var centers = grindMaster.GetChild(1);
+                    grindCenter = centers.GetChild(0).GetComponent<BoxCollider>();
+                }
+            }*/
+
             // Start a grind if you've entered a grind zone and were not already in one
             if (other.tag == "Grind" && !inGrindZone)
             {
