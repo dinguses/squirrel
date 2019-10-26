@@ -18,6 +18,8 @@ TagManager:
   - nut
   - speedZone
   - hurty
+  - finalCrusher
+  - challenge3
   layers:
   - Default
   - TransparentFX

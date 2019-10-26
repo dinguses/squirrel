@@ -24,7 +24,9 @@ namespace PreServer
         public GameObject leftCrusher;
         public GameObject rightCrusher;
 
-        private int forwardDivider = 8;
+        public GameObject finalCrusher;
+
+        private int forwardDivider = 9;
 
         public bool cageIsUp;
         public bool crushersPrimed;
@@ -35,6 +37,9 @@ namespace PreServer
         private Vector3 leftCrusherSprung = new Vector3(-389.4f, 14.2f, 107f);
         private Vector3 rightCrusherPrimed = new Vector3(-316.4f, 14.2f, 111.1f);
         private Vector3 rightCrusherSprung = new Vector3(-330f, 14.2f, 81f);
+
+        private Vector3 finalCrusherStart = new Vector3(-557.9052f, 53.8f, 363.9659f);
+        private Vector3 finalCrusherDone = new Vector3(-396.2f, 53.8f, 363.9659f);
 
         public Vector3 moveUp = new Vector3(0, .05f, 0);
         public Vector3 moveDown = new Vector3(0, -.05f, 0);
@@ -103,6 +108,20 @@ namespace PreServer
                 {
                     rightCrusher.transform.position = rightCrusher.transform.position + (rightCrusher.transform.forward / forwardDivider);
                 }
+            }
+
+            if (playerManager.inFinalZone && Vector3.Distance(finalCrusher.transform.position, finalCrusherDone) >= 7.6f)
+            {
+                Debug.Log(Vector3.Distance(finalCrusher.transform.position, finalCrusherDone));
+
+                finalCrusher.transform.position = finalCrusher.transform.position + (finalCrusher.transform.forward / 12);
+            }
+
+            if (playerManager.restartFinalCrusher)
+            {
+                finalCrusher.transform.position = finalCrusherStart;
+                playerManager.restartFinalCrusher = false;
+                playerManager.inFinalZone = false;
             }
         }
 

@@ -151,6 +151,9 @@ namespace PreServer
         public GameObject barrier;
         public bool inSpeedZone = false;
         public bool speedNutGot = false;
+        public bool inFinalZone = false;
+        public bool restartFinalCrusher = false;
+        public bool inChallenge3Room = false;
 
         private void Start()
         {
@@ -369,6 +372,10 @@ namespace PreServer
             if (Input.GetKeyDown(KeyCode.Alpha6))
             {
                 mTransform.position = new Vector3(-534f, 60f, 167);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha7))
+            {
+                mTransform.position = new Vector3(-545f, 60f, 311);
             }
         }
 
@@ -881,10 +888,30 @@ namespace PreServer
                 inSpeedZone = true;
             }
 
+            // FinalZone (for playtest)
+            if (other.tag == "finalCrusher")
+            {
+                inFinalZone = true;
+            }
+
+            if (other.tag == "challenge3")
+            {
+                inChallenge3Room = true;
+            }
+
             // For the crushers
             if (other.tag == "hurty")
             {
-                mTransform.position = new Vector3(-286f, 22f, 61f);
+                if (inFinalZone || !inChallenge3Room)
+                {
+                    mTransform.position = new Vector3(-545f, 60f, 311);
+                    restartFinalCrusher = true;
+                }
+
+                else
+                {
+                    mTransform.position = new Vector3(-286f, 22f, 61f);
+                }
             }
 
             /*if (other.tag == "GrindCenter")
@@ -934,6 +961,11 @@ namespace PreServer
             if (other.tag == "speedZone")
             {
                 inSpeedZone = false;
+            }
+
+            if (other.tag == "challenge3")
+            {
+                inChallenge3Room = false;
             }
 
             if (other.tag == "Grind" && !inJoint && !testRotate)
