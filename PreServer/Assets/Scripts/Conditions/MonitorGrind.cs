@@ -23,7 +23,7 @@ namespace PreServer
             Vector3 reusable = (state.mTransform.position + (state.mTransform.forward));
 
             // If player is in grind zone and has landed on the ground of the grind
-            if (state.inGrindZone && state.isGrounded)
+            if (state.inGrindZone /*&& state.isGrounded*/)
             {
                 // Go through all grindpoints and find the closest point to the player
                 foreach (KeyValuePair<int, Vector3> grindPoint in state.grindPoints)
