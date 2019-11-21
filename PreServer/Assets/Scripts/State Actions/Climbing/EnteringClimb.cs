@@ -23,7 +23,7 @@ namespace PreServer
         float cameraAngle = 0;
         float tempAngle = 0;
         PlayerManager states;
-        public bool debug = true;
+        public bool debug = false;
         public float angle = 0;
         Vector3 newDirection;
         Vector3 originalDirection;
