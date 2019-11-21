@@ -52,6 +52,7 @@ namespace PreServer
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
             camera.ignoreMouse = false;
+            ControllerSelected();
         }
 
         // Update is called once per frame
@@ -148,8 +149,8 @@ namespace PreServer
         public void ControllerSelected()
         {
             // Disable mouse
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            //Cursor.lockState = CursorLockMode.Locked;
+            //Cursor.visible = false;
             camera.ignoreMouse = true;
 
             ControlsPicked();
