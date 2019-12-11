@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offsetFromWall: 0.05
   cameraTransform: {fileID: 11400000, guid: 74c4d5a43fc4b4947a4d7dc56225221e, type: 2}
+  debug: 0
+  angle: 0

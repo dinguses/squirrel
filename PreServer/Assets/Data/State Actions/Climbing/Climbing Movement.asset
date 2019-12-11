@@ -18,4 +18,6 @@ MonoBehaviour:
   dashSpeed: 40
   dashTime: 0.15
   minTransferAngle: 30
+  angle: 0
+  debug: 0
   offsetFromWall: 0.05

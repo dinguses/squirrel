@@ -35,8 +35,8 @@ namespace PreServer
         public float angle = 0;
         Vector3 newDirection;
         Vector3 originalDirection;
+        public bool debug = false;
 
-        //Might have to do some readjustments in check raycast when transitioning, still buggy on faces with varying normals
         public override void OnEnter(StateManager sm)
         {
             states = (PlayerManager)sm;
@@ -62,10 +62,10 @@ namespace PreServer
             states.playerMesh.gameObject.SetActive(true);
             CheckUnder();
         }
-
+        
         void SafeClimb()
         {
-            originalDirection = targetRot * states.transform.forward.normalized;
+            originalDirection = targetRot * Vector3.forward.normalized;
             newDirection = originalDirection;
             //This is under the assumption that the climbhit will never be inside a mesh collider
             RaycastHit hit = new RaycastHit();
@@ -82,63 +82,63 @@ namespace PreServer
                 targetPos -= (originalDirection.normalized * 0.2f);
             }
 
-            //angle = 0;
-            //newDirection = originalDirection;
-            //float angleDirection = 1f;
+            angle = 0;
+            newDirection = originalDirection;
+            float angleDirection = 1f;
 
-            ////We've moved back as far as we can, if we're still hitting anything, then we'll rotating out of it should fix it
-            //while (Physics.Raycast(targetPos + states.climbHit.normal * 0.1f, newDirection, out hit, 2f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
-            //{
-            //    switch (angle)
-            //    {
-            //        case 0:
-            //            angleDirection = 1;
-            //            break;
-            //        case 45:
-            //            angleDirection = -1;
-            //            angle = 0;
-            //            break;
-            //        case -45:
-            //            angleDirection = 1;
-            //            angle = 45;
-            //            break;
-            //        case 90:
-            //            angleDirection = -1;
-            //            angle = -45;
-            //            break;
-            //        case -90:
-            //            angleDirection = 1;
-            //            angle = 90;
-            //            break;
-            //        case 135:
-            //            angleDirection = -1;
-            //            angle = -90;
-            //            break;
-            //        case -135:
-            //            angleDirection = 1;
-            //            angle = 135;
-            //            break;
-            //        case 180:
-            //            angleDirection = -1;
-            //            angle = -135;
-            //            break;
-            //    }
+            //We've moved back as far as we can, if we're still hitting anything, then we'll rotating out of it should fix it
+            while (Physics.Raycast(targetPos + states.climbHit.normal * 0.1f, newDirection, out hit, 2f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                switch (angle)
+                {
+                    case 0:
+                        angleDirection = 1;
+                        break;
+                    case 45:
+                        angleDirection = -1;
+                        angle = 0;
+                        break;
+                    case -45:
+                        angleDirection = 1;
+                        angle = 45;
+                        break;
+                    case 90:
+                        angleDirection = -1;
+                        angle = -45;
+                        break;
+                    case -90:
+                        angleDirection = 1;
+                        angle = 90;
+                        break;
+                    case 135:
+                        angleDirection = -1;
+                        angle = -90;
+                        break;
+                    case -135:
+                        angleDirection = 1;
+                        angle = 135;
+                        break;
+                    case 180:
+                        angleDirection = -1;
+                        angle = -135;
+                        break;
+                }
 
-            //    angle += angleDirection;
-            //    newDirection = Quaternion.AngleAxis(angle, states.climbHit.normal) * originalDirection.normalized;
-            //    //if we've done a full rotation and we still can't get out, then break out of the function otherwise we'll be in an endless loop
-            //    //If we ever have to break out, then this is most probably an issue with the level design
-            //    if (angle <= -180)
-            //        break;
-            //}
+                angle += angleDirection;
+                newDirection = Quaternion.AngleAxis(angle, states.climbHit.normal) * originalDirection.normalized;
+                //if we've done a full rotation and we still can't get out, then break out of the function otherwise we'll be in an endless loop
+                //If we ever have to break out, then this is most probably an issue with the level design
+                if (angle <= -180)
+                    break;
+            }
             //if (angle == 0)
             //{
             //    //Debug.LogError("Mission failed we'll get 'em next time");
             //}
             //Debug.LogError(angle);
-            ////angle = angle % 360;
-            //if (angle != 0)
-            //    targetRot = Quaternion.AngleAxis(angle, states.climbHit.normal) * targetRot;
+            //angle = angle % 360;
+            if (angle != 0)
+                targetRot = Quaternion.AngleAxis(angle, states.climbHit.normal) * targetRot;
             //Debug.DrawRay(targetPos, states.climbHit.normal * 2f, Color.red);
             //Debug.DrawRay(targetPos + states.climbHit.normal * 0.25f, targetRot * temp.normalized * 2, Color.yellow);
             //Debug.DrawRay(targetPos + states.climbHit.normal * 0.25f, temp2 * 2, Color.cyan);
@@ -163,7 +163,11 @@ namespace PreServer
 
                 Transfer(states);
                 //Rotate(states);
-                Move(states);
+                //Move(states);
+                //Debug.DrawRay(targetPos, states.climbHit.normal * 2f, Color.red);
+                //Debug.DrawRay(targetPos + states.climbHit.normal * 0.25f, originalDirection * 2, Color.yellow);
+                //Debug.DrawRay(targetPos + states.climbHit.normal * 0.25f, newDirection * 2, Color.green);
+                //Debug.DrawRay(targetPos + states.climbHit.normal * 0.25f, Quaternion.AngleAxis(angle, states.climbHit.normal) * originalDirection.normalized * 2f, Color.blue);
             }
             else
             {
@@ -262,7 +266,7 @@ namespace PreServer
                 {
                     if (angle < 70)
                     {
-                        //Debug.Log("Front has detected non-climbable surface, exit the climb");
+                        //Debug.LogError("Front has detected non-climbable surface, exit the climb");
                         states.rigid.velocity = Vector3.zero;
                         states.climbHit = front;
                         //states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
@@ -288,6 +292,8 @@ namespace PreServer
 
             // Draw the rays
             Debug.DrawRay(underOrigin, dir * 1.5f, Color.green);
+            Debug.DrawRay(underOrigin, Quaternion.AngleAxis(30f, states.climbHit.normal) * dir * 1.5f, Color.red);
+            Debug.DrawRay(underOrigin, Quaternion.AngleAxis(-30f, states.climbHit.normal) * dir * 1.5f, Color.blue);
             if (Physics.Raycast(underOrigin, dir, out under, 1.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
                 //underside has hit something
@@ -297,12 +303,14 @@ namespace PreServer
                 if(under.transform.tag == "Climb")
                 {
                     angle = Vector3.Angle(under.normal, states.climbHit.normal);
+                    Vector3 prevNormal = states.climbHit.normal;
                     states.climbHit = under;
                     //if(Mathf.Abs(angle - prevAngle) >= minTransferAngle)
                         //Debug.Log(Mathf.Abs(angle - prevAngle));
                     //if the angle between the new climb and the current one is greater than the transfer amount, then transfer to it
                     if (Mathf.Abs(angle - prevAngle) >= minTransferAngle)
                     {
+                        ignoreGravity = true;
                         prevAngle = angle;
                         //Debug.Log("Under has detected a new climb to transition to");
                         states.rigid.velocity = Vector3.zero;
@@ -328,7 +336,7 @@ namespace PreServer
                         ////Update variables for transfer
                         startPos = states.transform.position;
                         targetPos = states.climbHit.point + (states.climbHit.normal * offsetFromWall);
-                        targetRot = Quaternion.FromToRotation(states.transform.up, states.climbHit.normal) * states.transform.rotation;
+                        targetRot = Quaternion.FromToRotation(prevNormal, states.climbHit.normal) * states.transform.rotation;
                         t = 0;
                         inPos = false;
                         inRot = false;
@@ -345,7 +353,7 @@ namespace PreServer
                     //detach
                     if (angle < 70)
                     {
-                        //Debug.Log("Under has detected non-climbable surface, exit the climb");
+                        //Debug.LogError("Under has detected non-climbable surface, exit the climb");
                         states.climbHit = under;
                         states.climbState = PlayerManager.ClimbState.EXITING;
 
@@ -377,12 +385,115 @@ namespace PreServer
             }
             else
             {
-                underHit = false;
-                states.rigid.velocity = Vector3.zero;
-                Debug.Log("Under isn't hitting anything");
-                states.climbState = PlayerManager.ClimbState.NONE;
-                states.isJumping = true;
-                states.anim.SetBool(states.hashes.isClimbing, false);
+                //TODO: Refactor later, all transfer climbs do the same code, it will be more efficient to make a function
+                if (Physics.Raycast(underOrigin, Quaternion.AngleAxis(30f, states.climbHit.normal) * dir, out under, 1.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+                {
+                    if (under.transform.tag == "Climb")
+                    {
+                        angle = Vector3.Angle(under.normal, states.climbHit.normal);
+                        Vector3 prevNormal = states.climbHit.normal;
+                        states.climbHit = under;
+                        //if(Mathf.Abs(angle - prevAngle) >= minTransferAngle)
+                        //Debug.Log(Mathf.Abs(angle - prevAngle));
+                        //if the angle between the new climb and the current one is greater than the transfer amount, then transfer to it
+                        if (Mathf.Abs(angle - prevAngle) >= minTransferAngle)
+                        {
+                            ignoreGravity = true;
+                            prevAngle = angle;
+                            //Debug.Log("Under has detected a new climb to transition to");
+                            states.rigid.velocity = Vector3.zero;
+
+                            //Stop dashing
+                            if (states.dashActive)
+                            {
+                                states.dashActive = false;
+                                states.lagDashCooldown = 1.0f;
+                                dashActivated = false;
+                            }
+
+                            //Camera rotations, checking if the camera needs to be repositioned based on where it is relative to the climb
+                            tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, under.normal, Vector3.up);
+                            if (tempAngle < 90 && tempAngle > -90)
+                            {
+                                cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
+                                //moveCamera = true;
+                                if (camera != null)
+                                    camera.ignoreInput = true;
+                            }
+
+                            ////Update variables for transfer
+                            startPos = states.transform.position;
+                            targetPos = states.climbHit.point + (states.climbHit.normal * offsetFromWall);
+                            targetRot = Quaternion.FromToRotation(prevNormal, states.climbHit.normal) * states.transform.rotation;
+                            t = 0;
+                            inPos = false;
+                            inRot = false;
+                            transitioning = true;
+                            states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
+                            SafeClimb();
+                            return;
+                        }
+                    }
+                }
+                else if (Physics.Raycast(underOrigin, Quaternion.AngleAxis(-30f, states.climbHit.normal) * dir, out under, 1.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+                {
+                    if (under.transform.tag == "Climb")
+                    {
+                        angle = Vector3.Angle(under.normal, states.climbHit.normal);
+                        Vector3 prevNormal = states.climbHit.normal;
+                        states.climbHit = under;
+                        //if(Mathf.Abs(angle - prevAngle) >= minTransferAngle)
+                        //Debug.Log(Mathf.Abs(angle - prevAngle));
+                        //if the angle between the new climb and the current one is greater than the transfer amount, then transfer to it
+                        if (Mathf.Abs(angle - prevAngle) >= minTransferAngle)
+                        {
+                            ignoreGravity = true;
+                            prevAngle = angle;
+                            //Debug.Log("Under has detected a new climb to transition to");
+                            states.rigid.velocity = Vector3.zero;
+
+                            //Stop dashing
+                            if (states.dashActive)
+                            {
+                                states.dashActive = false;
+                                states.lagDashCooldown = 1.0f;
+                                dashActivated = false;
+                            }
+
+                            //Camera rotations, checking if the camera needs to be repositioned based on where it is relative to the climb
+                            tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, under.normal, Vector3.up);
+                            if (tempAngle < 90 && tempAngle > -90)
+                            {
+                                cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
+                                //moveCamera = true;
+                                if (camera != null)
+                                    camera.ignoreInput = true;
+                            }
+
+                            ////Update variables for transfer
+                            startPos = states.transform.position;
+                            targetPos = states.climbHit.point + (states.climbHit.normal * offsetFromWall);
+                            targetRot = Quaternion.FromToRotation(prevNormal, states.climbHit.normal) * states.transform.rotation;
+                            t = 0;
+                            inPos = false;
+                            inRot = false;
+                            transitioning = true;
+                            states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
+                            SafeClimb();
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    underHit = false;
+                    states.rigid.velocity = Vector3.zero;
+                    //Debug.LogError("Under isn't hitting anything");
+                    states.climbState = PlayerManager.ClimbState.NONE;
+                    states.isJumping = true;
+                    states.anim.SetBool(states.hashes.isClimbing, false);
+                }
+
             }
         }
         Quaternion prevRotation;
@@ -515,7 +626,8 @@ namespace PreServer
             }
             if (Vector3.Distance(states.transform.position, targetPos) <= offsetFromWall)
             {
-                inPos = true;
+                if (!debug)
+                    inPos = true;
             }
             else
             {
