@@ -41,6 +41,9 @@ namespace PreServer
 
             states.movementVariables.moveDirection = targetDir;
 
+            var targetDir3 = targetDir;
+            targetDir3.y = -states.mTransform.forward.y;
+
             targetDir2.y = -states.mTransform.forward.y;
 
            // Debug.Log("targetDir2 - " + targetDir2);
@@ -50,32 +53,36 @@ namespace PreServer
             Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * states.movementVariables.moveAmount * speed);
 
             //Rotate 180 ?
-            var testAngle = Vector3.Angle(targetDir2, states.mTransform.forward);
+            var testAngle = Vector3.Angle(targetDir3, states.mTransform.forward);
             var testAngleSide = Vector3.Angle(targetDir2, states.mTransform.right);
 
-            if (testAngle > 120 && testAngle < 240)
+            // Rotate 180 - disabled to test rotation
+            if (testAngle > 160 && testAngle < 200)
             {
                 states.testINT = 0;
 
-                Debug.Log("test angle - " + testAngle);
-                Debug.Log("test angle side - " + testAngleSide);
+                //Debug.Log("test angle - " + testAngle);
+                //Debug.Log("test angle side - " + testAngleSide);
 
                 // If the player should be rotating to the left
-                if (testAngleSide > 90)
-                {
-                    //states.anim.SetBool(states.hashes.mirror180, true);
-                    states.anim.CrossFade(states.hashes.squ_ground_180_mirror, 0.01f);
-                }
-                else
-                {
+                //if (testAngleSide > 90)
+                //{
+                //    //states.anim.SetBool(states.hashes.mirror180, true);
+                //    states.anim.CrossFade(states.hashes.squ_ground_180_mirror, 0.01f);
+                //}
+                //else
+                //{
                     states.anim.CrossFade(states.hashes.squ_ground_180, 0.01f);
-                }
+                //}
 
                 states.anim.SetBool(states.hashes.waitForAnimation, true);
                 states.rigid.velocity = Vector3.zero;
 
-                states.storedTargetDir = targetDir;
+                //states.storedTargetDir = targetDir;
+                states.storedTargetDir = targetDir3;
             }
+
+
             //float direction = 0;
             //float speedOut = 0;
             //StickToWorldSpace(states.transform, Camera.main.transform, states, ref direction, ref speedOut);

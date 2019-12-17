@@ -22,7 +22,7 @@ MonoBehaviour:
   onExit: []
   actions: []
   stateName: Locomotion
-  idCount: 13
+  idCount: 15
   transitions:
   - id: 1
     condition: {fileID: 11400000, guid: 09646b58739c1844d967360476f1c82b, type: 2}
@@ -51,4 +51,8 @@ MonoBehaviour:
   - id: 12
     condition: {fileID: 11400000, guid: 0d17b05ca1ed7f04cb833acbb77c655a, type: 2}
     targetState: {fileID: 11400000, guid: 08a0be003844bbf4892b81dc9ab10d6d, type: 2}
+    disable: 0
+  - id: 14
+    condition: {fileID: 11400000, guid: e349151d862f71a46942bfcaef080200, type: 2}
+    targetState: {fileID: 11400000, guid: b899e08e693b0114a82f56dc390686df, type: 2}
     disable: 0

@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e09f12a9b8fb5e44eb81fa499afbecc4, type: 3}
+  m_Name: NewDash
+  m_EditorClassIdentifier: 
+  onFixed: []
+  onUpdate: []
+  onEnter: []
+  onExit: []
+  actions:
+  - {fileID: 11400000, guid: e899f52d994e34e419bbbde0d187a778, type: 2}
+  stateName: 
+  idCount: 2
+  transitions:
+  - id: 0
+    condition: {fileID: 11400000, guid: dc52d886d0d046c42b4537b65aff1440, type: 2}
+    targetState: {fileID: 11400000, guid: 0225933b0bf4587438730a98b935d45e, type: 2}
+    disable: 0
+  - id: 1
+    condition: {fileID: 11400000, guid: 59461061ca5b0874989ce3bc6c789c38, type: 2}
+    targetState: {fileID: 11400000, guid: 79c7f8040eac1954590da60b276a0b99, type: 2}
+    disable: 0

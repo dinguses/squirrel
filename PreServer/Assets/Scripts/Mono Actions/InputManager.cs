@@ -17,6 +17,7 @@ namespace PreServer
         public BoolVariable zoom;
         public BoolVariable dash;
         public FloatVariable dashAxis;
+        public BoolVariable newDash;
 
         //public StateManagerVariable playerStates;
         public PlayerManagerVariable playerStates;
@@ -53,6 +54,9 @@ namespace PreServer
 
                 if (!playerStates.value.dashActive && playerStates.value.CanDash())
                     playerStates.value.dashActive = (dash.value || dashAxis.value > 0);
+
+                if (!playerStates.value.newDashActive && playerStates.value.CanNewDash())
+                    playerStates.value.newDashActive = newDash.value;
             }
         }
     }

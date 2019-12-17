@@ -16,7 +16,8 @@ namespace PreServer
 
             if (states.anim.GetBool(states.hashes.waitForAnimation))
             {
-                Debug.Log(states.testINT);
+                //Debug.Log(states.testINT);
+
                 states.testINT++;
 
                 Vector3 eulerAngles = states.mTransform.rotation.eulerAngles;
@@ -27,6 +28,9 @@ namespace PreServer
                 rotateAmount = rotateAmount - states.held180RotationAmt;
 
                 states.mTransform.rotation = Quaternion.Euler(eulerAngles.x, eulerAngles.y + rotateAmount, eulerAngles.z);
+
+                Debug.Log(eulerAngles.y);
+
                 states.held180RotationAmt = currentHold;
             }
 

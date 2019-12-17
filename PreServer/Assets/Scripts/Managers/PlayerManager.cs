@@ -33,6 +33,9 @@ namespace PreServer
         public int dashInAirCounter;
         public bool isGrounded;
 
+        public bool newDashActive;
+        public float timeSinceNewDash;
+
         public bool isColidingInAir;
 
         public bool isRun;
@@ -154,7 +157,7 @@ namespace PreServer
         public bool inFinalZone = false;
         public bool restartFinalCrusher = false;
         public bool inChallenge3Room = false;
-
+        public TimeManager tm;
         private void Start()
         {
             climbHit = new RaycastHit();
@@ -191,6 +194,11 @@ namespace PreServer
             grindCenters = new Dictionary<int, BoxCollider>();
 
             speedHackAmount = 2f;
+        }
+
+        public void DashAnimDone()
+        {
+            Debug.Log("dash anim done");
         }
 
         public float GetLength()
@@ -257,7 +265,7 @@ namespace PreServer
             }
             else
             {
-                if (movementVariables.moveAmount == 0)
+                if (movementVariables.moveAmount == 0 && currentState.name == "Locomotion")
                 {
                     if (idleInc < 250)
                         idleInc++;
@@ -1006,6 +1014,7 @@ namespace PreServer
         /// </summary>
         public void DashSetDashStarted()
         {
+            //tm.DoSlowMotion();
             dashStarted = true;
         }
 
@@ -1013,13 +1022,13 @@ namespace PreServer
         {
             //Debug.Log(Vector3.Angle(mTransform.forward, storedTargetDir));
 
-            if (Vector3.Angle(mTransform.forward, storedTargetDir) < 10)
+            /*if (Vector3.Angle(mTransform.forward, storedTargetDir) < 10)
             {
                 Debug.Log("ENDIN THE TURN EARLY");
                 anim.SetBool(hashes.waitForAnimation, false);
                 ending180Early = true;
                 anim.CrossFade(hashes.squ_idle, .2f);
-            }
+            }*/
         }
 
         /// <summary>
@@ -1052,6 +1061,7 @@ namespace PreServer
         public void Done180()
         {
             testRotate = false;
+
             anim.SetBool(hashes.waitForAnimation, false);
             anim.SetBool(hashes.mirror180, false);
         }
@@ -1153,6 +1163,11 @@ namespace PreServer
         }
 
         public bool CanDash()
+        {
+            return !isSliding && (climbState == ClimbState.NONE || climbState == ClimbState.CLIMBING)/* && (isGrounded || dashInAirCounter == 0)*/ && lagDashCooldown <= 0;
+        }
+
+        public bool CanNewDash()
         {
             return !isSliding && (climbState == ClimbState.NONE || climbState == ClimbState.CLIMBING)/* && (isGrounded || dashInAirCounter == 0)*/ && lagDashCooldown <= 0;
         }

@@ -61,7 +61,7 @@ namespace PreServer
 
             // QUATERNION WAY
 
-            float amount = 6;
+            float amount = 15;
 
             var test = states.GetComponent<Animation>();
 
@@ -71,8 +71,8 @@ namespace PreServer
 
                 if (!quickLand)
                     amount = 30;
-                else
-                    amount = 15;
+                //else
+                //    amount = 15;
             }
 
             if (angle < rotationConstraint)
