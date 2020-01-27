@@ -122,6 +122,15 @@ namespace PreServer
                     states.mTransform.rotation = targetRotation;
                 }
             }
+            // If player is not directly above slope
+            else
+            {
+                // Slowly rotate back towards 0 degrees
+
+                Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, Vector3.up) * states.mTransform.rotation;
+                Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * 1.75f);
+                states.mTransform.rotation = targetRotation;
+            }
 
             //TODO: properly implement step up logic for air movement
             if (states.stepUp)
@@ -154,15 +163,7 @@ namespace PreServer
                 //holdYVel = targetVelocity.y;
             }
 
-            // If player is not directly above slope
-            else
-            {
-                // Slowly rotate back towards 0 degrees
 
-                Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, Vector3.up) * states.mTransform.rotation;
-                Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * 1.75f);
-                states.mTransform.rotation = targetRotation;
-            }
 
             // Apply velocity to player
             states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity, states.delta * movementTime);

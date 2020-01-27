@@ -18,7 +18,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f677efc60e0b38143a7d515f1132797f, type: 2}
   - {fileID: 11400000, guid: 27ee309ca608d9c4b8b620caaad85818, type: 2}
   - {fileID: 11400000, guid: 89711f268d33c704e9005ccba2f52123, type: 2}
-  onEnter: []
+  onEnter:
+  - {fileID: 11400000, guid: 4a21e55960856f4408cc28819ff109e0, type: 2}
   onExit: []
   actions: []
   stateName: Locomotion

@@ -335,7 +335,7 @@ namespace PreServer
                 // if (distToDest <= 1.0f)
                 //if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
                 //if (navMeshAgent.pathStatus == NavMeshPathStatus.PathComplete)
-                if (navMeshAgent.remainingDistance <= 1.75f)
+                if (navMeshAgent.remainingDistance <= 1.75f && navMeshAgent.remainingDistance != 0)
                 {
                     ziggyPoints.RemoveAt(0);
 

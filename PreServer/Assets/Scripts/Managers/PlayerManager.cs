@@ -323,7 +323,7 @@ namespace PreServer
             #endregion
 
             //TODO: try using climbHit instead of bottomHit
-            if (dashActive && didClimbHit && climbState == ClimbState.NONE && dashStarted)
+            if (dashActive && didClimbHit && climbState == ClimbState.NONE)
             {
                 Debug.Log("Ending this dash EARLY");
                 dashActive = false;

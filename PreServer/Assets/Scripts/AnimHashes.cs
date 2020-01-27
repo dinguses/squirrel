@@ -14,6 +14,7 @@ namespace PreServer
         public int isGrounded = Animator.StringToHash("isGrounded");
         public int waitForAnimation = Animator.StringToHash("waitForAnimation");
         public int Land = Animator.StringToHash("squ_land");
+        public int Land2 = Animator.StringToHash("squ_land2");
         public int isLanding = Animator.StringToHash("isLanding");
         public int QuickLand = Animator.StringToHash("QuickLand");
         public int TimeSinceGrounded = Animator.StringToHash("TimeSinceGrounded");
@@ -37,6 +38,7 @@ namespace PreServer
         public int airDash = Animator.StringToHash("airDash");
         public int mirror180 = Animator.StringToHash("mirror180");
         public int squ_idle = Animator.StringToHash("squ_idle");
+        public int inDaFall = Animator.StringToHash("inDaFall");
 
         public int rotate_test = Animator.StringToHash("rotateFloat");
 

@@ -45,8 +45,9 @@ namespace PreServer
             }
             else
             {
-                Debug.Log("doing an air dash");
-                states.anim.CrossFade(states.hashes.squ_dash_air, 0.01f);
+                Debug.Log("doing an air dash and time is - " + time);
+                //states.anim.CrossFade(states.hashes.squ_dash_air, 0.01f);
+                //states.anim.Play(states.hashes.squ_dash_air);
             }
 
             states.dashInAirCounter++;

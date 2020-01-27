@@ -9,8 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb8a4554a20621944832f1593c4f53ca, type: 3}
-  m_Name: Air Rotation
+  m_Script: {fileID: 11500000, guid: 392c553b108a1824299607e6d859dc04, type: 3}
+  m_Name: Entered Locomotion
   m_EditorClassIdentifier: 
-  cameraTransform: {fileID: 11400000, guid: 14fa444e8fc99754c9f013ced74737ae, type: 2}
-  speed: 8
