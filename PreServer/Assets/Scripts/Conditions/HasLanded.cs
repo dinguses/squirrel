@@ -46,7 +46,7 @@ namespace PreServer
                     //If been in air for at least a certain amt of time, do the long land anim
                     if (timeDifference > .65f && !inMeat)
                     {
-                        state.anim.CrossFade(state.hashes.Land, .2f);
+                        //state.anim.CrossFade(state.hashes.Land, .2f);
                         Debug.Log("Landing with the land animation!");
                     }
 
