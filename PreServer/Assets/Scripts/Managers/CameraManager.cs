@@ -22,7 +22,10 @@ namespace PreServer
         float pitch;
         float prevYaw = 0;
         float prevPitch = 0;
+        float startUp;
+        float startAway;
         float camSmoothDampTime = 0.1f;
+        float timer = 0;
         Vector3 targetPos;
         Vector3 lookDir; //Direction between the player and the camera, allows the camera to rotate around the player, but not up and down for unknown reasons
         Vector3 prevPlayerPos;
@@ -38,8 +41,7 @@ namespace PreServer
         //public float maxDistance = 3f;
         //public float minDistance = 0.5f;
         //public float smooth;
-        //float startUp;
-        //float startAway;
+        
 
         public bool ignoreInput
         {
@@ -129,6 +131,8 @@ namespace PreServer
         {
             camTransform = Camera.main.transform;
             prevPlayerPos = player.position;
+            startUp = distanceUp;
+            startAway = distanceAway;
             if (!ignoreMouse)
             {
                 Cursor.lockState = CursorLockMode.Locked;
@@ -178,19 +182,17 @@ namespace PreServer
         void MoveCamera()
         {
             //yaw += (Input.GetAxis("RightStickHorizontal")) * mouseSens;
-            //if (!ignoreInput)
-            //{
-            //    if (ignoreMouse)
-            //        distanceUp -= ignorePitch ? 0 : Input.GetAxis("RightStickVertical") * 0.5f;
-            //    else
-            //        distanceUp -= ignorePitch ? 0 : (Input.GetAxis("RightStickVertical") * 0.5f + (Input.GetAxis("Mouse YY") * .2f));
-            //}
-            //distanceUp = Mathf.Clamp(distanceUp, -6, 14);
-            //distanceAway = (startAway * (1f - (Mathf.Abs(startUp - distanceUp) / 10f)));
-            //distanceAway = Mathf.Clamp(distanceAway, startAway - 10f, startAway);
-            //transform.RotateAround(player.position, Vector3.up, yaw - prevYaw);
-            Vector3 prevPosition = transform.position;
-            Vector3 characterOffset = player.position + player.up * 0.25f;
+            if (!ignoreInput)
+            {
+                if (ignoreMouse)
+                    distanceUp -= ignorePitch ? 0 : Input.GetAxis("RightStickVertical") * 0.3f;
+                else
+                    distanceUp -= ignorePitch ? 0 : (Input.GetAxis("RightStickVertical") * 0.3f + (Input.GetAxis("Mouse YY") * .2f));
+            }
+            distanceUp = Mathf.Clamp(distanceUp, -6, 14);
+            distanceAway = (startAway * (1f - (Mathf.Abs(startUp - distanceUp) / 10f)));
+            distanceAway = Mathf.Clamp(distanceAway, startAway - 10f, startAway);
+            Vector3 characterOffset = player.position + ((PlayerManager.ptr.climbState == PlayerManager.ClimbState.NONE ? Vector3.up : player.up) * 0.25f);
 
             lookDir = characterOffset - transform.position;
             lookDir.y = 0;
@@ -198,6 +200,25 @@ namespace PreServer
 
             //targetPos = player.position + player.up * distanceUp - player.forward * distanceAway;
             targetPos = characterOffset + Vector3.up * distanceUp - lookDir * distanceAway;
+
+            if (PlayerManager.ptr.climbState == PlayerManager.ClimbState.NONE && !PlayerManager.ptr.isGrounded)
+            {
+                if (prevPlayerPos.y < player.position.y)
+                {
+                    targetPos = new Vector3(targetPos.x, Mathf.Lerp(transform.position.y, targetPos.y, Time.deltaTime * camFollowSpeed), targetPos.z);
+                    timer += Time.deltaTime;
+                }
+                else if (timer > 0)
+                {
+                    targetPos = new Vector3(targetPos.x, Mathf.Lerp(transform.position.y, targetPos.y, Time.deltaTime * camFollowSpeed), targetPos.z);
+                    timer -= Time.deltaTime;
+                }
+            }
+            if(PlayerManager.ptr.isGrounded)
+            {
+                timer = 0;
+            }
+
             //float pitchX = pitch;
             //float pitchZ = pitch;
             //Quaternion currRot = transform.rotation;
@@ -205,8 +226,14 @@ namespace PreServer
             //targetPos = RotatePointAroundPivot(targetPos, player.position, currRot * Quaternion.Euler(pitch, -(yaw - prevYaw), 0)); //Fix this fucking shit ya asshole
             //Debug.DrawRay(player.position, transform.right * distanceUp, Color.red);
 
+            //transform.position = targetPos;
+            //transform.RotateAround(player.position, transform.right, pitch);
+            //transform.RotateAround(player.position, Vector3.up, yaw - prevYaw);
+            //targetPos = transform.position;
+            //transform.position = prevPosition;
+
+            Vector3 prevPosition = transform.position;
             transform.position = targetPos;
-            transform.RotateAround(player.position, transform.right, pitch);
             transform.RotateAround(player.position, Vector3.up, yaw - prevYaw);
             targetPos = transform.position;
             transform.position = prevPosition;
@@ -222,7 +249,7 @@ namespace PreServer
             {
                 if(Physics.Raycast(targetPos + (Vector3.up * 0.1f), Vector3.down, 0.2f, 1, QueryTriggerInteraction.Ignore))
                 {
-                    pitch += Time.deltaTime * 8f;
+                    distanceUp += Time.deltaTime * 4f;
                 }
             }
             transform.position = targetPos;
@@ -231,7 +258,7 @@ namespace PreServer
             float tempMax = 5f;
             float amountToIncrease = (distance - tempMin <= 0) ? 0.5f : 3f - (distance < tempMax ? 2.5f - (((distance - tempMin) / (tempMax - tempMin)) * 2.5f) : 0);
             //Debug.LogError(amountToIncrease);
-            transform.LookAt(characterOffset + (player.up * amountToIncrease));
+            transform.LookAt(characterOffset + (((PlayerManager.ptr.climbState == PlayerManager.ClimbState.NONE ? Vector3.up : player.up) * amountToIncrease)));
             //transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * smooth);
             prevPitch = pitch;
             prevYaw = yaw;
