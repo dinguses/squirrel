@@ -9,7 +9,9 @@ namespace PreServer
     {
         //Public variables
         public Transform player;
+        public FollowObject target;
         public Transform camTransform; //The viewing camera, used if the camera needs an additonal offset (Currently used in the camera zones)
+        public SkinnedMeshRenderer playerMesh;
         public float camFollowSpeed = 9;
         public float rotationSmoothTime = .12f;
         public float camZoomSpeed = 4;
@@ -151,8 +153,8 @@ namespace PreServer
                 }
                 else
                 {
-                    yaw += ignoreYaw ? 0 : (Input.GetAxis("RightStickHorizontal") + (Input.GetAxis("Mouse XX") * .2f)) * mouseSens * 3f;
-                    pitch -= ignorePitch ? 0 : (Input.GetAxis("RightStickVertical") + (Input.GetAxis("Mouse YY") * .2f)) * mouseSens * 0.75f;
+                    yaw += ignoreYaw ? 0 : (Input.GetAxis("RightStickHorizontal") + (Input.GetAxis("Mouse X") * .2f)) * mouseSens * 3f;
+                    pitch -= ignorePitch ? 0 : (Input.GetAxis("RightStickVertical") + (Input.GetAxis("Mouse Y") * .2f)) * mouseSens * 0.75f;
                 }
                 pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
             }
@@ -187,12 +189,12 @@ namespace PreServer
                 if (ignoreMouse)
                     distanceUp -= ignorePitch ? 0 : Input.GetAxis("RightStickVertical") * 0.3f;
                 else
-                    distanceUp -= ignorePitch ? 0 : (Input.GetAxis("RightStickVertical") * 0.3f + (Input.GetAxis("Mouse YY") * .2f));
+                    distanceUp -= ignorePitch ? 0 : (Input.GetAxis("RightStickVertical") * 0.3f + (Input.GetAxis("Mouse Y") * .2f));
             }
             distanceUp = Mathf.Clamp(distanceUp, -6, 14);
             distanceAway = (startAway * (1f - (Mathf.Abs(startUp - distanceUp) / 10f)));
             distanceAway = Mathf.Clamp(distanceAway, startAway - 10f, startAway);
-            Vector3 characterOffset = player.position + ((PlayerManager.ptr.climbState == PlayerManager.ClimbState.NONE ? Vector3.up : player.up) * 0.25f);
+            Vector3 characterOffset = target.transform.position/* + ((PlayerManager.ptr.climbState == PlayerManager.ClimbState.NONE ? Vector3.up : player.up) * 0.25f)*/;
 
             lookDir = characterOffset - transform.position;
             lookDir.y = 0;
@@ -201,23 +203,23 @@ namespace PreServer
             //targetPos = player.position + player.up * distanceUp - player.forward * distanceAway;
             targetPos = characterOffset + Vector3.up * distanceUp - lookDir * distanceAway;
 
-            if (PlayerManager.ptr.climbState == PlayerManager.ClimbState.NONE && !PlayerManager.ptr.isGrounded)
-            {
-                if (prevPlayerPos.y < player.position.y)
-                {
-                    targetPos = new Vector3(targetPos.x, Mathf.Lerp(transform.position.y, targetPos.y, Time.deltaTime * camFollowSpeed), targetPos.z);
-                    timer += Time.deltaTime;
-                }
-                else if (timer > 0)
-                {
-                    targetPos = new Vector3(targetPos.x, Mathf.Lerp(transform.position.y, targetPos.y, Time.deltaTime * camFollowSpeed), targetPos.z);
-                    timer -= Time.deltaTime;
-                }
-            }
-            if(PlayerManager.ptr.isGrounded)
-            {
-                timer = 0;
-            }
+            //if (PlayerManager.ptr.climbState == PlayerManager.ClimbState.NONE && !PlayerManager.ptr.isGrounded)
+            //{
+            //    if (prevPlayerPos.y < player.position.y)
+            //    {
+            //        targetPos = new Vector3(targetPos.x, Mathf.Lerp(transform.position.y, targetPos.y, Time.deltaTime * 8), targetPos.z);
+            //        timer += Time.deltaTime;
+            //    }
+            //    else if (timer > 0)
+            //    {
+            //        targetPos = new Vector3(targetPos.x, Mathf.Lerp(transform.position.y, targetPos.y, Time.deltaTime * 8), targetPos.z);
+            //        timer -= Time.deltaTime;
+            //    }
+            //}
+            //if(PlayerManager.ptr.isGrounded)
+            //{
+            //    timer = 0;
+            //}
 
             //float pitchX = pitch;
             //float pitchZ = pitch;
@@ -234,7 +236,7 @@ namespace PreServer
 
             Vector3 prevPosition = transform.position;
             transform.position = targetPos;
-            transform.RotateAround(player.position, Vector3.up, yaw - prevYaw);
+            transform.RotateAround(target.transform.position, Vector3.up, yaw - prevYaw);
             targetPos = transform.position;
             transform.position = prevPosition;
 
@@ -256,10 +258,12 @@ namespace PreServer
             float distance = Vector3.Distance(transform.position, player.position);
             float tempMin = 1f;
             float tempMax = 5f;
-            float amountToIncrease = (distance - tempMin <= 0) ? 0.5f : 3f - (distance < tempMax ? 2.5f - (((distance - tempMin) / (tempMax - tempMin)) * 2.5f) : 0);
+            //float amountToIncrease = (distance - tempMin <= 0) ? 0.5f : 3f - (distance < tempMax ? 2.5f - (((distance - tempMin) / (tempMax - tempMin)) * 2.5f) : 0);
+            float amountToIncrease = (distance - tempMin <= 0) ? -1.75f : (distance < tempMax ? -1.75f + (((distance - tempMin) / (tempMax - tempMin)) * 1.75f) : 0);
             //Debug.LogError(amountToIncrease);
             transform.LookAt(characterOffset + (((PlayerManager.ptr.climbState == PlayerManager.ClimbState.NONE ? Vector3.up : player.up) * amountToIncrease)));
             //transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * smooth);
+            //ChangeTransparency();
             prevPitch = pitch;
             prevYaw = yaw;
             prevPlayerPos = player.position;
@@ -298,6 +302,25 @@ namespace PreServer
         {
             return angle * (point - pivot) + pivot;
         }               
+
+        void ChangeTransparency()
+        {
+            if (Vector3.Distance(transform.position, player.position) <= 4f)
+            {
+                Color temp = playerMesh.sharedMaterial.color;
+                temp.a = Mathf.Lerp(temp.a, 0.2f, Time.deltaTime * camFollowSpeed);
+                playerMesh.sharedMaterial.color = temp;
+            }
+            else
+            {
+                if(playerMesh.sharedMaterial.color.a <= 0.99f)
+                {
+                    Color temp = playerMesh.sharedMaterial.color;
+                    temp.a = Mathf.Lerp(temp.a, 1f, Time.deltaTime * camFollowSpeed);
+                    playerMesh.sharedMaterial.color = temp;
+                }
+            }
+        }
 
         private void OnDrawGizmos()
         {
