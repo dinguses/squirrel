@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: Lag Dash
   m_EditorClassIdentifier: 
   offsetFromWall: 0.1
+  dashSpeed: 50
+  dashTime: 0.15

@@ -28,33 +28,27 @@ namespace PreServer
 
             base.OnEnter(states);
 
-            //Debug.Log("Dashing and grounded is " + states.isGrounded);
-
             states.anim.SetBool(states.hashes.isDashing, true);
-
-            //Debug.Log(states.anim.GetCurrentAnimatorClipInfo(2)[0].clip.name);
-            //Debug.Log(Time.realtimeSinceStartup - states.timeSinceJump);
             var time = Time.realtimeSinceStartup - states.timeSinceJump;
 
             if ((time < 0.01f || time > .6f) && states.isGrounded)
             {
                 Debug.Log("doing a grounded dash");
                 states.anim.CrossFade(states.hashes.squ_dash, 0.01f);
-                states.anim.SetBool(states.hashes.groundDash, true);
-                states.anim.SetLayerWeight(2, 0);
             }
             else
             {
-                Debug.Log("doing an air dash and time is - " + time);
-                //states.anim.CrossFade(states.hashes.squ_dash_air, 0.01f);
-                //states.anim.Play(states.hashes.squ_dash_air);
+                Debug.Log("doing an air dash");
+                states.anim.CrossFade(states.hashes.squ_dash_air, 0.01f);
             }
 
             states.dashInAirCounter++;
             states.rigid.useGravity = false;
+
             if (states.isRun)
             {
-                dashTime = 0.225f;
+                //dashTime = 0.225f;
+                dashSpeed = 50f;
                 states.speedHackAmount -= 0.2f;
                 if (states.speedHackAmount <= 0)
                 {
@@ -62,10 +56,7 @@ namespace PreServer
                     states.runRanOut = true;
                 }
             }
-            else
-            {
-                dashTime = 0.15f;
-            }
+
             states.rigid.velocity = states.transform.forward * dashSpeed;
             //Debug.Log("LagDash Setting Velocity to: " + states.rigid.velocity);
             states.rigid.drag = 0;
@@ -105,7 +96,7 @@ namespace PreServer
         public override void OnUpdate(StateManager sm)
         {
             base.OnUpdate(states);
-            if(timer > dashTime || states.climbState != PlayerManager.ClimbState.NONE)
+            if (timer > dashTime || states.climbState != PlayerManager.ClimbState.NONE)
             {
                 states.dashActive = false;
             }
@@ -117,9 +108,9 @@ namespace PreServer
 
         void CheckRaycast(StateManager sm)
         {
-            
+
         }
-        
+
         void Transfer(StateManager sm)
         {
             delta = Time.deltaTime * 4;
@@ -169,10 +160,10 @@ namespace PreServer
             states.lagDashCooldown = 1.0f;
             states.speedHackRecover = 0.1f;
             states.anim.SetBool(states.hashes.isDashing, false);
-            states.anim.SetBool(states.hashes.groundDash, false);
+            Debug.Log("dash over");
             states.timeSinceJump = Time.realtimeSinceStartup;
-            states.anim.SetLayerWeight(2, 1);
-            
+            //states.anim.SetLayerWeight(2, 1);
+
             if (states.isGrounded)
                 states.pauseSpeedHackTimer = false;
             //states.anim.CrossFade(states.hashes.sq, 0.2f);

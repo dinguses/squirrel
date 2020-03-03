@@ -22,14 +22,14 @@ namespace PreServer
 
                 Vector3 eulerAngles = states.mTransform.rotation.eulerAngles;
 
-                float rotateAmount = states.anim.GetFloat(states.hashes.rotate_test);
+                float rotateAmount = states.anim.GetFloat(states.hashes.rotateFloat);
                 float currentHold = rotateAmount;
 
                 rotateAmount = rotateAmount - states.held180RotationAmt;
 
                 states.mTransform.rotation = Quaternion.Euler(eulerAngles.x, eulerAngles.y + rotateAmount, eulerAngles.z);
 
-                Debug.Log(eulerAngles.y);
+                //Debug.Log(eulerAngles.y);
 
                 states.held180RotationAmt = currentHold;
             }

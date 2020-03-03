@@ -691,7 +691,7 @@ namespace PreServer
                 states.dashActive = false;
                 states.lagDashCooldown = 1.0f;
                 states.anim.SetBool(states.hashes.isDashing, false);
-                states.anim.SetLayerWeight(1, 1);
+                //states.anim.SetLayerWeight(1, 1);
             }
             moveCamera = false;
             if (camera != null)

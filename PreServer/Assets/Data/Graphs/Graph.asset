@@ -70,8 +70,8 @@ MonoBehaviour:
     drawNode: {fileID: 11400000, guid: 3de6cb72c5d54a842957b3d8754294e2, type: 2}
     windowRect:
       serializedVersion: 2
-      x: 456
-      y: 84
+      x: 415
+      y: 59
       width: 200
       height: 400
     windowTitle: State
@@ -176,8 +176,8 @@ MonoBehaviour:
     drawNode: {fileID: 11400000, guid: 3de6cb72c5d54a842957b3d8754294e2, type: 2}
     windowRect:
       serializedVersion: 2
-      x: 793
-      y: 141
+      x: 823
+      y: 57
       width: 200
       height: 430
     windowTitle: State
@@ -202,8 +202,8 @@ MonoBehaviour:
     drawNode: {fileID: 11400000, guid: 3de6cb72c5d54a842957b3d8754294e2, type: 2}
     windowRect:
       serializedVersion: 2
-      x: 835
-      y: 511
+      x: 662
+      y: 490
       width: 200
       height: 170
     windowTitle: State
@@ -228,8 +228,8 @@ MonoBehaviour:
     drawNode: {fileID: 11400000, guid: 02d1192eec6276044a75147866515bb8, type: 2}
     windowRect:
       serializedVersion: 2
-      x: 1402
-      y: 517
+      x: 1351
+      y: 503
       width: 200
       height: 100
     windowTitle: Condition
@@ -255,8 +255,8 @@ MonoBehaviour:
     drawNode: {fileID: 11400000, guid: 02d1192eec6276044a75147866515bb8, type: 2}
     windowRect:
       serializedVersion: 2
-      x: 1196
-      y: 269
+      x: 1236
+      y: 272
       width: 200
       height: 100
     windowTitle: Condition
@@ -335,8 +335,8 @@ MonoBehaviour:
     drawNode: {fileID: 11400000, guid: 02d1192eec6276044a75147866515bb8, type: 2}
     windowRect:
       serializedVersion: 2
-      x: 782
-      y: 411
+      x: 697
+      y: 404
       width: 200
       height: 100
     windowTitle: Condition
@@ -416,8 +416,8 @@ MonoBehaviour:
     drawNode: {fileID: 11400000, guid: 765a518b20d9ed8449bf9d452b8f6306, type: 2}
     windowRect:
       serializedVersion: 2
-      x: 559
-      y: 451
+      x: 575
+      y: 468
       width: 100
       height: 80
     windowTitle: Portal
@@ -843,8 +843,8 @@ MonoBehaviour:
     drawNode: {fileID: 11400000, guid: 02d1192eec6276044a75147866515bb8, type: 2}
     windowRect:
       serializedVersion: 2
-      x: 1034
-      y: 313
+      x: 944
+      y: 237
       width: 200
       height: 100
     windowTitle: Condition
@@ -924,8 +924,8 @@ MonoBehaviour:
     drawNode: {fileID: 11400000, guid: 02d1192eec6276044a75147866515bb8, type: 2}
     windowRect:
       serializedVersion: 2
-      x: 1022
-      y: 438
+      x: 1043
+      y: 306
       width: 200
       height: 100
     windowTitle: Condition
@@ -978,8 +978,8 @@ MonoBehaviour:
     drawNode: {fileID: 11400000, guid: 3de6cb72c5d54a842957b3d8754294e2, type: 2}
     windowRect:
       serializedVersion: 2
-      x: 783
-      y: 74
+      x: 566
+      y: 36
       width: 200
       height: 340
     windowTitle: State
@@ -1081,4 +1081,4 @@ MonoBehaviour:
       previousCondition: {fileID: 11400000, guid: 59461061ca5b0874989ce3bc6c789c38,
         type: 2}
       transitionId: 1
-  idCount: 96
+  idCount: 97

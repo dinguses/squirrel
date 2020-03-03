@@ -22,7 +22,7 @@ MonoBehaviour:
   actions:
   - {fileID: 11400000, guid: 72090600ea1baf34fbfd048d40729e8b, type: 2}
   stateName: Grinding
-  idCount: 10
+  idCount: 11
   transitions:
   - id: 4
     condition: {fileID: 11400000, guid: 64c5e74196b4cdb4494edae9959361ba, type: 2}

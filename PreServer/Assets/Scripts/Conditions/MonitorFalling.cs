@@ -24,6 +24,7 @@ namespace PreServer
 
                 // start counting how long they've been ungrounded
                 state.timeSinceJump = Time.realtimeSinceStartup;
+                state.anim.SetBool(state.hashes.waitForAnimation, false);
             }
 
             return result;

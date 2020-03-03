@@ -11,6 +11,11 @@ namespace PreServer
         {
             PlayerManager state = (PlayerManager)sm;
 
+            if (state.dashActive)
+            {
+                Debug.Log(state.currentState.name + " and grounded: " + state.isGrounded);
+            }
+
             return state.dashActive/* && (state.isGrounded || state.dashInAirCounter == 0)*/;
         }
     }

@@ -17,13 +17,16 @@ namespace PreServer
             bool result = false;
 
             // If player has left grind zone, they're no longer grinding
-            if (!state.inGrindZone)
+            if (!state.inGrindZone /*&& state.isGrounded*/)
             {
+                Debug.Log("Left the grind");
+
                 // Time for gravity again
                 state.rigid.useGravity = true;
 
                 // Grinding is false
                 state.anim.SetBool(state.hashes.isGrinding, false);
+                state.doneAdjustingGrind = false;
 
                 result = true;
             }

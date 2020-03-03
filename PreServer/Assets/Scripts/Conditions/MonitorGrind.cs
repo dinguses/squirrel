@@ -163,17 +163,18 @@ namespace PreServer
                 state.anim.SetBool(state.hashes.isGrinding, true);
 
                 float moveAmount = state.movementVariables.moveAmount;
+
                 if (moveAmount > 0.1f && moveAmount < 0.3f)
                 {
-                    state.anim.CrossFade(state.hashes.squ_grind_walk, 0.01f);
+                    state.anim.CrossFade(state.hashes.squ_grind_walk, 0.1f);
                 }
                 else if (moveAmount > 0.3f)
                 {
-                    state.anim.CrossFade(state.hashes.squ_grind_run, 0.01f);
+                    state.anim.CrossFade(state.hashes.squ_grind_run, 0.1f);
                 }
                 else
                 {
-                    state.anim.CrossFade(state.hashes.squ_grind_idle, 0.01f);
+                    state.anim.CrossFade(state.hashes.squ_grind_idle, 0.1f);
                 }
 
                 

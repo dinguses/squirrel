@@ -204,8 +204,6 @@ namespace PreServer
             {
                 Debug.Log("doing a grounded dash");
                 states.anim.CrossFade(states.hashes.squ_dash, 0.01f);
-                states.anim.SetBool(states.hashes.groundDash, true);
-                states.anim.SetLayerWeight(2, 0);
             }
             else
             {
@@ -253,9 +251,8 @@ namespace PreServer
             states.lagDashCooldown = 1.0f;
             states.speedHackRecover = 0.1f;
             states.anim.SetBool(states.hashes.isDashing, false);
-            states.anim.SetBool(states.hashes.groundDash, false);
             states.timeSinceJump = Time.realtimeSinceStartup;
-            states.anim.SetLayerWeight(2, 1);
+            //states.anim.SetLayerWeight(2, 1);
             
             if (states.isGrounded)
                 states.pauseSpeedHackTimer = false;

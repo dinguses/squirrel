@@ -31,7 +31,7 @@ namespace PreServer
 
             if (!states.dashActive)
             {
-                states.anim.CrossFade(states.hashes.jump, 0.01f);
+                states.anim.CrossFade(states.hashes.squ_jump, 0.01f);
             }
 
             if (currentVelocity.y < -.3f)

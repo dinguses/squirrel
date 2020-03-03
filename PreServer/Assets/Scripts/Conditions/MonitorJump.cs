@@ -26,6 +26,7 @@ namespace PreServer
                 state.isJumping = false;
                 state.rigid.useGravity = true;
                 state.anim.SetBool(state.hashes.isGrinding, false);
+                state.anim.SetBool(state.hashes.waitForAnimation, false);
                 state.inGrindZone = false;
 
                 // Execute actions (Handle Jump Velocity)

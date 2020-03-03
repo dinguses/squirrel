@@ -17,8 +17,8 @@ namespace PreServer
             // get ammt of time since jump/leaving ground
             float timeDifference = Time.realtimeSinceStartup - state.timeSinceJump;
 
-            if (state.isGrounded)
-                Debug.Log(timeDifference);
+            /*if (state.isGrounded)
+                Debug.Log(timeDifference);*/
 
             // have to have been ungrounded to start checking
             if (timeDifference > .35f)
@@ -46,7 +46,7 @@ namespace PreServer
                     //If been in air for at least a certain amt of time, do the long land anim
                     if (timeDifference > .65f && !inMeat)
                     {
-                        //state.anim.CrossFade(state.hashes.Land, .2f);
+                        state.anim.CrossFade(state.hashes.Land, .2f);
                         Debug.Log("Landing with the land animation!");
                     }
 

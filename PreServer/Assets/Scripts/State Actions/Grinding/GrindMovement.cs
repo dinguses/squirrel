@@ -59,7 +59,7 @@ namespace PreServer
                     timer = 0.15f;
                 }
 
-                states.anim.SetLayerWeight(1, 0);
+                //states.anim.SetLayerWeight(1, 0);
                 dashActivated = true;
             }
 
@@ -84,18 +84,32 @@ namespace PreServer
                     Vector3 grindCenterClosestPoint = states.grindCenter.ClosestPoint(states.mTransform.position);
 
                     states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * 10 * (states.groundSpeedMult * 2));
+
+                    if (!states.doneAdjustingGrind)
+                        Debug.Log("cc - " + Vector3.Distance(states.rigid.position, grindCenterClosestPoint));
+
+                    if (!states.doneAdjustingGrind)
+                    {
+                        if (Vector3.Distance(states.rigid.position, grindCenterClosestPoint) < .1f)
+                        {
+                            Debug.Log("Done adjusting!");
+                            states.doneAdjustingGrind = true;
+                        }
+                    }
+
+
                     //states.rigid.MovePosition(grindCenterClosestPoint);
 
 
-                    //Debug.Log(Vector3.Distance(states.rigid.position, grindCenterClosestPoint));
-                    /*
-                    int mult = 10;
+                        //Debug.Log(Vector3.Distance(states.rigid.position, grindCenterClosestPoint));
+                        /*
+                        int mult = 10;
 
-                    if (Vector3.Distance(states.rigid.position, grindCenterClosestPoint) < .2f && states.inJoint)
-                        mult = 3;
+                        if (Vector3.Distance(states.rigid.position, grindCenterClosestPoint) < .2f && states.inJoint)
+                            mult = 3;
 
-                    states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * mult);*/
-                    //states.rigid.MovePosition(grindCenterClosestPoint);
+                        states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * mult);*/
+                        //states.rigid.MovePosition(grindCenterClosestPoint);
                 }
             }
 
@@ -105,7 +119,7 @@ namespace PreServer
                 states.dashActive = false;
                 states.rigid.velocity = Vector3.zero;
                 states.anim.SetBool(states.hashes.isDashing, false);
-                states.anim.SetLayerWeight(1, 1);
+                //states.anim.SetLayerWeight(1, 1);
                 //Debug.Log("Dash over");
                 states.lagDashCooldown = 1.0f;
                 dashActivated = false;
@@ -122,7 +136,8 @@ namespace PreServer
                 states.dashActive = false;
                 states.lagDashCooldown = 1.0f;
                 states.anim.SetBool(states.hashes.isDashing, false);
-                states.anim.SetLayerWeight(1, 1);
+                states.doneAdjustingGrind = false;
+                //states.anim.SetLayerWeight(1, 1);
             }
         }
     }

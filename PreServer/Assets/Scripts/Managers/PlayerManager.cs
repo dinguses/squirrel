@@ -104,6 +104,7 @@ namespace PreServer
         public Vector3 storedTargetDir;
         public bool dashStarted = false;
         public bool testRotate = false;
+        public bool doneAdjustingGrind = false;
 
         public Camera mainCam;
         public GameObject front;
@@ -551,9 +552,9 @@ namespace PreServer
             RaycastHit backHit = new RaycastHit();
 
             // Draw the rays
-            //Debug.DrawRay(frontOrigin, dir * dis, Color.green);
-            //Debug.DrawRay(middleOrigin, dir * dis, Color.yellow);
-            //Debug.DrawRay(backOrigin, dir * dis, Color.white);
+            Debug.DrawRay(frontOrigin, dir * dis, Color.green);
+            Debug.DrawRay(middleOrigin, dir * dis, Color.yellow);
+            Debug.DrawRay(backOrigin, dir * dis, Color.white);
 
             // If player is already grounded, check if they should remain
             //if (states.isGrounded)
@@ -976,17 +977,35 @@ namespace PreServer
                 inChallenge3Room = false;
             }
 
-            if (other.tag == "Grind" && !inJoint && !testRotate)
+            // TODO: temporarily moved to BackLeftTest()
+            /*if (other.tag == "Grind" && !inJoint && !testRotate && doneAdjustingGrind)
             {
                 Debug.Log("purge?");
 
+                Debug.Log("isGrounded: " + isGrounded);
+
                 PurgeGrindPoints();
                 inGrindZone = false;
-            }
+                doneAdjustingGrind = false;
+            }*/
 
             if (other.tag == "joint")
             {
                 inJoint = false;
+            }
+        }
+
+        public void BackLeftTest()
+        {
+            if (!inJoint && !testRotate && doneAdjustingGrind)
+            {
+                Debug.Log("purge?");
+
+                Debug.Log("isGrounded: " + isGrounded);
+
+                PurgeGrindPoints();
+                inGrindZone = false;
+                doneAdjustingGrind = false;
             }
         }
 
@@ -1063,7 +1082,7 @@ namespace PreServer
             testRotate = false;
 
             anim.SetBool(hashes.waitForAnimation, false);
-            anim.SetBool(hashes.mirror180, false);
+            //anim.SetBool(hashes.mirror180, false);
         }
 
         /// <summary>
@@ -1123,20 +1142,24 @@ namespace PreServer
             }
         }
 
+        /// <summary>
+        /// Generates the lists of grind points and grind centers
+        /// </summary>
+        /// <param name="grindColliderGen"></param>
         void GenerateGrindPoints(Collider grindColliderGen)
         {
             Debug.Log("generate grind point?");
 
+            // If there's not already grind points (to catch any double calls)
             if (grindPoints.Count == 0)
             {
                 var grindMaster = grindColliderGen.gameObject.transform.parent.parent;
                 var points = grindMaster.GetChild(2);
 
-                var tttt = points.childCount;
+                var numPoints = points.childCount;
 
-                for (int i = 0; i < tttt; i++)
+                for (int i = 0; i < numPoints; i++)
                 {
-                    var strungo = points.GetChild(i);
                     grindPoints.Add(i, points.GetChild(i).position);
                 }
 
@@ -1148,6 +1171,8 @@ namespace PreServer
                     grindCenters.Add(i, center);
                 }
             }
+
+            // No grind points? As a pre-caution, purge everything and start over
             else
             {
                 PurgeGrindPoints();
@@ -1155,6 +1180,9 @@ namespace PreServer
             }
         }
 
+        /// <summary>
+        /// When exiting a grind, clear out the lists
+        /// </summary>
         void PurgeGrindPoints()
         {
             grindPoints = new Dictionary<int, Vector3>();
