@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e73411a8ee223f84799a9f4acce90f5d, type: 3}
   m_Name: Rotate Grind
   m_EditorClassIdentifier: 
-  cameraTransform: {fileID: 11400000, guid: 74c4d5a43fc4b4947a4d7dc56225221e, type: 2}
+  cameraTransform: {fileID: 11400000, guid: 14fa444e8fc99754c9f013ced74737ae, type: 2}
   speed: 8
