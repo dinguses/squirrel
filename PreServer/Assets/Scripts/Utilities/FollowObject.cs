@@ -9,6 +9,8 @@ public class FollowObject : MonoBehaviour
     public float offset;
     public enum OffsetDirection { NONE, FORWARD, UP, RIGHT }
     public OffsetDirection direction;
+    public enum UpdateTick { NORMAL, LATE, FIXED }
+    public UpdateTick update;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,7 +20,25 @@ public class FollowObject : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(target != null)
+        if (update == UpdateTick.NORMAL)
+            UpdatePosition(Time.deltaTime);
+    }
+
+    private void LateUpdate()
+    {
+        if (update == UpdateTick.LATE)
+            UpdatePosition(Time.deltaTime);
+    }
+
+    private void FixedUpdate()
+    {
+        if (update == UpdateTick.FIXED)
+            UpdatePosition(Time.fixedDeltaTime);
+    }
+
+    void UpdatePosition(float delta)
+    {
+        if (target != null)
         {
             Vector3 off = Vector3.zero;
             if (offset != 0)
@@ -37,7 +57,7 @@ public class FollowObject : MonoBehaviour
                 }
             }
             Vector3 targetPos = target.position + off;
-            transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * followSpeed);
+            transform.position = Vector3.Lerp(transform.position, targetPos, delta * followSpeed);
         }
     }
 }

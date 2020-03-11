@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace PreServer
 {
@@ -44,8 +45,59 @@ namespace PreServer
         public Vector3 moveUp = new Vector3(0, .05f, 0);
         public Vector3 moveDown = new Vector3(0, -.05f, 0);
 
+        public SmartLagDash smartDash;
+        public Text dashDistance;
+        public Text dashTime;
+        public Text dashSHDistance;
+        public void IncreaseDashDistance()
+        {
+            smartDash.defaultDist += 0.5f;
+            if (smartDash.defaultDist >= smartDash.runDist)
+                IncreaseDashSHDistance();
+            dashDistance.text = smartDash.defaultDist.ToString("N2");
+        }
+
+        public void DecreaseDashDistance()
+        {
+            if (smartDash.defaultDist <= 0.5f)
+                return;
+            smartDash.defaultDist -= 0.5f;
+            dashDistance.text = smartDash.defaultDist.ToString("N2");
+        }
+
+        public void IncreaseDashTime()
+        {
+            smartDash.time += 0.05f;
+            dashTime.text = smartDash.time.ToString("N2");
+        }
+
+        public void DecreaseDashTime()
+        {
+            if (smartDash.time <= 0.05f)
+                return;
+            smartDash.time -= 0.05f;
+            dashTime.text = smartDash.time.ToString("N2");
+        }
+
+        public void IncreaseDashSHDistance()
+        {
+            smartDash.runDist += 0.5f;
+            dashSHDistance.text = smartDash.runDist.ToString("N2");
+        }
+
+        public void DecreaseDashSHDistance()
+        {
+            smartDash.runDist -= 0.5f;
+            if (smartDash.defaultDist >= smartDash.runDist)
+                DecreaseDashDistance();
+            dashSHDistance.text = smartDash.runDist.ToString("N2");
+        }
+
         public void Start()
         {
+            dashDistance.text = smartDash.defaultDist.ToString("N2");
+            dashSHDistance.text = smartDash.runDist.ToString("N2");
+            dashTime.text = smartDash.time.ToString("N2");
             cageIsUp = false;
             crushersPrimed = false;
 
