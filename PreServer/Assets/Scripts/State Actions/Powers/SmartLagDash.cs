@@ -64,7 +64,7 @@ namespace PreServer
         public override void OnUpdate(StateManager states)
         {
             base.OnUpdate(states);
-            if (t >= time)
+            if (t >= totalTime)
                 ((PlayerManager)states).dashActive = false;
             Move(states);
         }
