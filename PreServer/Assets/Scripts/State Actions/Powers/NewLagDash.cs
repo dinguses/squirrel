@@ -140,7 +140,7 @@ namespace PreServer
                     }
 
                     Debug.Log(slowMoTimer);
-
+                    states.lagDashCooldown = slowMoTimer;
                     if (slowMoTimer >= 1 || overrideSlowMo)
                     {
 

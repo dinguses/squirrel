@@ -15,3 +15,6 @@ MonoBehaviour:
   defaultDist: 10
   runDist: 15
   time: 0.15
+  endMomentum: 20
+  slowMoDuration: 2
+  slowMoSpeedUpDelay: 1
