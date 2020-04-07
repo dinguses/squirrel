@@ -75,7 +75,7 @@ namespace PreServer
 
         public bool inGrindZone;
         public Dictionary<int, Vector3> grindPoints;
-        public Dictionary<int, BoxCollider> grindCenters;
+        //public Dictionary<int, BoxCollider> grindCenters;
 
         public float held180RotationAmt = 0;
 
@@ -94,8 +94,8 @@ namespace PreServer
         public Vector3 backNormal;
         public Vector3 backupGroundNormal;
 
-        public KeyValuePair<int, BoxCollider> grindCenterPair;
-        public BoxCollider grindCenter;
+        //public KeyValuePair<int, BoxCollider> grindCenterPair;
+        //public BoxCollider grindCenter;
         public bool inJoint = false;
 
         public bool rotateBool = false;
@@ -192,7 +192,7 @@ namespace PreServer
             inGrindZone = false;
 
             grindPoints = new Dictionary<int, Vector3>();
-            grindCenters = new Dictionary<int, BoxCollider>();
+            //grindCenters = new Dictionary<int, BoxCollider>();
 
             speedHackAmount = 2f;
         }
@@ -953,8 +953,8 @@ namespace PreServer
                 if (grindPoints.Count == 2)
                 {
                     var grindMaster = other.gameObject.transform.parent.parent;
-                    var centers = grindMaster.GetChild(1);
-                    grindCenter = centers.GetChild(0).GetComponent<BoxCollider>();
+                    //var centers = grindMaster.GetChild(1);
+                    //grindCenter = centers.GetChild(0).GetComponent<BoxCollider>();
                 }
             }
 
@@ -1117,9 +1117,9 @@ namespace PreServer
                     behindPoint = hold;
                     behindPointPair = holdPair;
 
-                    var trungo = grindCenterPair.Key + 1;
-                    grindCenter = grindCenters[trungo];
-                    grindCenterPair = new KeyValuePair<int, BoxCollider>(trungo, grindCenter);
+                    //var trungo = grindCenterPair.Key + 1;
+                    //grindCenter = grindCenters[trungo];
+                    //grindCenterPair = new KeyValuePair<int, BoxCollider>(trungo, grindCenter);
                 }
 
                 if (facingPointPair.Key < behindPointPair.Key)
@@ -1135,9 +1135,9 @@ namespace PreServer
                     behindPoint = hold;
                     behindPointPair = holdPair;
 
-                    var trungo = grindCenterPair.Key - 1;
-                    grindCenter = grindCenters[trungo];
-                    grindCenterPair = new KeyValuePair<int, BoxCollider>(trungo, grindCenter);
+                    //var trungo = grindCenterPair.Key - 1;
+                    //grindCenter = grindCenters[trungo];
+                    //grindCenterPair = new KeyValuePair<int, BoxCollider>(trungo, grindCenter);
                 }
             }
         }
@@ -1154,7 +1154,8 @@ namespace PreServer
             if (grindPoints.Count == 0)
             {
                 var grindMaster = grindColliderGen.gameObject.transform.parent.parent;
-                var points = grindMaster.GetChild(2);
+                //var points = grindMaster.GetChild(2);
+                var points = grindMaster.GetChild(1);
 
                 var numPoints = points.childCount;
 
@@ -1163,13 +1164,13 @@ namespace PreServer
                     grindPoints.Add(i, points.GetChild(i).position);
                 }
 
-                var centers = grindMaster.GetChild(1);
+                /*var centers = grindMaster.GetChild(1);
 
                 for (int i = 0; i < centers.childCount; i++)
                 {
                     var center = centers.GetChild(i).GetComponent<BoxCollider>();
                     grindCenters.Add(i, center);
-                }
+                }*/
             }
 
             // No grind points? As a pre-caution, purge everything and start over
@@ -1186,8 +1187,8 @@ namespace PreServer
         void PurgeGrindPoints()
         {
             grindPoints = new Dictionary<int, Vector3>();
-            grindCenters = new Dictionary<int, BoxCollider>();
-            grindCenter = new BoxCollider();
+            //grindCenters = new Dictionary<int, BoxCollider>();
+            //grindCenter = new BoxCollider();
         }
 
         public bool CanDash()

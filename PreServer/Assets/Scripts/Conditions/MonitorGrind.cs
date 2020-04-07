@@ -107,55 +107,55 @@ namespace PreServer
                 }
 
                 // Figure out what grind center to move along
-                if (state.grindPoints.Count > 2)
-                {
-                    if (state.facingPointPair.Key < state.behindPointPair.Key)
-                    {
-                        string test = "GrindCenter_" + state.facingPointPair.Key.ToString() + state.behindPointPair.Key.ToString();
+                //if (state.grindPoints.Count > 2)
+                //{
+                //    if (state.facingPointPair.Key < state.behindPointPair.Key)
+                //    {
+                //        string test = "GrindCenter_" + state.facingPointPair.Key.ToString() + state.behindPointPair.Key.ToString();
 
-                        for (int i = 0; i < state.grindCenters.Count; i++)
-                        {
-                            var ttttee = state.grindCenters[i];
+                //        for (int i = 0; i < state.grindCenters.Count; i++)
+                //        {
+                //            var ttttee = state.grindCenters[i];
 
-                            if (ttttee.name == test)
-                            {
-                                state.grindCenter = state.grindCenters[i];
-                                state.grindCenterPair = new KeyValuePair<int, BoxCollider>(state.facingPointPair.Key, state.grindCenter);
-                            }
-                        }
+                //            if (ttttee.name == test)
+                //            {
+                //                state.grindCenter = state.grindCenters[i];
+                //                state.grindCenterPair = new KeyValuePair<int, BoxCollider>(state.facingPointPair.Key, state.grindCenter);
+                //            }
+                //        }
 
-                        //state.grindCenter = state.grindCenters2[test];
-                        //state.grindCenterPair2 = new KeyValuePair<string, BoxCollider>(test, state.grindCenter);
+                //        //state.grindCenter = state.grindCenters2[test];
+                //        //state.grindCenterPair2 = new KeyValuePair<string, BoxCollider>(test, state.grindCenter);
 
-                        //state.grindCenter = state.grindCenters[state.facingPointPair.Key];
-                        //state.grindCenterPair = new KeyValuePair<int, BoxCollider>(state.facingPointPair.Key, state.grindCenter);
-                    }
+                //        //state.grindCenter = state.grindCenters[state.facingPointPair.Key];
+                //        //state.grindCenterPair = new KeyValuePair<int, BoxCollider>(state.facingPointPair.Key, state.grindCenter);
+                //    }
                     
-                    else
-                    {
-                        string test = "GrindCenter_" + state.behindPointPair.Key.ToString() + state.facingPointPair.Key.ToString();
+                //    else
+                //    {
+                //        string test = "GrindCenter_" + state.behindPointPair.Key.ToString() + state.facingPointPair.Key.ToString();
 
-                        for (int i = 0; i < state.grindCenters.Count; i++)
-                        {
-                            var ttttee = state.grindCenters[i];
+                //        for (int i = 0; i < state.grindCenters.Count; i++)
+                //        {
+                //            var ttttee = state.grindCenters[i];
 
-                            if (ttttee.name == test)
-                            {
-                                state.grindCenter = state.grindCenters[i];
-                                state.grindCenterPair = new KeyValuePair<int, BoxCollider>(state.behindPointPair.Key, state.grindCenter);
-                            }
-                        }
+                //            if (ttttee.name == test)
+                //            {
+                //                state.grindCenter = state.grindCenters[i];
+                //                state.grindCenterPair = new KeyValuePair<int, BoxCollider>(state.behindPointPair.Key, state.grindCenter);
+                //            }
+                //        }
 
-                        /*string test = "GrindCenter" + state.behindPointPair.Key.ToString() + state.facingPointPair.Key.ToString();
+                //        /*string test = "GrindCenter" + state.behindPointPair.Key.ToString() + state.facingPointPair.Key.ToString();
 
-                        state.grindCenter = state.grindCenters2[test];
-                        state.grindCenterPair2 = new KeyValuePair<string, BoxCollider>(test, state.grindCenter);*/
+                //        state.grindCenter = state.grindCenters2[test];
+                //        state.grindCenterPair2 = new KeyValuePair<string, BoxCollider>(test, state.grindCenter);*/
                         
-                        //state.grindCenter = state.grindCenters[state.behindPointPair.Key];
-                        //state.grindCenterPair = new KeyValuePair<int, BoxCollider>(state.behindPointPair.Key, state.grindCenter);
-                    }
-                }
-
+                //        //state.grindCenter = state.grindCenters[state.behindPointPair.Key];
+                //        //state.grindCenterPair = new KeyValuePair<int, BoxCollider>(state.behindPointPair.Key, state.grindCenter);
+                //    }
+                //}
+                
 
                 // No gravity on grinds
                 state.rigid.useGravity = false;

@@ -78,38 +78,55 @@ namespace PreServer
                 states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity, states.delta * 10.5f);
 
                 // If there is a current grind center
-                if (states.grindCenter != null)
+                //if (states.grindCenter != null)
+                //{
+                //    // Move Player towards center should they not be on it
+                //    Vector3 grindCenterClosestPoint = states.grindCenter.ClosestPoint(states.mTransform.position);
+
+                //    states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * 10 * (states.groundSpeedMult * 2));
+
+                //    if (!states.doneAdjustingGrind)
+                //        Debug.Log("cc - " + Vector3.Distance(states.rigid.position, grindCenterClosestPoint));
+
+                //    if (!states.doneAdjustingGrind)
+                //    {
+                //        if (Vector3.Distance(states.rigid.position, grindCenterClosestPoint) < .1f)
+                //        {
+                //            Debug.Log("Done adjusting!");
+                //            states.doneAdjustingGrind = true;
+                //        }
+                //    }
+
+
+                //    //states.rigid.MovePosition(grindCenterClosestPoint);
+
+
+                //        //Debug.Log(Vector3.Distance(states.rigid.position, grindCenterClosestPoint));
+                //        /*
+                //        int mult = 10;
+
+                //        if (Vector3.Distance(states.rigid.position, grindCenterClosestPoint) < .2f && states.inJoint)
+                //            mult = 3;
+
+                //        states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * mult);*/
+                //        //states.rigid.MovePosition(grindCenterClosestPoint);
+                //}
+
+                // Move Player towards center should they not be on it
+                Vector3 grindCenterClosestPoint = GetPoint(states.rigid.position, states.facingPoint, states.behindPoint);
+
+                states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * 10 * (states.groundSpeedMult * 2));
+
+                if (!states.doneAdjustingGrind)
+                    Debug.Log("cc - " + Vector3.Distance(states.rigid.position, grindCenterClosestPoint));
+
+                if (!states.doneAdjustingGrind)
                 {
-                    // Move Player towards center should they not be on it
-                    Vector3 grindCenterClosestPoint = states.grindCenter.ClosestPoint(states.mTransform.position);
-
-                    states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * 10 * (states.groundSpeedMult * 2));
-
-                    if (!states.doneAdjustingGrind)
-                        Debug.Log("cc - " + Vector3.Distance(states.rigid.position, grindCenterClosestPoint));
-
-                    if (!states.doneAdjustingGrind)
+                    if (Vector3.Distance(states.rigid.position, grindCenterClosestPoint) < .1f)
                     {
-                        if (Vector3.Distance(states.rigid.position, grindCenterClosestPoint) < .1f)
-                        {
-                            Debug.Log("Done adjusting!");
-                            states.doneAdjustingGrind = true;
-                        }
+                        Debug.Log("Done adjusting!");
+                        states.doneAdjustingGrind = true;
                     }
-
-
-                    //states.rigid.MovePosition(grindCenterClosestPoint);
-
-
-                        //Debug.Log(Vector3.Distance(states.rigid.position, grindCenterClosestPoint));
-                        /*
-                        int mult = 10;
-
-                        if (Vector3.Distance(states.rigid.position, grindCenterClosestPoint) < .2f && states.inJoint)
-                            mult = 3;
-
-                        states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * mult);*/
-                        //states.rigid.MovePosition(grindCenterClosestPoint);
                 }
             }
 
@@ -125,6 +142,11 @@ namespace PreServer
                 dashActivated = false;
                 states.playerMesh.gameObject.SetActive(true);
             }
+        }
+
+        Vector3 GetPoint(Vector3 p, Vector3 a, Vector3 b)
+        {
+            return a + Vector3.Project(p - a, b - a);
         }
 
         public override void OnExit(StateManager sm)
