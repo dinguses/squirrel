@@ -288,7 +288,7 @@ namespace PreServer
                 }
             }
             #endregion
-            if (lagDashCooldown > 0)
+            if (lagDashCooldown > 0 && !dashActive)
             {
                 lagDashCooldown -= delta;
                 if (lagDashCooldown < 0)
@@ -324,12 +324,12 @@ namespace PreServer
             #endregion
 
             //TODO: try using climbHit instead of bottomHit
-            if (dashActive && didClimbHit && climbState == ClimbState.NONE)
-            {
-                Debug.Log("Ending this dash EARLY");
-                dashActive = false;
-                playerMesh.gameObject.SetActive(true);
-            }
+            //if (dashActive && didClimbHit && climbState == ClimbState.NONE)
+            //{
+            //    Debug.Log("Ending this dash EARLY");
+            //    dashActive = false;
+            //    playerMesh.gameObject.SetActive(true);
+            //}
 
             if (!dashActive && dashStarted)
                 dashStarted = false;

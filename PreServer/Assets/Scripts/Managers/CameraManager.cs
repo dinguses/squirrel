@@ -244,14 +244,14 @@ namespace PreServer
             //smoothPosition(transform.position, ref targetPos);
             //Debug.DrawLine(player.position, targetPos, Color.magenta);
             Vector3 temp = targetPos;
-            targetPos = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * camFollowSpeed);
+            targetPos = Vector3.Lerp(transform.position, targetPos, Time.unscaledDeltaTime * camFollowSpeed);
             CompensateForWalls(characterOffset, temp, ref targetPos);
 
             if (prevPlayerPos != player.position)
             {
                 if(Physics.Raycast(targetPos + (Vector3.up * 0.1f), Vector3.down, 0.2f, 1, QueryTriggerInteraction.Ignore))
                 {
-                    distanceUp += Time.deltaTime * 4f;
+                    distanceUp += Time.unscaledDeltaTime * 4f;
                 }
             }
             transform.position = targetPos;
