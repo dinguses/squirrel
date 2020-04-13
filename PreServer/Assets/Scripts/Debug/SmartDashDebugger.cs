@@ -15,6 +15,14 @@ namespace PreServer
         public Text slowMoSpeedUp;
         public Text rotationAngle;
         public Text rotationSpeed;
+        public Text verticalVelocity;
+        public Text horizontalVelocity;
+        public GameObject p1;
+        public GameObject p2;
+        public GameObject p3;
+        public GameObject p4;
+        public float factor = 0.0001f;
+        Vector3 intersection = Vector3.zero;
         // Start is called before the first frame update
         void Start()
         {
@@ -26,6 +34,8 @@ namespace PreServer
             slowMoSpeedUp.text = smartDash.slowMoSpeedUpDelay.ToString("N2");
             rotationSpeed.text = smartDash.rotationSpeed.ToString("N2");
             rotationAngle.text = smartDash.rotationCutoff.ToString("N2");
+            horizontalVelocity.text = smartDash.velocityMult.x.ToString("N2");
+            verticalVelocity.text = smartDash.velocityMult.y.ToString("N2");
         }
 
         public void IncreaseDashDistance()
@@ -150,10 +160,79 @@ namespace PreServer
             slowMoTime.text = smartDash.slowMoDuration.ToString("N2");
         }
 
+        public void IncreaseVerticalVelocitySuppresion()
+        {
+            if (smartDash.velocityMult.y >= 1f)
+                return;
+            smartDash.velocityMult.y += 0.05f;
+            verticalVelocity.text = smartDash.velocityMult.y.ToString("N2");
+        }
+
+        public void DecreaseVerticalVelocitySuppresion()
+        {
+            if (smartDash.velocityMult.y <= 0f)
+                return;
+            smartDash.velocityMult.y -= 0.05f;
+            verticalVelocity.text = smartDash.velocityMult.y.ToString("N2");
+        }
+
+        public void IncreaseHorizontalVelocitySuppresion()
+        {
+            if (smartDash.velocityMult.x >= 1f)
+                return;
+            smartDash.velocityMult.x += 0.05f;
+            smartDash.velocityMult.z = smartDash.velocityMult.x;
+            horizontalVelocity.text = smartDash.velocityMult.x.ToString("N2");
+        }
+
+        public void DecreaseHorizontalVelocitySuppresion()
+        {
+            if (smartDash.velocityMult.x <= 0f)
+                return;
+            smartDash.velocityMult.x -= 0.05f;
+            smartDash.velocityMult.z = smartDash.velocityMult.x;
+            horizontalVelocity.text = smartDash.velocityMult.x.ToString("N2");
+        }
+
         // Update is called once per frame
         void Update()
         {
+            if (p1 != null && p2 != null && p3 != null && p4 != null)
+            {
+                if (LineLineIntersection(out intersection, p1.transform.position, p2.transform.position - p1.transform.position, p3.transform.position, p4.transform.position - p3.transform.position))
+                {
+                    Debug.DrawLine(p1.transform.position, p2.transform.position, Color.green);
+                    Debug.DrawLine(p3.transform.position, p4.transform.position, Color.green);
+                    Debug.DrawRay(intersection, Vector3.up);
+                }
+                else
+                {
+                    Debug.DrawLine(p1.transform.position, p2.transform.position, Color.blue);
+                    Debug.DrawLine(p3.transform.position, p4.transform.position, Color.blue);
+                }
+            }
+        }
 
+        public bool LineLineIntersection(out Vector3 intersection, Vector3 linePoint1, Vector3 lineDir1, Vector3 linePoint2, Vector3 lineDir2)
+        {
+            Vector3 lineDir3 = linePoint2 - linePoint1;
+            Vector3 crossVec1and2 = Vector3.Cross(lineDir1, lineDir2);
+            Vector3 crossVec3and2 = Vector3.Cross(lineDir3, lineDir2);
+
+            float planarFactor = Vector3.Dot(lineDir3, crossVec1and2);
+
+            //is coplanar, and not parrallel
+            if (Mathf.Abs(planarFactor) < factor && crossVec1and2.sqrMagnitude > factor)
+            {
+                float s = Vector3.Dot(crossVec3and2, crossVec1and2) / crossVec1and2.sqrMagnitude;
+                intersection = linePoint1 + (lineDir1 * s);
+                return true;
+            }
+            else
+            {
+                intersection = Vector3.zero;
+                return false;
+            }
         }
     }
 }

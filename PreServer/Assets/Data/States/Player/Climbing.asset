@@ -19,7 +19,7 @@ MonoBehaviour:
   actions:
   - {fileID: 11400000, guid: 10718ce09e002874180ab9e8360cb82e, type: 2}
   stateName: 
-  idCount: 2
+  idCount: 4
   transitions:
   - id: 0
     condition: {fileID: 11400000, guid: edc4ea99884573d43af9a867f7b0ebb5, type: 2}
@@ -28,4 +28,8 @@ MonoBehaviour:
   - id: 1
     condition: {fileID: 11400000, guid: 09646b58739c1844d967360476f1c82b, type: 2}
     targetState: {fileID: 11400000, guid: 79c7f8040eac1954590da60b276a0b99, type: 2}
+    disable: 0
+  - id: 3
+    condition: {fileID: 11400000, guid: 183a7fbf36cc6584c8f4a936b2e53754, type: 2}
+    targetState: {fileID: 11400000, guid: 38e9ae9e4e2bbee48a64b3bf7351e59c, type: 2}
     disable: 0
