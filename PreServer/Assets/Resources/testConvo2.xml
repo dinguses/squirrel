@@ -1,0 +1,15 @@
+<!--?xml version="1.0" encoding="UTF-8"?-->
+<convo>
+  <chat type="2" time="1.5" />
+  <chat type="5" time="1" from="wank_w0rm" />
+  <chat type="2" time="2.5" />
+  <chat type="0" time="4" from="wank_w0rm" startNext="true" startNextTime=".5" />
+  <chat type="0" time="3" from="Bertie" startNext="true" startNextTime="1" />
+  <chat type="0" time="2" from="echelon" />
+  <chat type="2" time="2" />
+  <chat type="1" time="0" from="echelon" words="ass" />
+  <chat type="2" time="1" />
+  <chat type="1" time="0" from="Bertie" words="ass" />
+  <chat type="2" time="2" />
+  <chat type="1" time="0" from="wank_w0rm" words="ass" />
+</convo>

@@ -6,6 +6,9 @@ namespace PreServer
 {
     public class DesktopManager : MonoBehaviour
     {
-
+        public void Start()
+        {
+            Cursor.lockState = CursorLockMode.Confined;
+        }
     }
 }
