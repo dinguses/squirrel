@@ -23,4 +23,4 @@ MonoBehaviour:
   rotationCutoff: 20
   dashRotationSpeed: 16
   flickerTime: 0.175
-  gdm: 2
+  gdm: 0
