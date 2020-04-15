@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63fadc09856dc08449fd5dcfd61a19e8, type: 3}
   m_Name: Smart Lag Dash
   m_EditorClassIdentifier: 
-  defaultDist: 10
-  runDist: 15
-  time: 0.15
-  endMomentum: 20
-  slowMoDuration: 2
+  defaultDist: 9.5
+  runDist: 12.5
+  time: 0.2
+  endMomentum: 28
+  velocityMult: {x: 0.5, y: 1, z: 0.5}
+  slowMoDuration: 1.75
   slowMoSpeedUpDelay: 1
+  rotationSpeed: 4
+  rotationCutoff: 20

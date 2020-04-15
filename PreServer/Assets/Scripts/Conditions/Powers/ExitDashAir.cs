@@ -13,13 +13,14 @@ namespace PreServer
 
             bool test = state.dashActive;
             bool test2 = state.isGrounded;
+            bool test3 = state.climbState == PlayerManager.ClimbState.NONE;
 
-            if (!state.dashActive && !state.isGrounded)
+            if (!state.dashActive && !state.isGrounded && test3)
             {
                 Debug.Log("exiting dash in air");
             }
 
-            if (!test && !test2)
+            if (!test && !test2 && test3)
                 return true;
             else
                 return false;

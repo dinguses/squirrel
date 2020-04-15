@@ -19,11 +19,6 @@ namespace PreServer
         bool transitioning = false;
         RaycastHit front;
         RaycastHit under;
-        public float dashSpeed = 40f;
-        public float dashTime = 0.15f;
-        bool dash = false;
-        float timer = 0;
-        bool dashActivated = false;
         bool moveCamera = false;
         CameraManager camera;
         float cameraAngle = 0;
@@ -52,9 +47,6 @@ namespace PreServer
             transitioning = false;
             states.isGrounded = false;
             states.dashInAirCounter = 0;
-            dash = false;
-            timer = 0;
-            dashActivated = false;
             moveCamera = false;
             if (camera != null)
                 camera.ignoreInput = false;
@@ -172,46 +164,9 @@ namespace PreServer
             else
             {
                 RotateTowardsClimb();
-                if (timer <= 0 && states.dashActive && states.CanDash() && !dashActivated)
-                {
-                    states.anim.CrossFade(states.hashes.squ_dash, 0.01f);
-                    states.anim.SetBool(states.hashes.isDashing, true);
-
-                    //Debug.Log("Adding velocity 9");
-                    states.rigid.velocity = states.transform.forward * dashSpeed - (under.normal.normalized * dashSpeed * 0.5f);
-                    if (states.isRun)
-                    {
-                        timer = 0.225f;
-                        states.speedHackAmount -= 0.2f;
-                        if (states.speedHackAmount <= 0)
-                        {
-                            states.speedHackAmount = 0;
-                            states.runRanOut = true;
-                        }
-                    }
-                    else
-                    {
-                        timer = 0.15f;
-                    }
-                    dashActivated = true;
-                }
-                if (!states.dashActive)
-                {
-                    Rotate(states);
-                    Move(states);
-                }
+                Rotate(states);
+                Move(states);
                 CheckRaycast(states);
-            }
-            timer -= Time.deltaTime;
-            if (timer < 0 && states.dashActive && dashActivated)
-            {
-                states.dashActive = false;
-                states.rigid.velocity = Vector3.zero;
-                states.anim.SetBool(states.hashes.isDashing, false);
-                //Debug.Log("Dash over");
-                states.lagDashCooldown = 1.0f;
-                dashActivated = false;
-                states.playerMesh.gameObject.SetActive(true);
             }
             Debug.DrawRay(states.climbHit.point, states.climbHit.normal * 3f, Color.black);
         }
@@ -235,12 +190,7 @@ namespace PreServer
                     prevAngle = Vector3.Angle(front.normal, states.climbHit.normal);
                     states.rigid.velocity = Vector3.zero;
                     //Debug.Log("Front are you fucking things up, do I have to fix you?");
-                    if (states.dashActive)
-                    {
-                        states.dashActive = false;
-                        states.lagDashCooldown = 1.0f;
-                        dashActivated = false;
-                    }
+
                     tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, front.normal, Vector3.up);
                     if (tempAngle < 90 && tempAngle > -90)
                     {
@@ -314,14 +264,6 @@ namespace PreServer
                         prevAngle = angle;
                         //Debug.Log("Under has detected a new climb to transition to");
                         states.rigid.velocity = Vector3.zero;
-
-                        //Stop dashing
-                        if (states.dashActive)
-                        {
-                            states.dashActive = false;
-                            states.lagDashCooldown = 1.0f;
-                            dashActivated = false;
-                        }
 
                         //Camera rotations, checking if the camera needs to be repositioned based on where it is relative to the climb
                         tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, under.normal, Vector3.up);
@@ -403,14 +345,6 @@ namespace PreServer
                             //Debug.Log("Under has detected a new climb to transition to");
                             states.rigid.velocity = Vector3.zero;
 
-                            //Stop dashing
-                            if (states.dashActive)
-                            {
-                                states.dashActive = false;
-                                states.lagDashCooldown = 1.0f;
-                                dashActivated = false;
-                            }
-
                             //Camera rotations, checking if the camera needs to be repositioned based on where it is relative to the climb
                             tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, under.normal, Vector3.up);
                             if (tempAngle < 90 && tempAngle > -90)
@@ -451,14 +385,6 @@ namespace PreServer
                             prevAngle = angle;
                             //Debug.Log("Under has detected a new climb to transition to");
                             states.rigid.velocity = Vector3.zero;
-
-                            //Stop dashing
-                            if (states.dashActive)
-                            {
-                                states.dashActive = false;
-                                states.lagDashCooldown = 1.0f;
-                                dashActivated = false;
-                            }
 
                             //Camera rotations, checking if the camera needs to be repositioned based on where it is relative to the climb
                             tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, under.normal, Vector3.up);
@@ -553,7 +479,7 @@ namespace PreServer
             RaycastHit hit = new RaycastHit();
             if (Physics.Raycast(center, dir, out hit, 5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
-                states.mTransform.rotation = Quaternion.Slerp(states.mTransform.rotation, Quaternion.FromToRotation(states.transform.up, hit.normal) * states.transform.rotation, t * rotationSpeed * (states.dashActive ? 4f : 1f));
+                states.mTransform.rotation = Quaternion.Slerp(states.mTransform.rotation, Quaternion.FromToRotation(states.transform.up, hit.normal) * states.transform.rotation, Time.unscaledDeltaTime * rotationSpeed);
                 Vector3 v = Vector3.Cross(hit.normal, Vector3.up);
                 climbForward = Vector3.Cross(v, hit.normal);
                 climbRight = Vector3.Cross(hit.normal, Vector3.up);
@@ -568,7 +494,7 @@ namespace PreServer
             //Debug.DrawRay(origin2, -Vector3.up, Color.red);
             Vector3 targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * climbSpeed * states.climbSpeedMult;
             if(!ignoreGravity)
-                targetVelocity -= under.normal.normalized * targetVelocity.magnitude * 0.5f;
+                targetVelocity -= climbUp.normalized * targetVelocity.magnitude * 0.5f;
             //if (transitioning)
             //    targetVelocity = Quaternion.Inverse(targetRot) * targetVelocity;
             Vector3 currentVelocity = states.rigid.velocity;
@@ -618,7 +544,7 @@ namespace PreServer
 
             if (!inPos)
             {
-                t += delta * (dashActivated ? 4 : states.isRun ? states.climbSpeedMult : 1);
+                t += delta * (states.isRun ? states.climbSpeedMult : 1);
                 Vector3 tp = Vector3.Lerp(startPos, targetPos, t);
                 if (t >= 1)
                     tp = targetPos;
@@ -686,13 +612,6 @@ namespace PreServer
         {
             base.OnExit(states);
             //states.rigid.velocity = Vector3.zero;
-            if (states.dashActive)
-            {
-                states.dashActive = false;
-                states.lagDashCooldown = 1.0f;
-                states.anim.SetBool(states.hashes.isDashing, false);
-                //states.anim.SetLayerWeight(1, 1);
-            }
             moveCamera = false;
             if (camera != null)
                 camera.ignoreInput = false;
