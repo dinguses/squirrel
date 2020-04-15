@@ -17,6 +17,8 @@ namespace PreServer
         public Text rotationSpeed;
         public Text verticalVelocity;
         public Text horizontalVelocity;
+        public Text ghostMode;
+        public Text flickerTime;
         public GameObject p1;
         public GameObject p2;
         public GameObject p3;
@@ -36,6 +38,8 @@ namespace PreServer
             rotationAngle.text = smartDash.rotationCutoff.ToString("N2");
             horizontalVelocity.text = smartDash.velocityMult.x.ToString("N2");
             verticalVelocity.text = smartDash.velocityMult.y.ToString("N2");
+            ghostMode.text = smartDash.gdm.ToString();
+            flickerTime.text = smartDash.flickerTime.ToString("N3");
         }
 
         public void IncreaseDashDistance()
@@ -192,6 +196,38 @@ namespace PreServer
             smartDash.velocityMult.x -= 0.05f;
             smartDash.velocityMult.z = smartDash.velocityMult.x;
             horizontalVelocity.text = smartDash.velocityMult.x.ToString("N2");
+        }
+
+        public void IncreaseFlickerTime()
+        {
+            if (smartDash.flickerTime >= .5f)
+                return;
+            smartDash.flickerTime += 0.025f;
+            flickerTime.text = smartDash.flickerTime.ToString("N3");
+        }
+
+        public void DecreaseFlickerTime()
+        {
+            if (smartDash.flickerTime <= 0f)
+                return;
+            smartDash.flickerTime -= 0.025f;
+            flickerTime.text = smartDash.flickerTime.ToString("N3");
+        }
+
+        public void IncreaseGhostMode()
+        {
+            smartDash.gdm++;
+            smartDash.gdm = (SmartLagDash.GhostDisplayMode)((int)smartDash.gdm % (int)SmartLagDash.GhostDisplayMode.Max);
+            ghostMode.text = smartDash.gdm.ToString();
+        }
+
+        public void DecreaseGhostMode()
+        {
+            if (smartDash.gdm == 0)
+                smartDash.gdm = SmartLagDash.GhostDisplayMode.Max;
+            smartDash.gdm--;
+            smartDash.gdm = (SmartLagDash.GhostDisplayMode)((int)smartDash.gdm % (int)SmartLagDash.GhostDisplayMode.Max);
+            ghostMode.text = smartDash.gdm.ToString();
         }
 
         // Update is called once per frame

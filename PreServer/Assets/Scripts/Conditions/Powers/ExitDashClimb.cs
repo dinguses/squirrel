@@ -10,7 +10,7 @@ namespace PreServer
         public override bool CheckCondition(StateManager sm)
         {
             PlayerManager state = (PlayerManager)sm;
-            return !state.dashActive && state.climbState == PlayerManager.ClimbState.CLIMBING;
+            return !state.dashActive && state.climbState != PlayerManager.ClimbState.NONE;
         }
     }
 }

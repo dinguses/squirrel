@@ -14,6 +14,7 @@ namespace PreServer
         public float endMomentum = 20f;//amount of extra momentum applied to the player when the dash ends
         public Vector3 velocityMult = Vector3.one;//velocity mult that will be applied to the player's velocity at the start of the dash
         float distance = 5f; //distance the current dash will go, dash will go shorter if a wall is hit
+        float distanceFactor = 0;
         float totalTime = 0.15f; //time is takes for the dash to end, this value is altered to maintain a consitent speed across every distance
         float t = 0; //timer - used for debugging purposes now
         PlayerManager player; //reference to the player
@@ -28,19 +29,30 @@ namespace PreServer
         float slowMoTimer = 0; //times how long the slow mo affect should go
         bool buttonHeld = false; //used to check if the button is still being held down
         float heldDownTimer = 0;
-        GameObject blueSquirrel; //the blue (ghosted) squirrel
         bool timeScaleSet = false; //has the timescale been set
-        float bsTimer = 0;
-        int bsPathIndex = 0;
+        bool pathChanged = false;
+        
 
         //Rotation Variables
         public float rotationSpeed = 16f;//speed the player rotates at
         public float rotationCutoff = 15f;//stops the player from rotating past this amount
+        public float dashRotationSpeed = 16f;//speed the player rotates at
         Vector3 prevRotation; //used to check against current rotation to know if the path should be recalculated
         Quaternion startRotation;
         Quaternion minRotation;
         Quaternion maxRotation;
         SmartDashDebugger debugger;
+
+        //Ghost Squirrel Variables
+        GameObject blueSquirrel; //the blue (ghosted) squirrel
+        int bsPathIndex = 0;
+        float currentBSPathTime = 0;
+        bool showGhost = false;
+        float ghostTimer = 0;
+        public float flickerTime = 0.175f;
+        public GhostDisplayMode gdm;
+        public enum GhostDisplayMode { On, Flicker, Max }
+
         public override void Execute(StateManager sm)
         {
 
@@ -120,12 +132,21 @@ namespace PreServer
                 {
                     states.transform.rotation = Quaternion.FromToRotation(player.transform.up, player.climbHit.normal) * player.transform.rotation;
                     dir = states.transform.rotation  * Vector3.forward.normalized;
-                    pos = player.climbHit.point;
+                    //pos = player.climbHit.point;
+                    pos = GetPoint(player.transform.position, player.climbHit.point, player.climbHit.point - (dir * distance));
+                    player.transform.position = pos;
                 }
-                CalculatePathClimb(distance, player.climbHit.transform == null ? (player.transform.up.normalized * 0.25f) : (player.climbHit.normal.normalized * 0.25f), dir, pos, totalTime);
+                CalculatePathClimb(distance, player.climbHit.transform == null ? (player.transform.up.normalized * 0.25f) : (player.climbHit.normal.normalized * 0.25f), dir, pos, totalTime, states.transform.rotation);
             }
             else
-                CalculatePath(distance, (player.transform.up * 0.25f), dir, pos, totalTime);
+                CalculatePath(distance, (player.transform.up * 0.25f), dir, pos, totalTime, states.transform.rotation);
+
+            distanceFactor = 0;
+            for (int i = 0; i < path.Count; ++i)
+            {
+                distanceFactor += Vector3.Distance(path[i].lerper.startVal, path[i].lerper.endVal);
+            }
+            distanceFactor /= distance;
         }
 
         /// <summary>
@@ -136,13 +157,13 @@ namespace PreServer
         /// <param name="dir">current direction of the path, based on previous raycast hit</param>
         /// <param name="start">start position</param>
         /// <param name="remainingTime">time remaining to keep a consistent speed across all paths and make the sum of all paths = total dash time</param>
-        void CalculatePath(float remainingDistance, Vector3 up, Vector3 dir, Vector3 start, float remainingTime)
+        void CalculatePath(float remainingDistance, Vector3 up, Vector3 dir, Vector3 start, float remainingTime, Quaternion startRot)
         {
             //Add a new path object
             path.Add(new Path());
-
             RaycastHit triggerInfo = new RaycastHit();
             Vector3 target;
+            path[path.Count - 1].slerper = new QuaternionSlerper(startRot, Quaternion.FromToRotation(player.transform.up, up.normalized) * player.transform.rotation);
             //Check if the path will hit any object including triggers
             if (Physics.Raycast(start + up, dir, out triggerInfo, remainingDistance, Layers.ignoreLayersController, QueryTriggerInteraction.Collide))
             {
@@ -220,7 +241,7 @@ namespace PreServer
             if (remainingDistance > 0)
             {
                 //Debug.LogError(remainingDistance);
-                CalculatePath(remainingDistance, up, dir, path[path.Count - 1].lerper.endVal, remainingTime);
+                CalculatePath(remainingDistance, up, dir, path[path.Count - 1].lerper.endVal, remainingTime, path[path.Count - 1].slerper.endVal);
             }
         }
 
@@ -232,10 +253,11 @@ namespace PreServer
         /// <param name="dir">current direction of the path, based on previous raycast hit</param>
         /// <param name="start">start position</param>
         /// <param name="remainingTime">time remaining to keep a consistent speed across all paths and make the sum of all paths = total dash time</param>
-        void CalculatePathClimb(float remainingDistance, Vector3 up, Vector3 dir, Vector3 start, float remainingTime)
+        void CalculatePathClimb(float remainingDistance, Vector3 up, Vector3 dir, Vector3 start, float remainingTime, Quaternion startRot)
         {
             //Add a new path object
             path.Add(new Path());
+            path[path.Count - 1].slerper = new QuaternionSlerper(startRot, Quaternion.FromToRotation(player.transform.up, up.normalized) * player.transform.rotation);
 
             //Check under and a straight shot
             RaycastHit triggerInfo = new RaycastHit();
@@ -293,11 +315,7 @@ namespace PreServer
             if (remainingDistance > 0)
             {
                 //Debug.LogError(remainingDistance);
-                CalculatePathClimb(remainingDistance, up, dir, path[path.Count - 1].lerper.endVal, remainingTime);
-            }
-            else if(blueSquirrel != null)
-            {
-                blueSquirrel.transform.rotation = Quaternion.FromToRotation(blueSquirrel.transform.up, up.normalized) * blueSquirrel.transform.rotation;
+                CalculatePathClimb(remainingDistance, up, dir, path[path.Count - 1].lerper.endVal, remainingTime, path[path.Count - 1].slerper.endVal);
             }
         }
 
@@ -471,6 +489,7 @@ namespace PreServer
                 {
                     buttonHeld = false;
                 }
+                RotateBasedOnGround(player);
             }
             else
             {
@@ -506,20 +525,31 @@ namespace PreServer
                         //blueSquirrel.transform.parent = player.transform;
                     }
 
+                    
                     if (player.transform.position != path[0].lerper.startVal || player.transform.forward != prevRotation)
                     {
+                        if (blueSquirrel)
+                            GetGhostTime();
                         while (path.Count > 0)
                             path.RemoveAt(0);
                         GeneratePath(player, false);
-                        if (blueSquirrel)
-                            blueSquirrel.transform.position = path[path.Count - 1].lerper.endVal;
+                        pathChanged = true;
+                        //if (blueSquirrel)
+                        //    blueSquirrel.transform.position = path[path.Count - 1].lerper.endVal;
                     }
                     Rotate(player);
-                    //if(blueSquirrel)
-                    //    MoveGhost();
+                    RotateBasedOnGround(player);
+                    if (blueSquirrel)
+                    {
+                        MoveGhost();
+                    }
                 }
                 else
                 {
+                    if(path.Count == 0)
+                    {
+                        GeneratePath(player, false);
+                    }
                     if (!timeScaleSet)
                     {
                         Time.timeScale = prevTimeScale;
@@ -560,14 +590,14 @@ namespace PreServer
                 //Update the time in the current path and get the position it calculated
                 path[pathIndex].Update(Time.deltaTime);
                 states.transform.position = path[pathIndex].lerper.GetValue();
-
+                states.transform.rotation = path[pathIndex].slerper.GetValue();
                 //Debug.LogError("Path time: " + path[pathIndex].time + " time passed: " + t + " lerpVal: " + path[pathIndex].lerper.GetLerpVal());
 
                 //If the current path is complete, then move onto the next one
                 if (path[pathIndex].lerper.done)
                 {
                     //Debug.LogError(path[pathIndex].time + " " + path[pathIndex].GetRemainder());
-
+                    states.transform.rotation = path[pathIndex].slerper.endVal;
                     ++pathIndex;
                     //Add any remaining time from the previous path into the current so we don't go an extra frame or 2 over
                     if (pathIndex < path.Count)
@@ -609,37 +639,125 @@ namespace PreServer
                 blueSquirrel.transform.rotation = targetRotation;
         }
 
-        //Moves the player
+        void RotateBasedOnGround(StateManager states)
+        {
+            Vector3 center = states.transform.position;
+            center += states.transform.forward + (states.transform.up * 0.2f);
+
+            // Dir represents the downward direction
+            Vector3 dir = -states.transform.up * 0.5f;
+
+            // Draw the rays
+            //Debug.DrawRay(center, dir * 5f, Color.red);
+            RaycastHit hit = new RaycastHit();
+            if (Physics.Raycast(center, dir, out hit, 5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                states.transform.rotation = Quaternion.Slerp(states.transform.rotation, Quaternion.FromToRotation(states.transform.up, hit.normal) * states.transform.rotation, Time.unscaledDeltaTime * rotationSpeed);
+            }
+        }
+
+        void GetGhostTime()
+        {
+            currentBSPathTime = 0;
+            for (int i = 0; i < path.Count; ++i)
+            {
+                if (path[i].lerper.done)
+                {
+                    currentBSPathTime += path[i].time;
+                }
+                else
+                {
+                    currentBSPathTime += (path[i].time * path[i].lerper.GetLerpVal());
+                }
+            }
+            //Debug.LogError(currentBSPathTime);
+            //bsTimer = currentBSPathTime;
+        }
+
+        //Moves the ghost
         void MoveGhost()
         {
             if (bsPathIndex >= path.Count)
             {
                 bsPathIndex = 0;
-                bsTimer = 0;
+                //bsTimer = 0;
             }
-            bsTimer += Time.unscaledDeltaTime * 0.25f;
 
-            //Update the time in the current path and get the position it calculated
-            path[bsPathIndex].Update(bsTimer);
+            if (pathChanged)
+            {
+                bsPathIndex = 0;
+                //currentBSPathTime += Time.unscaledDeltaTime * 0.4f;
+                while (currentBSPathTime > 0 && bsPathIndex < path.Count)
+                {
+                    if(currentBSPathTime > path[bsPathIndex].time)
+                    {
+                        path[bsPathIndex].Update(path[bsPathIndex].time);
+                        currentBSPathTime -= path[bsPathIndex].time;
+                        bsPathIndex++;
+                    }
+                    else
+                    {
+                        path[bsPathIndex].Update(currentBSPathTime);
+                        currentBSPathTime = 0;
+                    }
+                }
+                if(bsPathIndex >= path.Count)
+                {
+                    bsPathIndex = 0;
+                    ResetPath();
+                }
+            }
+            pathChanged = false;
+            path[bsPathIndex].Update(Time.unscaledDeltaTime * (0.3f * distanceFactor));
+
             blueSquirrel.transform.position = path[bsPathIndex].lerper.GetValue();
+            blueSquirrel.transform.rotation = path[bsPathIndex].slerper.GetValue();
 
-            //Debug.LogError("Path time: " + path[pathIndex].time + " time passed: " + t + " lerpVal: " + path[pathIndex].lerper.GetLerpVal());
+            if (distanceFactor * distance <= 2f)
+            {
+                showGhost = false;
+                blueSquirrel.gameObject.SetActive(showGhost);
+            }
+            else
+            {
+                switch (gdm)
+                {
+                    case GhostDisplayMode.On:
+                        if(!showGhost)
+                        {
+                            showGhost = true;
+                            blueSquirrel.SetActive(showGhost);
+                        }
+                        break;
+                    case GhostDisplayMode.Flicker:
+                        if (ghostTimer >= flickerTime)
+                        {
+                            showGhost = !showGhost;
+                            blueSquirrel.SetActive(showGhost);
+                            ghostTimer = 0;
+                        }
+                        ghostTimer += Time.unscaledDeltaTime;
+                        break;
+                }
+                
+            }
 
             //If the current path is complete, then move onto the next one
             if (path[bsPathIndex].lerper.done)
             {
                 //Debug.LogError(path[pathIndex].time + " " + path[pathIndex].GetRemainder());
-
+                blueSquirrel.transform.rotation = path[bsPathIndex].slerper.endVal;
                 ++bsPathIndex;
                 //Add any remaining time from the previous path into the current so we don't go an extra frame or 2 over
                 if (bsPathIndex < path.Count)
+                {
                     path[bsPathIndex].lerper.Update(path[bsPathIndex - 1].GetRemainder() / path[bsPathIndex].time);
+                }
                 else
                 {
                     bsPathIndex = 0;
                     ResetPath();
                 }
-                bsTimer = 0;
             }
 
         }
@@ -676,15 +794,17 @@ namespace PreServer
     public class Path
     {
         public VectorLerper lerper;
+        public QuaternionSlerper slerper;
         public float time;
-        float t = 0;
         float remainder;
+
         public void Update(float amount)
         {
             remainder = (amount / time) + lerper.GetLerpVal();
             if (remainder >= 1)
                 remainder = (remainder - 1f) * time;
             lerper.Update(amount / time);
+            slerper.Update(amount / (time * 0.25f));
         }
 
         public float GetRemainder()
@@ -696,6 +816,7 @@ namespace PreServer
         {
             remainder = 0;
             lerper.Reset();
+            slerper.Reset();
         }
     }
 
@@ -799,6 +920,64 @@ namespace PreServer
         }
 
         public int GetValue()
+        {
+            return value;
+        }
+    }
+
+    public class QuaternionSlerper
+    {
+        Quaternion value = Quaternion.identity;
+        Quaternion _startVal = Quaternion.identity;
+        public Quaternion startVal
+        {
+            get { return _startVal; }
+        }
+        Quaternion _endVal = Quaternion.identity;
+        public Quaternion endVal
+        {
+            get { return _endVal; }
+            set
+            {
+                lerpVal = 0;
+                _startVal = _endVal;
+                _endVal = value;
+            }
+        }
+
+        float lerpVal = 0;
+        public float GetLerpVal() { return lerpVal; }
+        public bool done { get { return value == endVal; } }
+        public QuaternionSlerper(Quaternion s, Quaternion e)
+        {
+            _startVal = s;
+            value = s;
+            _endVal = e;
+        }
+
+        public void Reset(Quaternion s, Quaternion e)
+        {
+            _startVal = s;
+            _endVal = e;
+        }
+
+        public void Reset()
+        {
+            lerpVal = 0;
+            value = startVal;
+        }
+
+        public void Update(float amount)
+        {
+            if (value != endVal)
+            {
+                lerpVal += amount;
+                lerpVal = Mathf.Clamp(lerpVal, 0, 1);
+                value = Quaternion.Slerp(startVal, endVal, lerpVal);
+            }
+        }
+
+        public Quaternion GetValue()
         {
             return value;
         }
