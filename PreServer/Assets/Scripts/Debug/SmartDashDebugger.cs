@@ -19,6 +19,7 @@ namespace PreServer
         public Text horizontalVelocity;
         public Text ghostMode;
         public Text flickerTime;
+        public Text ghostSpeed;
         public GameObject p1;
         public GameObject p2;
         public GameObject p3;
@@ -212,6 +213,22 @@ namespace PreServer
                 return;
             smartDash.flickerTime -= 0.025f;
             flickerTime.text = smartDash.flickerTime.ToString("N3");
+        }
+
+        public void IncreaseGhostSpeed()
+        {
+            if (smartDash.ghostSpeed >= 1f)
+                return;
+            smartDash.ghostSpeed += 0.05f;
+            ghostSpeed.text = smartDash.ghostSpeed.ToString("N2");
+        }
+
+        public void DecreaseGhostSpeed()
+        {
+            if (smartDash.ghostSpeed <= 0f)
+                return;
+            smartDash.ghostSpeed -= 0.05f;
+            ghostSpeed.text = smartDash.ghostSpeed.ToString("N2");
         }
 
         public void IncreaseGhostMode()

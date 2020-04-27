@@ -45,13 +45,19 @@ namespace PreServer
 
         //Ghost Squirrel Variables
         GameObject blueSquirrel; //the blue (ghosted) squirrel
+        GameObject bsTrail;
+        TrailRenderer trail;
+        LineRenderer line;
         int bsPathIndex = 0;
         float currentBSPathTime = 0;
         bool showGhost = false;
         float ghostTimer = 0;
         public float flickerTime = 0.175f;
+        public float ghostSpeed = 0.3f;
         public GhostDisplayMode gdm;
         public enum GhostDisplayMode { On, Flicker, Max }
+        SkinnedMeshRenderer bsRend;
+        float rendTime = 0;
 
         public override void Execute(StateManager sm)
         {
@@ -97,7 +103,8 @@ namespace PreServer
                 player.rigid.velocity = Vector3.zero;
 
             heldDownTimer = 0;
-
+            bsPathIndex = 0;
+            rendTime = 0;
             base.OnEnter(states);
             GeneratePath(states, true);
         }
@@ -164,6 +171,7 @@ namespace PreServer
             RaycastHit triggerInfo = new RaycastHit();
             Vector3 target;
             path[path.Count - 1].slerper = new QuaternionSlerper(startRot, Quaternion.FromToRotation(player.transform.up, up.normalized) * player.transform.rotation);
+            path[path.Count - 1].up = up.normalized;
             //Check if the path will hit any object including triggers
             if (Physics.Raycast(start + up, dir, out triggerInfo, remainingDistance, Layers.ignoreLayersController, QueryTriggerInteraction.Collide))
             {
@@ -258,6 +266,7 @@ namespace PreServer
             //Add a new path object
             path.Add(new Path());
             path[path.Count - 1].slerper = new QuaternionSlerper(startRot, Quaternion.FromToRotation(player.transform.up, up.normalized) * player.transform.rotation);
+            path[path.Count - 1].up = up.normalized;
 
             //Check under and a straight shot
             RaycastHit triggerInfo = new RaycastHit();
@@ -521,11 +530,20 @@ namespace PreServer
                     }
                     else if (!blueSquirrel)
                     {
-                        blueSquirrel = Instantiate(Resources.Load<GameObject>("BlueSquirrel"), path[path.Count - 1].lerper.endVal, player.transform.rotation);
+                        blueSquirrel = Instantiate(Resources.Load<GameObject>("BlueSquirrel"), path[path.Count - 1].lerper.endVal, path[path.Count - 1].slerper.endVal);
+                        bsTrail = Instantiate(Resources.Load<GameObject>("DashTrail"), path[path.Count - 1].lerper.endVal, player.transform.rotation);
+                        line = bsTrail.GetComponent<LineRenderer>();
+                        trail = bsTrail.GetComponentInChildren<TrailRenderer>();
+                        line.positionCount = path.Count + 1;
+                        for (int i = 0; i < line.positionCount; ++i)
+                        {
+                            line.SetPosition(i, path[0].lerper.startVal + path[0].up * 0.25f);
+                        }
+                        bsRend = blueSquirrel.GetComponentInChildren<SkinnedMeshRenderer>();
                         //blueSquirrel.transform.parent = player.transform;
                     }
 
-                    
+
                     if (player.transform.position != path[0].lerper.startVal || player.transform.forward != prevRotation)
                     {
                         if (blueSquirrel)
@@ -534,14 +552,32 @@ namespace PreServer
                             path.RemoveAt(0);
                         GeneratePath(player, false);
                         pathChanged = true;
-                        //if (blueSquirrel)
-                        //    blueSquirrel.transform.position = path[path.Count - 1].lerper.endVal;
+
+                        if (blueSquirrel)
+                        {
+                            line.positionCount = path.Count + 1;
+                            for (int i = 0; i < line.positionCount; ++i)
+                            {
+                                line.SetPosition(i, path[0].lerper.startVal + path[0].up * 0.25f);
+                            }
+                            blueSquirrel.transform.position = path[path.Count - 1].lerper.endVal;
+                            blueSquirrel.transform.rotation = path[path.Count - 1].slerper.endVal;
+                        }
+                        bsTrail.transform.rotation = player.transform.rotation;
                     }
                     Rotate(player);
                     RotateBasedOnGround(player);
                     if (blueSquirrel)
                     {
+                        line.material.mainTextureOffset = new Vector2((line.material.mainTextureOffset.x + Time.unscaledDeltaTime * 8), line.material.mainTextureOffset.y);
                         MoveGhost();
+                    }
+                    if (bsRend != null)
+                    {
+                        rendTime += Time.unscaledDeltaTime;
+                        //if (rendTime >= 1f)
+                        //    rendTime = 0;
+                        bsRend.material.SetFloat("_UnscaledTime", rendTime);
                     }
                 }
                 else
@@ -559,10 +595,26 @@ namespace PreServer
                         player.rigid.velocity = Vector3.zero;
                         player.rigid.drag = 0;
                     }
+                    if (!player.anim.GetBool(player.hashes.isDashing))
+                    {
+                        player.anim.SetBool(player.hashes.isDashing, true);
+                        if (player.isGrounded || player.climbState == PlayerManager.ClimbState.CLIMBING)
+                        {
+                            Debug.Log("doing a grounded dash");
+                            player.anim.CrossFade(player.hashes.squ_dash, 0.01f);
+                        }
+                        else
+                        {
+                            Debug.Log("doing an air dash");
+                            player.anim.CrossFade(player.hashes.squ_dash_air, 0.01f);
+                        }
+                    }
                     if (blueSquirrel)
                     {
+                        Destroy(bsTrail);
                         Destroy(blueSquirrel);
                         blueSquirrel = null;
+                        bsTrail = null;
                     }
                     Move(states);
                 }
@@ -635,8 +687,8 @@ namespace PreServer
             Quaternion targetRotation = Quaternion.Slerp(player.transform.rotation, tr, Time.unscaledDeltaTime * player.movementVariables.moveAmount * rotationSpeed);
             
             player.transform.rotation = targetRotation;
-            if (blueSquirrel != null)
-                blueSquirrel.transform.rotation = targetRotation;
+            //if (blueSquirrel != null)
+            //    blueSquirrel.transform.rotation = targetRotation;
         }
 
         void RotateBasedOnGround(StateManager states)
@@ -677,6 +729,7 @@ namespace PreServer
         //Moves the ghost
         void MoveGhost()
         {
+            //trail.time = totalTime * Time.timeScale;
             if (bsPathIndex >= path.Count)
             {
                 bsPathIndex = 0;
@@ -705,28 +758,46 @@ namespace PreServer
                 {
                     bsPathIndex = 0;
                     ResetPath();
+                    bsTrail.transform.position = path[bsPathIndex].lerper.startVal + path[bsPathIndex].up * 0.25f;
+                    //trail.Clear();
+                    for(int i = 0; i < line.positionCount; ++i)
+                    {
+                        line.SetPosition(i, path[bsPathIndex].lerper.startVal + path[bsPathIndex].up * 0.25f);
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i <= bsPathIndex; ++i)
+                    {
+                        line.SetPosition(i, path[i].lerper.startVal + path[i].up * 0.25f);
+                    }
                 }
             }
             pathChanged = false;
-            path[bsPathIndex].Update(Time.unscaledDeltaTime * (0.3f * distanceFactor));
+            path[bsPathIndex].Update(Time.unscaledDeltaTime * (ghostSpeed * distanceFactor));
 
-            blueSquirrel.transform.position = path[bsPathIndex].lerper.GetValue();
-            blueSquirrel.transform.rotation = path[bsPathIndex].slerper.GetValue();
-
+            bsTrail.transform.position = path[bsPathIndex].lerper.GetValue() + path[bsPathIndex].up * 0.25f;
+            //bsTrail.transform.rotation = path[bsPathIndex].slerper.GetValue();
+            for (int i = bsPathIndex; i < path.Count; ++i)
+            {
+                line.SetPosition(i + 1, path[bsPathIndex].lerper.GetValue() + path[bsPathIndex].up * 0.25f);
+            }
             if (distanceFactor * distance <= 2f)
             {
                 showGhost = false;
                 blueSquirrel.gameObject.SetActive(showGhost);
+                bsTrail.gameObject.SetActive(showGhost);
             }
             else
             {
                 switch (gdm)
                 {
                     case GhostDisplayMode.On:
-                        if(!showGhost)
+                        if (!showGhost)
                         {
                             showGhost = true;
                             blueSquirrel.SetActive(showGhost);
+                            bsTrail.gameObject.SetActive(showGhost);
                         }
                         break;
                     case GhostDisplayMode.Flicker:
@@ -734,19 +805,20 @@ namespace PreServer
                         {
                             showGhost = !showGhost;
                             blueSquirrel.SetActive(showGhost);
+                            bsTrail.gameObject.SetActive(showGhost);
                             ghostTimer = 0;
                         }
                         ghostTimer += Time.unscaledDeltaTime;
                         break;
                 }
-                
+
             }
 
             //If the current path is complete, then move onto the next one
             if (path[bsPathIndex].lerper.done)
             {
                 //Debug.LogError(path[pathIndex].time + " " + path[pathIndex].GetRemainder());
-                blueSquirrel.transform.rotation = path[bsPathIndex].slerper.endVal;
+                bsTrail.transform.rotation = path[bsPathIndex].slerper.endVal;
                 ++bsPathIndex;
                 //Add any remaining time from the previous path into the current so we don't go an extra frame or 2 over
                 if (bsPathIndex < path.Count)
@@ -757,6 +829,12 @@ namespace PreServer
                 {
                     bsPathIndex = 0;
                     ResetPath();
+                    bsTrail.transform.position = path[bsPathIndex].lerper.startVal + path[bsPathIndex].up * 0.25f;
+                    //trail.Clear();
+                    for (int i = 0; i < line.positionCount; ++i)
+                    {
+                        line.SetPosition(i, path[bsPathIndex].lerper.startVal + path[bsPathIndex].up * 0.25f);
+                    }
                 }
             }
 
@@ -778,6 +856,7 @@ namespace PreServer
                 pathsCompleted += path[i].lerper.done ? 1 : 0;
             }
             Debug.Log("Completed " + pathsCompleted + " path(s) in " + t + " seconds, total time: " + totalTime + " slowMoTimer: " + slowMoTimer);
+            player.anim.SetBool(player.hashes.isDashing, false);
             base.OnExit(states);
             while (path.Count > 0)
                 path.RemoveAt(0);
@@ -788,6 +867,8 @@ namespace PreServer
                 player.rigid.velocity = states.transform.forward * endMomentum;
                 player.rigid.useGravity = true;
             }
+            if (player.isGrounded || player.climbState != PlayerManager.ClimbState.NONE)
+                player.pauseSpeedHackTimer = false;
         }
     }
 
@@ -796,6 +877,7 @@ namespace PreServer
         public VectorLerper lerper;
         public QuaternionSlerper slerper;
         public float time;
+        public Vector3 up;
         float remainder;
 
         public void Update(float amount)
