@@ -39,6 +39,7 @@ namespace PreServer
             base.OnEnter(states);
             states.rigid.useGravity = false;
             startPos = states.transform.position;
+            states.pauseSpeedHackTimer = false;
             //startRot = states.transform.rotation;
             targetPos = states.climbHit.point + (states.climbHit.normal * offsetFromWall);
             targetRot = Quaternion.FromToRotation(states.transform.up, states.climbHit.normal) * states.transform.rotation;
