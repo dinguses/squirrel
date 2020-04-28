@@ -1,146 +1,96 @@
 <!--?xml version="1.0" encoding="UTF-8"?-->
 <convo>
   <chat type="2" time="1.5" />
-  <chat type="5" time="1" from="wank_w0rm" />
+  <chat type="0" time="1" from="wank_w0rm" />
   <chat type="2" time="2.5" />
-  <chat type="0" time="3" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="we actually transferred a file with the squirrel!" />
+  <chat type="1" time="3" from="wank_w0rm" words="we actually transferred a file with the squirrel!" />
   <chat type="2" time="2" />
-  <chat type="0" time="2.25" from="echelon" />
-  <chat type="1" time="0" from="echelon" words="Nice work, that will definitely be a useful asset" />
+  <chat type="1" time="2.25" from="echelon" words="Nice work, that will definitely be a useful asset" />
   <chat type="3" time="1" from="choice01" words="We?! '*we*' didn't do anything, that was all me" />
   <chat type="3" time="2" from="choice02" words="this is actually really risky to use if SAM finds out" />
   <chat type="3" time="3" from="choice03" words="this is nuts, we could get all kinds of stuff past the feds" />
   <chat type="4" time="0" />
   <chat type="2" time="3.25" />
-  <chat type="6" time="0" from="choice01" />
-  <chat type="0" time="3" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="yeah yeah, but i provided the moral support" />
+  <chat type="5" time="0" from="choice01" />
+  <chat type="1" time="3" from="wank_w0rm" words="yeah yeah, but i provided the moral support" />
   <chat type="2" time="2.75" />
-  <chat type="0" time="1.75" from="Bertie" />
-  <chat type="1" time="0" from="Bertie" words="I'm sure you did." />
+  <chat type="1" time="1.75" from="Bertie" words="I'm sure you did." />
   <chat type="2" time="0.75" />
-  <chat type="0" time="5.5" from="echelon" />
-  <chat type="1" time="0" from="echelon" words="in either case, I'm glad both you you trusted enough to share it with us. i'd be careful about spreading it around though" />
-  <chat type="7" time="0" from="connect0" />
-  <chat type="6" time="0" from="choice02" />
-  <chat type="0" time="4.5" from="echelon" />
-  <chat type="1" time="0" from="echelon" words="Yes, we need to be careful about how we use this, we can't let word get out it's possible." />
-  <chat type="2" time="3" />
-  <chat type="0" time="4" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="that's true, but at the smae time, there are a lot of people who would pay out the ass to use it" />
-  <chat type="2" time="2" />
-  <chat type="0" time="5" from="Bertie" />
-  <chat type="1" time="0" from="Bertie" words="I'm not opposed to getting paid for your hard work. Maybe there is a way we can use this for good and get something out of it. I'll consult some of my most trusted connections." />
-  <chat type="7" time="0" from="connect0" />
-  <chat type="6" time="0" from="choice03" />
-  <chat type="0" time="2.75" from="Bertie" />
-  <chat type="1" time="0" from="Bertie" words="Don't be too blasé with your use of this ability though, we can't afford for SAM to catch on." />
-  <chat type="2" time="2" />
-  <chat type="0" time="2.25" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="we have a real chance to make some change here though" />
-  <chat type="2" time="2" />
-  <chat type="0" time="3.25" from="echelon" />
-  <chat type="1" time="0" from="echelon" words="can't make change if you're dead though. I agree with Bertie, we need to use this smartly" />
-  <chat type="7" time="0" from="connect0" />
+  <chat type="1" time="5.5" from="echelon" words="in either case, I'm glad both you you trusted enough to share it with us. i'd be careful about spreading it around though" />
   <chat type="6" time="0" from="connect0" />
+  <chat type="5" time="0" from="choice02" />
+  <chat type="1" time="4.5" from="echelon" words="Yes, we need to be careful about how we use this, we can't let word get out it's possible." />
+  <chat type="2" time="3" />
+  <chat type="1" time="4" from="wank_w0rm" words="that's true, but at the smae time, there are a lot of people who would pay out the ass to use it" />
+  <chat type="2" time="2" />
+  <chat type="1" time="5" from="Bertie" words="I'm not opposed to getting paid for your hard work. Maybe there is a way we can use this for good and get something out of it. I'll consult some of my most trusted connections." />
+  <chat type="6" time="0" from="connect0" />
+  <chat type="5" time="0" from="choice03" />
+  <chat type="1" time="2.75" from="Bertie" words="Don't be too blasé with your use of this ability though, we can't afford for SAM to catch on." />
+  <chat type="2" time="2" />
+  <chat type="1" time="2.25" from="wank_w0rm" words="we have a real chance to make some change here though" />
+  <chat type="2" time="2" />
+  <chat type="1" time="3.25" from="echelon" words="can't make change if you're dead though. I agree with Bertie, we need to use this smartly" />
+  <chat type="6" time="0" from="connect0" />
+  <chat type="5" time="0" from="connect0" />
   <chat type="2" time="1.5" />
-  <chat type="0" time="3" from="echelon" />
-  <chat type="1" time="0" from="echelon" words="the squirrel represents the most secure channel of communication we have. we need to use it only for high priority messages." />
+  <chat type="1" time="3" from="echelon" words="the squirrel represents the most secure channel of communication we have. we need to use it only for high priority messages." />
   <chat type="2" time="0.5" />
-  <chat type="0" time="1" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="mhm" />
+  <chat type="1" time="1" from="wank_w0rm" words="mhm" />
   <chat type="2" time="0.5" />
-  <chat type="0" time="2" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="ratatusk i have a great idea! lets try sharing a movie" />
+  <chat type="1" time="2" from="wank_w0rm" words="ratatusk i have a great idea! lets try sharing a movie" />
   <chat type="2" time="0.75" />
-  <chat type="0" time="2" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="we should see if we can transfer this camrip that to a buddy of mine" />
+  <chat type="1" time="2" from="wank_w0rm" words="we should see if we can transfer this camrip that to a buddy of mine" />
   <chat type="3" time="1" from="choice11" words="sweet! let's do it" />
   <chat type="3" time="2" from="choice12" words="that seems a little irresponsible - i love it" />
   <chat type="3" time="3" from="choice13" words="This is somebody you trust, right?" />
   <chat type="4" time="0" />
-  <chat type="6" time="0" from="choice11" />
+  <chat type="5" time="0" from="choice11" />
   <chat type="2" time="2.5" />
-  <chat type="0" time="2.75" from="Bertie" />
-  <chat type="1" time="0" from="Bertie" words="It will definitely be useful to know if this squirrel can support mutliple file types. let us know what you find out!" />
+  <chat type="1" time="2.75" from="Bertie" words="It will definitely be useful to know if this squirrel can support mutliple file types. let us know what you find out!" />
   <chat type="2" time="2.5" />
-  <chat type="0" time="2.75" from="echelon" />
-  <chat type="1" time="0" from="echelon" words="but didn't we just say to be careful with it?!" />
+  <chat type="1" time="2.75" from="echelon" words="but didn't we just say to be careful with it?!" />
   <chat type="2" time="2.5" />
-  <chat type="0" time="2.75" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="whatever nerd" />
-  <chat type="7" time="0" from="connect1" />
-  <chat type="6" time="0" from="choice12" />
+  <chat type="1" time="2.75" from="wank_w0rm" words="whatever nerd" />
+  <chat type="6" time="0" from="connect1" />
+  <chat type="5" time="0" from="choice12" />
   <chat type="2" time="0.5" />
-  <chat type="0" time="0.75" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="That's the spirit!" />
+  <chat type="1" time="0.75" from="wank_w0rm" words="That's the spirit!" />
   <chat type="2" time="2.5" />
-  <chat type="0" time="2.75" from="echelon" />
-  <chat type="1" time="0" from="echelon" words="we're all going to die. At least make sure you encode your messages to this person" />
-  <chat type="7" time="0" from="connect1" />
-  <chat type="6" time="0" from="choice13" />
+  <chat type="1" time="2.75" from="echelon" words="we're all going to die. At least make sure you encode your messages to this person" />
+  <chat type="6" time="0" from="connect1" />
+  <chat type="5" time="0" from="choice13" />
   <chat type="2" time="0.5" />
-  <chat type="0" time="0.75" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="yeah of course, come on you know feetGamer88" />
+  <chat type="1" time="0.75" from="wank_w0rm" words="yeah of course, come on you know feetGamer88" />
   <chat type="3" time="2" from="" words="oh, right...foot guy..." />
   <chat type="4" time="0" />
-  <chat type="7" time="0" from="connect1" />
   <chat type="6" time="0" from="connect1" />
+  <chat type="5" time="0" from="connect1" />
   <chat type="2" time="0.5" />
-  <chat type="0" time="0.75" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="great." />
+  <chat type="1" time="0.75" from="wank_w0rm" words="great." />
   <chat type="2" time="0.5" />
-  <chat type="0" time="0.75" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="lets meet at preserver plaza so I can transfer you the file" />
+  <chat type="1" time="0.75" from="wank_w0rm" words="lets meet at preserver plaza so I can transfer you the file" />
   <chat type="2" time="0.5" />
-  <chat type="0" time="0.75" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="we can meet up with my buddy from there" />
+  <chat type="1" time="0.75" from="wank_w0rm" words="we can meet up with my buddy from there" />
   <chat type="3" time="2" from="" words="okay lets go" />
   <chat type="4" time="0" />
   <chat type="2" time="1.5" />
-  <chat type="0" time="0.75" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="wait, here's a fun test" />
+  <chat type="1" time="0.75" from="wank_w0rm" words="wait, here's a fun test" />
   <chat type="2" time="1.5" />
-  <chat type="0" time="0.75" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="what If I spammed this chat a bunch to test the scrolling feature?" />
+  <chat type="1" time="0.75" from="wank_w0rm" words="what If I spammed this chat a bunch to test the scrolling feature?" />
   <chat type="2" time="2.5" />
-  <chat type="0" time="0.75" from="echelon" />
-  <chat type="1" time="0" from="echelon" words="maybe dont" />
-  <chat type="0" time="0.1" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="ass" />
+  <chat type="1" time="0.75" from="echelon" words="maybe dont" />
   <chat type="2" time="0.3" />
-  <chat type="0" time="0.1" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="ass" />
+  <chat type="1" time="0.1" from="wank_w0rm" words="ass" />
+  <chat type="1" time="0.1" from="wank_w0rm" words="ass" />
+  <chat type="1" time="0.1" from="wank_w0rm" words="ass" />
+  <chat type="1" time="0.1" from="wank_w0rm" words="ass" />
+  <chat type="1" time="0.1" from="wank_w0rm" words="ass" />
+  <chat type="1" time="0.1" from="wank_w0rm" words="ass" />
+  <chat type="1" time="0.1" from="wank_w0rm" words="ass" />
   <chat type="2" time="0.3" />
-  <chat type="0" time="0.1" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="ass" />
-  <chat type="2" time="0.3" />
-  <chat type="0" time="0.1" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="ass" />
-  <chat type="2" time="0.3" />
-  <chat type="0" time="0.1" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="ass" />
-  <chat type="2" time="0.3" />
-  <chat type="0" time="0.1" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="ass" />
-  <chat type="2" time="0.3" />
-  <chat type="0" time="0.1" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="ass" />
-  <chat type="2" time="0.3" />
-  <chat type="0" time="0.1" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="ass" />
-  <chat type="2" time="0.3" />
-  <chat type="0" time="0.1" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="ass" />
-  <chat type="2" time="0.3" />
-  <chat type="0" time="0.1" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="ass" />
-  <chat type="2" time="0.3" />
-  <chat type="0" time="2" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="lol it works...sorta" />
+  <chat type="1" time="2" from="wank_w0rm" words="lol it works...sorta" />
   <chat type="2" time="0.5" />
-  <chat type="0" time="1.5" from="wank_w0rm" />
-  <chat type="1" time="0" from="wank_w0rm" words="ok later nerds" />
-  <chat type="5" time="0" from="wank_w0rm" />
+  <chat type="1" time="1.5" from="wank_w0rm" words="ok later nerds" />
+  <chat type="0" time="0" from="wank_w0rm" />
 </convo>

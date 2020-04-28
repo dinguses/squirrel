@@ -55,7 +55,7 @@ namespace PreServer
             MainChatText.text += "<color=grey>Ratatusk has entered the room.</color>";
             lineCounter = 1;
 
-            chatAsset = (TextAsset)Resources.Load("testConvo2");
+            chatAsset = (TextAsset)Resources.Load("testConvo");
             testConvo.LoadXml(chatAsset.text);
             chatSteps = new List<ChatStep>();
 
@@ -78,6 +78,9 @@ namespace PreServer
                 if (isStartNext)
                     newStep.startNextTime = float.Parse(node.GetAttribute("startNextTime"));
 
+                bool.TryParse(node.GetAttribute("cancel"), out bool isCancel);
+                newStep.cancel = isCancel ? bool.Parse(node.GetAttribute("cancel")) : false;
+
                 chatSteps.Add(newStep);
             }
         }
@@ -96,7 +99,7 @@ namespace PreServer
                     IsTypingText.text = usersTyping[0] + " and " + usersTyping[1] + " are typing...";
                     break;
                 case 3:
-                    IsTypingText.text = usersTyping[0] + ", " + usersTyping[1] + ",and " + usersTyping[2] + " are typing...";
+                    IsTypingText.text = usersTyping[0] + ", " + usersTyping[1] + ", and " + usersTyping[2] + " are typing...";
                     break;
                 default:
                     break;
@@ -107,50 +110,31 @@ namespace PreServer
         {
             ChatStep step = chatSteps[currStep];
 
-            if (!postChoiceJump || step.type == 6)
+            if (!postChoiceJump || step.type == 5)
             {
                 switch (step.type)
                 {
-                    // 0 - Person/People are typing
+                    // 0 - Other player joining/leaving chat
                     case 0:
+                        bool leaving = Convert.ToBoolean(step.length);
+                        MainChatText.text += ("\n<color=grey>" + step.name + (leaving ? " has entered the room." : " has left the room.") + "</color>");
+                        lineCounter++;
+                        StartCoroutine(Wait(0));
+                        break;
+
+                    // 1 - Sending a message
+                    case 1:
                         numPeopleTyping++;
                         usersTyping.Add(step.name);
-
-                        /*if (numPeopleTyping == 1)
-                        {
-                            IsTypingText.text = step.name + " is typing...";
-                        }*/
-
-                        StartCoroutine(UserIsTyping(step.length, step.startNext, step.name, step.startNextTime));
+                        StartCoroutine(UserIsTyping(step.length, step.startNext, step.name, step.startNextTime, step.words, step.cancel));
                         break;
-                    // 1 - Someone sends a message
-                    case 1:
 
-                        string color = "black";
-                        switch (step.name)
-                        {
-                            case "wank_w0rm":
-                                color = "green";
-                                break;
-                            case "Bertie":
-                                color = "blue";
-                                break;
-                            case "echelon":
-                                color = "red";
-                                break;
-                            default:
-                                color = "black";
-                                break;
-                        }
-                        MainChatText.text += "\n" + "<color=" + color + ">" + step.name + "</color>: " + step.words;
-                        lineCounter++;
-                        StartCoroutine(Wait(step.length));
-                        break;
                     // 2 - Pause
                     case 2:
                         StartCoroutine(Wait(step.length));
                         break;
-                    // 3 - Player choices
+
+                    // 3 - Player dialogue option
                     case 3:
                         if (step.length == 1)
                         {
@@ -175,41 +159,35 @@ namespace PreServer
                             Choice3.ChoiceText.text = Choice3.words;
                             C3_Container.SetActive(true);
                         }
-
-                        //Text test = Choices.Where(w => w.name.Contains(step.length.ToString())).First();
-                        //Choices.Where(w => w.name.Contains(step.length.ToString())).FirstOrDefault().text = step.words;
-
-
                         StartCoroutine(Wait(0));
                         break;
+
                     // 4 - End of player choices
                     case 4:
                         // ToDo: more specific logic for 1/2 option choices
                         break;
-                    // 5 - Other player joining/leaving chat
+
+                    // 5  - Designates start of branch
                     case 5:
-                        bool leaving = Convert.ToBoolean(step.length);
-                        MainChatText.text += ("\n<color=grey>" + step.name + (leaving ? " has entered the room." : " has left the room.") + "</color>");
-                        lineCounter++;
-                        StartCoroutine(Wait(0));
-                        break;
-                    case 6:
                         if (step.name == lastChoice)
                         {
                             postChoiceJump = false;
                         }
                         StartCoroutine(Wait(0));
                         break;
-                    case 7:
+
+                    // 6 - Jump to specific id
+                    case 6:
                         postChoiceJump = true;
                         lastChoice = step.name;
                         StartCoroutine(Wait(0));
                         break;
+
                     default:
                         break;
                 }
 
-                if ((step.type == 1 || step.type == 5) && lineCounter >= 16)
+                if ((step.type == 1 || step.type == 0) && lineCounter >= 16)
                 {
                     var test = textField.sizeDelta;
                     textField.sizeDelta = new Vector2(test.x, test.y + 20);
@@ -228,7 +206,7 @@ namespace PreServer
             NextStep();
         }
 
-        IEnumerator UserIsTyping(float numSecs, bool startNextStep, string userName, float startNextTime)
+        IEnumerator UserIsTyping(float numSecs, bool startNextStep, string userName, float startNextTime, string words, bool cancel)
         {
             if (fastToggle)
                 numSecs /= 10;
@@ -243,6 +221,28 @@ namespace PreServer
             yield return new WaitForSeconds(numSecs);
             numPeopleTyping--;
             usersTyping.Remove(userName);
+
+            if (!cancel)
+            {
+                string color = "black";
+                switch (userName)
+                {
+                    case "wank_w0rm":
+                        color = "green";
+                        break;
+                    case "Bertie":
+                        color = "blue";
+                        break;
+                    case "echelon":
+                        color = "red";
+                        break;
+                    default:
+                        color = "black";
+                        break;
+                }
+                MainChatText.text += "\n" + "<color=" + color + ">" + userName + "</color>: " + words;
+                lineCounter++;
+            }
 
             if (!startNextStep)
             {
@@ -306,6 +306,7 @@ namespace PreServer
         public string words;
         public bool startNext;
         public float startNextTime;
+        public bool cancel;
     }
 
     public class Choice
