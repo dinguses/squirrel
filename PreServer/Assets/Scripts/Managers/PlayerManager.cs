@@ -105,6 +105,7 @@ namespace PreServer
         public bool dashStarted = false;
         public bool testRotate = false;
         public bool doneAdjustingGrind = false;
+        public bool nextPointHit = false;
 
         public Camera mainCam;
         public GameObject front;
@@ -992,6 +993,7 @@ namespace PreServer
             if (other.tag == "joint")
             {
                 inJoint = false;
+                nextPointHit = false;
             }
         }
 
@@ -1098,46 +1100,54 @@ namespace PreServer
         /// </summary>
         public void NextPoint()
         {
-            Debug.Log("Next Point");
-
-            dashActive = false;
-
-            if (grindPoints.Count > 2)
+            if (!nextPointHit)
             {
-                if (facingPointPair.Key > behindPointPair.Key)
+                Debug.Log("Next Point");
+
+                dashActive = false;
+
+                if (grindPoints.Count > 2)
                 {
-                    var newKey = facingPointPair.Key + 1;
-                    var bungus = grindPoints[newKey];
+                    if (facingPointPair.Key > behindPointPair.Key)
+                    {
+                        var newKey = facingPointPair.Key + 1;
+                        var bungus = grindPoints[newKey];
 
-                    var hold = facingPoint;
-                    var holdPair = facingPointPair;
+                        var hold = facingPoint;
+                        var holdPair = facingPointPair;
 
-                    facingPoint = bungus;
-                    facingPointPair = new KeyValuePair<int, Vector3>(newKey, bungus);
-                    behindPoint = hold;
-                    behindPointPair = holdPair;
+                        facingPoint = bungus;
+                        facingPointPair = new KeyValuePair<int, Vector3>(newKey, bungus);
+                        behindPoint = hold;
+                        behindPointPair = holdPair;
 
-                    //var trungo = grindCenterPair.Key + 1;
-                    //grindCenter = grindCenters[trungo];
-                    //grindCenterPair = new KeyValuePair<int, BoxCollider>(trungo, grindCenter);
+                        //var trungo = grindCenterPair.Key + 1;
+                        //grindCenter = grindCenters[trungo];
+                        //grindCenterPair = new KeyValuePair<int, BoxCollider>(trungo, grindCenter);
+                    }
+
+                    if (facingPointPair.Key < behindPointPair.Key)
+                    {
+                        var newKey = facingPointPair.Key - 1;
+                        var bungus = grindPoints[newKey];
+
+                        var hold = facingPoint;
+                        var holdPair = facingPointPair;
+
+                        facingPoint = bungus;
+                        facingPointPair = new KeyValuePair<int, Vector3>(newKey, bungus);
+                        behindPoint = hold;
+                        behindPointPair = holdPair;
+
+                        //var trungo = grindCenterPair.Key - 1;
+                        //grindCenter = grindCenters[trungo];
+                        //grindCenterPair = new KeyValuePair<int, BoxCollider>(trungo, grindCenter);
+                    }
                 }
 
-                if (facingPointPair.Key < behindPointPair.Key)
+                if (inJoint)
                 {
-                    var newKey = facingPointPair.Key - 1;
-                    var bungus = grindPoints[newKey];
-
-                    var hold = facingPoint;
-                    var holdPair = facingPointPair;
-
-                    facingPoint = bungus;
-                    facingPointPair = new KeyValuePair<int, Vector3>(newKey, bungus);
-                    behindPoint = hold;
-                    behindPointPair = holdPair;
-
-                    //var trungo = grindCenterPair.Key - 1;
-                    //grindCenter = grindCenters[trungo];
-                    //grindCenterPair = new KeyValuePair<int, BoxCollider>(trungo, grindCenter);
+                    nextPointHit = true;
                 }
             }
         }

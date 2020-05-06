@@ -12,6 +12,7 @@ namespace PreServer
         {
             if (other.name == "GrindColliderFront")
             {
+                Debug.Log("Entered point");
                 states.NextPoint();
             }
         }
