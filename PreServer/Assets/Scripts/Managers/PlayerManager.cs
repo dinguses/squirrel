@@ -412,6 +412,8 @@ namespace PreServer
             }
             else if (speedHackAmount < 2f)
             {
+                if (pauseSpeedHackTimer && (climbState == ClimbState.CLIMBING || isGrounded))
+                    pauseSpeedHackTimer = false;
                 if (!pauseSpeedHackTimer)
                     speedHackAmount += runRanOut ? delta * 0.5f : dashActive ? 0 : delta;
                 if (speedHackAmount >= 2f)

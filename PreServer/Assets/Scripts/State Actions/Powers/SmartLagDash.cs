@@ -20,6 +20,7 @@ namespace PreServer
         PlayerManager player; //reference to the player
         List<Path> path; //path the dash travels on
         int pathIndex = 0; //index of the current path the squirrel will travel on
+        bool fullDistanceUsed = false;
 
         //Slow mo Variables
         public float slowMoDuration = 2f; //total time the slow mo effect is applied
@@ -148,12 +149,19 @@ namespace PreServer
             else
                 CalculatePath(distance, (player.transform.up * 0.25f), dir, pos, totalTime, states.transform.rotation);
 
+            if (fullDistanceUsed)
+            {
+                SafetyNet();
+                fullDistanceUsed = false;
+            }
+
             distanceFactor = 0;
             for (int i = 0; i < path.Count; ++i)
             {
                 distanceFactor += Vector3.Distance(path[i].lerper.startVal, path[i].lerper.endVal);
             }
             distanceFactor /= distance;
+            
         }
 
         /// <summary>
@@ -222,6 +230,7 @@ namespace PreServer
                         target = start + dir * Mathf.Abs(remainingDistance);
                         remainingDistance = 0;
                         remainingTime = 0;
+                        fullDistanceUsed = true;
                     }
                 }
             }
@@ -232,6 +241,7 @@ namespace PreServer
                 target = start + dir * Mathf.Abs(remainingDistance);
                 remainingDistance = 0;
                 remainingTime = 0;
+                fullDistanceUsed = true;
             }
             //Create a new lerper using the start and end positions established
             path[path.Count - 1].lerper = new VectorLerper(start, target);
@@ -301,8 +311,11 @@ namespace PreServer
                 else
                 {
                     //If a wall isn't hit, then use up the rest of the distance because ain't nothing gonna stop us baby!!!!
-                    path[path.Count - 1].time = Mathf.Abs(remainingTime);
-                    target = start + dir * Mathf.Abs(remainingDistance);
+                    //path[path.Count - 1].time = Mathf.Abs(remainingTime);
+                    target = tempPos - up - dir;//start + dir * Mathf.Abs(remainingDistance);
+                    path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
+                    if (Vector3.Distance(start, target) >= remainingDistance)
+                        fullDistanceUsed = true;
                     remainingDistance = 0;
                     remainingTime = 0;
                 }
@@ -336,6 +349,7 @@ namespace PreServer
                 path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
                 remainingDistance = 0;
                 remainingTime = 0;
+                fullDistanceUsed = false;
             }
             else
             {
@@ -346,13 +360,14 @@ namespace PreServer
                 {
                     float angle = Vector3.Angle(up, hitInfo.normal);
                     //if the player hit either a surface that it cannot traverse, a climb, or is in the air
-                    if (angle >= 90)
+                    if (angle >= 90 || hitInfo.transform.tag != "Climb")
                     {
                         //move the target point back the length of the squirrel and end the dash
                         target = hitInfo.point - (dir * 2f) - up;
                         path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
                         remainingDistance = 0;
                         remainingTime = 0;
+                        fullDistanceUsed = false;
                     }
                     else
                     {
@@ -366,6 +381,7 @@ namespace PreServer
                         //subtract the distance and time from the respective remainings
                         remainingDistance -= hitInfo.distance;
                         remainingTime -= path[path.Count - 1].time;
+                        fullDistanceUsed = false;
                     }
                 }
                 else
@@ -373,8 +389,9 @@ namespace PreServer
                     if (climbHit.transform == null)
                     {
                         //If a wall isn't hit, then use up the rest of the distance because ain't nothing gonna stop us baby!!!!
-                        path[path.Count - 1].time = Mathf.Abs(remainingTime);
-                        target = start + dir * Mathf.Abs(remainingDistance);
+                        //path[path.Count - 1].time = Mathf.Abs(remainingTime);
+                        target = tempPos - up - (dir * 1.75f);//start + dir * Mathf.Abs(remainingDistance);
+                        path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
                         remainingDistance = 0;
                         remainingTime = 0;
                     }
@@ -394,6 +411,7 @@ namespace PreServer
                 target = start + dir * Mathf.Abs(remainingDistance);
                 remainingDistance = 0;
                 remainingTime = 0;
+                fullDistanceUsed = true;
             }
             else
             {
@@ -409,14 +427,16 @@ namespace PreServer
                     //subtract the distance and time from the respective remainings
                     remainingDistance -= Vector3.Distance(start, target);
                     remainingTime -= path[path.Count - 1].time;
+                    fullDistanceUsed = false;
                 }
                 else
                 {
                     //move the target point back the length of the squirrel and end the dash
-                    target = GetPoint(climbHit.point, start, tempPos - up) - dir;
+                    target = GetPoint(climbHit.point, start, tempPos - up) - (dir * 1.75f);
                     path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
                     remainingDistance = 0;
                     remainingTime = 0;
+                    fullDistanceUsed = false;
                 }
             }
         }
@@ -439,6 +459,7 @@ namespace PreServer
                 {
                     temp += dir.normalized * tempRemaining;
                     tempRemaining = 0;
+                    fullDistanceUsed = true;
                 }
                 //Debug.LogError(tempPos + " " + dir.normalized);
                 Debug.DrawRay(temp, -up.normalized * 0.5f, Color.red);
@@ -457,6 +478,10 @@ namespace PreServer
                         {
                             return underInfo;
                         }
+                    }
+                    else
+                    {
+                        return underInfo;
                     }
                     //else if (Physics.Raycast(temp - up * 0.5f, -up, out underInfo, 0.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                     //{
@@ -486,6 +511,59 @@ namespace PreServer
         Vector3 GetPoint(Vector3 p, Vector3 a, Vector3 b)
         {
             return a + Vector3.Project(p - a, b - a);
+        }
+
+        //Once the path has been fully calculated figure out if the squirrel's face will hit anything just to make sure we don't go into any walls
+        void SafetyNet()
+        {
+            bool safe = false;
+            Vector3 dir = Vector3.zero;
+            RaycastHit hit = new RaycastHit();
+            float dist = 0;
+            if(player.climbState == PlayerManager.ClimbState.CLIMBING)
+            {
+                dist = Vector3.Distance(path[path.Count - 1].lerper.endVal, path[path.Count - 1].lerper.startVal);
+                dir = path[path.Count - 1].lerper.endVal - path[path.Count - 1].lerper.startVal;
+                float temp = 1.75f;
+                while (temp > 0)
+                {
+                    if (Physics.Raycast(path[path.Count - 1].lerper.endVal + (dir.normalized * temp) + (path[path.Count - 1].up * 0.25f), -path[path.Count - 1].up, out hit, 0.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+                    {
+                        break;
+                    }
+                    if (temp >= 0.1f)
+                    {
+                        temp -= 0.1f;
+                    }
+                    else
+                    {
+                        temp = 0;
+                    }
+                }
+                if(temp != 1.75f)
+                    path[path.Count - 1].lerper.Reset(path[path.Count - 1].lerper.startVal, path[path.Count - 1].lerper.endVal - (dir.normalized * (1.75f - temp)));
+                Debug.LogError("Hit the safety check");
+            }
+
+            do
+            {
+                dir = path[path.Count - 1].lerper.endVal - path[path.Count - 1].lerper.startVal;
+                safe = !Physics.Raycast(path[path.Count - 1].lerper.endVal + (path[path.Count - 1].up * 0.25f), dir, out hit, 2f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore);
+                if (!safe)
+                {
+                    dist = Vector3.Distance(path[path.Count - 1].lerper.endVal, path[path.Count - 1].lerper.startVal);
+                    if(dist < 2f)
+                    {
+                        path.RemoveAt(path.Count - 1);
+                        continue;
+                    }
+                    else
+                    {
+                        path[path.Count - 1].lerper.Reset(path[path.Count - 1].lerper.startVal, path[path.Count - 1].lerper.endVal - (dir.normalized * (2f - hit.distance)));
+                        break;
+                    }
+                }
+            } while (!safe && path.Count > 0);
         }
 
         public override void OnUpdate(StateManager states)
