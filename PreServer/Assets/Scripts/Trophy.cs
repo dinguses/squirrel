@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Trophy : MonoBehaviour
 {
+	// you're winnner
     public bool rotateX;
     public bool rotateY;
     public bool rotateZ;
