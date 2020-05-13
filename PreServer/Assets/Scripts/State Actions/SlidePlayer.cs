@@ -38,44 +38,44 @@ namespace PreServer
         public override void OnUpdate(StateManager sm)
         {
             //need to make a rotate on slide action
-            currentVelocity = states.rigid.velocity;
-            targetVelocity = currentVelocity;
-            //currentVelocity.x = 0;
-            //This is causing the player move up the high slope, but why?
-            targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * movementSpeed * states.slideSpeedMult;
-            //float angle = 0;
-            //if (states.middle != null)
-            //    angle = states.middle.transform.eulerAngles.y;
-            //else if (states.front != null)
-            //    angle = states.front.transform.eulerAngles.y;
-            //else if (states.back != null)
-            //    angle = states.back.transform.eulerAngles.y;
-            //else
-            //    angle = states.mTransform.;
-            //targetVelocity.z = (force * Mathf.Cos(angle));
-            //targetVelocity.z = (force > 0 ? - Mathf.Abs(targetVelocity.z) : + Mathf.Abs(targetVelocity.z));
-            //targetVelocity.x = force;
-            //targetVelocity = states.mTransform.TransformDirection(Vector3.Lerp(currentVelocity, targetVelocity, states.delta * movementTime));
-            //Debug.Log(Time.frameCount + " || target: " + targetVelocity + " force: " + force + " angle: " + angle);
-            if (timer >= slideTime)
-            {
+            //currentVelocity = states.rigid.velocity;
+            //targetVelocity = currentVelocity;
+            ////currentVelocity.x = 0;
+            ////This is causing the player move up the high slope, but why?
+            //targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * movementSpeed * states.slideSpeedMult;
+            ////float angle = 0;
+            ////if (states.middle != null)
+            ////    angle = states.middle.transform.eulerAngles.y;
+            ////else if (states.front != null)
+            ////    angle = states.front.transform.eulerAngles.y;
+            ////else if (states.back != null)
+            ////    angle = states.back.transform.eulerAngles.y;
+            ////else
+            ////    angle = states.mTransform.;
+            ////targetVelocity.z = (force * Mathf.Cos(angle));
+            ////targetVelocity.z = (force > 0 ? - Mathf.Abs(targetVelocity.z) : + Mathf.Abs(targetVelocity.z));
+            ////targetVelocity.x = force;
+            ////targetVelocity = states.mTransform.TransformDirection(Vector3.Lerp(currentVelocity, targetVelocity, states.delta * movementTime));
+            ////Debug.Log(Time.frameCount + " || target: " + targetVelocity + " force: " + force + " angle: " + angle);
+            //if (timer >= slideTime)
+            //{
                 
 
-                targetVelocity -= states.GetSlideDirection() * gravity;
+            //    targetVelocity -= states.GetSlideDirection() * gravity;
 
-                //Debug.Log(targetVelocity.y);
+            //    //Debug.Log(targetVelocity.y);
 
-                states.rigid.velocity = targetVelocity;
-                gravity += gravityAdditive;
-                //Debug.Log(Time.frameCount + " || velocity: " + states.rigid.velocity + " current: " + currentVelocity + " target: " + targetVelocity);
-            }
-            else if(!currentVelocity.Equals(targetVelocity))
-            {
-                targetVelocity.y = currentVelocity.y;
-                states.rigid.velocity = targetVelocity;
-                //Debug.Log(Time.frameCount + " || velocity: " + states.rigid.velocity + " current: " + currentVelocity + " target: " + targetVelocity);
-            }
-            timer += states.delta;
+            //    states.rigid.velocity = targetVelocity;
+            //    gravity += gravityAdditive;
+            //    //Debug.Log(Time.frameCount + " || velocity: " + states.rigid.velocity + " current: " + currentVelocity + " target: " + targetVelocity);
+            //}
+            //else if(!currentVelocity.Equals(targetVelocity))
+            //{
+            //    targetVelocity.y = currentVelocity.y;
+            //    states.rigid.velocity = targetVelocity;
+            //    //Debug.Log(Time.frameCount + " || velocity: " + states.rigid.velocity + " current: " + currentVelocity + " target: " + targetVelocity);
+            //}
+            //timer += states.delta;
         }
 
         public override void OnExit(StateManager sm)

@@ -229,7 +229,11 @@ namespace PreServer
                 UpdateGroundNormals();
                 SetAnimStates();
                 StepUpTest();
-                CheckSliding();
+                //CheckSliding();
+                if (Input.GetKeyDown(KeyCode.L))
+                {
+                    isSliding = !isSliding;
+                }
                 CheckForClimb();
             }
             else
