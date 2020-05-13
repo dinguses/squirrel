@@ -72,7 +72,8 @@ namespace PreServer
                 //}
                 //else
                 //{
-                    states.anim.CrossFade(states.hashes.squ_ground_180, 0.01f);
+                states.middlePivot = states.mTransform.position + states.mTransform.forward;
+                states.anim.CrossFade(states.hashes.squ_ground_180, 0.01f);
                 //}
 
                 states.anim.SetBool(states.hashes.waitForAnimation, true);

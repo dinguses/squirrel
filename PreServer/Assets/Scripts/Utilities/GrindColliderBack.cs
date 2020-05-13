@@ -13,7 +13,6 @@ namespace PreServer
             if (other.name == "GrindCollider")
             {
                 states.BackLeftTest();
-                //Debug.Log("Back collider left grind zone");
             }
         }
     }

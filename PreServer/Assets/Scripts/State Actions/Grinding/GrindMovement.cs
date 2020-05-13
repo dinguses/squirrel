@@ -115,7 +115,7 @@ namespace PreServer
                 // Move Player towards center should they not be on it
                 Vector3 grindCenterClosestPoint = GetPoint(states.rigid.position, states.facingPoint, states.behindPoint);
 
-                states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * 10 * (states.groundSpeedMult * 2));
+                states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * 10f * (states.groundSpeedMult * 2));
 
                 if (!states.doneAdjustingGrind)
                     Debug.Log("cc - " + Vector3.Distance(states.rigid.position, grindCenterClosestPoint));
@@ -153,6 +153,7 @@ namespace PreServer
         {
             base.OnExit(states);
             //states.rigid.velocity = Vector3.zero;
+            states.frontCollider.enabled = true;
             if (states.dashActive)
             {
                 states.dashActive = false;

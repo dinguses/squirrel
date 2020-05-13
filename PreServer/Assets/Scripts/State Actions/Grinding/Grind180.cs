@@ -27,7 +27,17 @@ namespace PreServer
 
                 rotateAmount = rotateAmount - states.held180RotationAmt;
 
-                states.mTransform.rotation = Quaternion.Euler(eulerAngles.x, eulerAngles.y + rotateAmount, eulerAngles.z);
+                //if (states.inGrindZone)
+                //{
+                    states.mTransform.RotateAround(states.middlePivot, states.mTransform.up, rotateAmount);
+                //}
+
+                /*else
+                {
+                    states.mTransform.rotation = Quaternion.Euler(eulerAngles.x, eulerAngles.y + rotateAmount, eulerAngles.z);
+                }*/
+
+                //= Quaternion.Euler(eulerAngles.x, eulerAngles.y + rotateAmount, eulerAngles.z);
 
                 //Debug.Log(eulerAngles.y);
 

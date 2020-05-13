@@ -182,7 +182,7 @@ namespace PreServer
                 state.movementVariables.moveAmount = 0;
                 state.rigid.velocity = new Vector3(0, 0, 0);
 
-
+                //state.frontCollider.enabled = false;
 
                 //GOTO
                 //state.frontCollider.enabled = false;

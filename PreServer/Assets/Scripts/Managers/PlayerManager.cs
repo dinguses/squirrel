@@ -78,6 +78,7 @@ namespace PreServer
         //public Dictionary<int, BoxCollider> grindCenters;
 
         public float held180RotationAmt = 0;
+        public Vector3 middlePivot;
 
         public int testINT = 0;
         public bool ending180Early = false;
@@ -223,6 +224,16 @@ namespace PreServer
         bool prevRunState = false;
         public override void UpdateParent()
         {
+            if (inGrindZone)
+            {
+                if (Vector3.Distance(mTransform.position, facingPoint) <= 1f)
+                {
+                    Debug.Log("got too close, next point");
+                    frontCollider.enabled = false;
+                    NextPoint();
+                }
+            }
+
             delta = Time.deltaTime;
             if (climbState == ClimbState.NONE)
             {
@@ -1146,6 +1157,27 @@ namespace PreServer
                         //grindCenterPair = new KeyValuePair<int, BoxCollider>(trungo, grindCenter);
                     }
                 }
+
+                var ttt = facingPoint;
+
+                Debug.Log("d1 - " + Vector3.Distance(mTransform.position, facingPoint));
+                Debug.Log("d2 - " + Vector3.Distance(behindPoint, facingPoint));
+
+                var testyyy = Vector3.Distance(mTransform.position, facingPoint) - Vector3.Distance(behindPoint, facingPoint);
+
+                if (Vector3.Distance(mTransform.position, facingPoint) > Vector3.Distance(behindPoint, facingPoint))
+                {
+                    //mTransform.position = Vector3.MoveTowards(mTransform.position, facingPoint, testyyy);
+                }
+
+                //if (movementVariables.moveAmount <= 0.5f)
+                /*mTransform.position = Vector3.MoveTowards(mTransform.position, facingPoint, 0.5f);
+                if (movementVariables.moveAmount <= 0.5f)
+                {
+                    mTransform.position = Vector3.MoveTowards(mTransform.position, facingPoint, 1f);
+                }*/
+
+                frontCollider.enabled = true;
 
                 if (inJoint)
                 {

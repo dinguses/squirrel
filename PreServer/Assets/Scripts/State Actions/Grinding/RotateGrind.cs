@@ -64,7 +64,10 @@ namespace PreServer
                 states.facingPoint = states.behindPoint;
                 states.facingPointPair = states.behindPointPair;
                 states.behindPoint = holdFacing;
-                states.behindPointPair = holdFacingPair;       
+                states.behindPointPair = holdFacingPair;
+
+                states.middlePivot = states.mTransform.position + states.mTransform.forward;
+                states.nextPointHit = false;
 
                 states.anim.SetBool(states.hashes.waitForAnimation, true);
 

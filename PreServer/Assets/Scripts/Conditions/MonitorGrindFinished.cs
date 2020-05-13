@@ -28,6 +28,8 @@ namespace PreServer
                 state.anim.SetBool(state.hashes.isGrinding, false);
                 state.doneAdjustingGrind = false;
 
+                state.frontCollider.enabled = true;
+
                 result = true;
             }
 
