@@ -640,8 +640,8 @@ namespace PreServer
                             }
                             blueSquirrel.transform.position = path[path.Count - 1].lerper.endVal;
                             blueSquirrel.transform.rotation = path[path.Count - 1].slerper.endVal;
+                            bsTrail.transform.rotation = player.transform.rotation;
                         }
-                        bsTrail.transform.rotation = player.transform.rotation;
                     }
                     Rotate(player);
                     RotateBasedOnGround(player);

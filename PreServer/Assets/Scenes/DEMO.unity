@@ -3207,6 +3207,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 6875418784780974170, guid: de5c63d9750a02c499a3b296f5d8165f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6875418784780974167, guid: de5c63d9750a02c499a3b296f5d8165f,
         type: 3}
       propertyPath: dashCooldown
@@ -3634,24 +3639,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: de5c63d9750a02c499a3b296f5d8165f, type: 3}
---- !u!1 &139977829 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6875418784780974170, guid: de5c63d9750a02c499a3b296f5d8165f,
-    type: 3}
-  m_PrefabInstance: {fileID: 139977828}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &139977830
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 139977829}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e4e892a165034c34193d89b94cd7b21f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &148369344
 PrefabInstance:
   m_ObjectHideFlags: 0
