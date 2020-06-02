@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: WaitForAnimation
   m_EditorClassIdentifier: 
   onFixed: []
+  onLateUpdate: []
   onUpdate:
   - {fileID: 11400000, guid: c053462a60c106041a942a97fbc9c40a, type: 2}
   onEnter: []

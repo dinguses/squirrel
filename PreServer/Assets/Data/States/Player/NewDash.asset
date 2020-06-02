@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: NewDash
   m_EditorClassIdentifier: 
   onFixed: []
+  onLateUpdate: []
   onUpdate: []
   onEnter: []
   onExit: []

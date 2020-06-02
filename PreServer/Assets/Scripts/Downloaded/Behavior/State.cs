@@ -8,6 +8,7 @@ namespace PreServer
     public class State : ScriptableObject
     {
     	public StateActions[] onFixed;
+        public StateActions[] onLateUpdate;
         public StateActions[] onUpdate;
         public StateActions[] onEnter;
         public StateActions[] onExit;
@@ -50,6 +51,17 @@ namespace PreServer
             {
                 if (actions[i] != null)
                     actions[i].OnUpdate(states);
+            }
+            CheckTransitions(states);
+        }
+
+        public void LateTick(StateManager states)
+        {
+            ExecuteActions(states, onLateUpdate);
+            for (int i = 0; i < actions.Length; i++)
+            {
+                if (actions[i] != null)
+                    actions[i].OnLateUpdate(states);
             }
             CheckTransitions(states);
         }

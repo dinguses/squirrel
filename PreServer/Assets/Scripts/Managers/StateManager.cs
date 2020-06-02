@@ -21,6 +21,11 @@ namespace PreServer
 
         }
 
+        public virtual void LateUpdateParent()
+        {
+
+        }
+
         private void FixedUpdate()
         {
             FixedUpdateParent();
@@ -38,6 +43,16 @@ namespace PreServer
             if (currentState != null)
             {
                 currentState.Tick(this);
+            }
+        }
+
+        private void LateUpdate()
+        {
+            LateUpdateParent();
+
+            if (currentState != null)
+            {
+                currentState.LateTick(this);
             }
         }
     }
