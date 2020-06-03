@@ -84,7 +84,7 @@ namespace PreServer.BehaviorEditor
 					//	SerializedObject serializedState = new SerializedObject(b.stateRef.currentState);
 					}
 
-					float standard = 170;
+					float standard = 100;
 					b.stateRef.serializedState.Update();
 					b.showActions = EditorGUILayout.Toggle("Show Actions ", b.showActions);
 					if (b.showActions)
@@ -94,8 +94,15 @@ namespace PreServer.BehaviorEditor
 						EditorGUILayout.LabelField("");
 						b.stateRef.onUpdateList.DoLayoutList();
                         EditorGUILayout.LabelField("");
+                        b.stateRef.onLateUpdateList.DoLayoutList();
+                        EditorGUILayout.LabelField("");
                         b.stateRef.actionList.DoLayoutList();
-                        standard += 100 + 40 + (b.stateRef.onUpdateList.count + b.stateRef.onFixedList.count + b.stateRef.actionList.count) * 30;
+                        int updateCount = b.stateRef.onUpdateList.count == 0 ? 0 : b.stateRef.onUpdateList.count - 1;
+                        int fixedCount = b.stateRef.onFixedList.count == 0 ? 0 : b.stateRef.onFixedList.count - 1;
+                        int lateUpdateCount = b.stateRef.onLateUpdateList.count == 0 ? 0 : b.stateRef.onLateUpdateList.count - 1;
+                        int actionCount = b.stateRef.actionList.count == 0 ? 0 : b.stateRef.actionList.count - 1;
+
+                        standard += 320 + (updateCount + fixedCount + lateUpdateCount + actionCount) * 20;
 					}
 					b.showEnterExit = EditorGUILayout.Toggle("Show Enter/Exit ", b.showEnterExit);
 					if (b.showEnterExit)
@@ -104,7 +111,9 @@ namespace PreServer.BehaviorEditor
 						b.stateRef.onEnterList.DoLayoutList();
 						EditorGUILayout.LabelField("");
 						b.stateRef.onExitList.DoLayoutList();
-						standard += 100 + 40 + (b.stateRef.onEnterList.count + b.stateRef.onExitList.count) * 30;
+                        int enterCount = b.stateRef.onEnterList.count == 0 ? 0 : b.stateRef.onEnterList.count - 1;
+                        int exitCount = b.stateRef.onExitList.count == 0 ? 0 : b.stateRef.onExitList.count - 1;
+                        standard += (b.showActions ? 165 : 160) + (enterCount + exitCount) * 20;
 					}
 
 					b.stateRef.serializedState.ApplyModifiedProperties();
@@ -123,12 +132,14 @@ namespace PreServer.BehaviorEditor
 			b.stateRef.serializedState = new SerializedObject(b.stateRef.currentState);
 			b.stateRef.onFixedList = new ReorderableList(b.stateRef.serializedState, b.stateRef.serializedState.FindProperty("onFixed"), true, true, true, true);
 			b.stateRef.onUpdateList = new ReorderableList(b.stateRef.serializedState, b.stateRef.serializedState.FindProperty("onUpdate"), true, true, true, true);
+			b.stateRef.onLateUpdateList = new ReorderableList(b.stateRef.serializedState, b.stateRef.serializedState.FindProperty("onLateUpdate"), true, true, true, true);
 			b.stateRef.onEnterList = new ReorderableList(b.stateRef.serializedState, b.stateRef.serializedState.FindProperty("onEnter"), true, true, true, true);
 			b.stateRef.onExitList = new ReorderableList(b.stateRef.serializedState, b.stateRef.serializedState.FindProperty("onExit"), true, true, true, true);
 			b.stateRef.actionList = new ReorderableList(b.stateRef.serializedState, b.stateRef.serializedState.FindProperty("actions"), true, true, true, true);
 
 			HandleReordableList(b.stateRef.onFixedList, "On Fixed");
 			HandleReordableList(b.stateRef.onUpdateList, "On Update");
+			HandleReordableList(b.stateRef.onLateUpdateList, "On Late Update");
 			HandleReordableList(b.stateRef.onEnterList, "On Enter");
 			HandleReordableList(b.stateRef.onExitList, "On Exit");
 			HandleReordableList(b.stateRef.actionList, "Actions");

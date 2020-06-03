@@ -161,6 +161,8 @@ namespace PreServer
         public bool restartFinalCrusher = false;
         public bool inChallenge3Room = false;
         public TimeManager tm;
+        public GameObject slideObject;
+        public TerrainCollider slideTerrain;
         private void Start()
         {
             climbHit = new RaycastHit();
@@ -243,7 +245,7 @@ namespace PreServer
                 UpdateGroundNormals();
                 SetAnimStates();
                 StepUpTest();
-                //CheckSliding();
+                CheckSliding();
                 if (Input.GetKeyDown(KeyCode.L))
                 {
                     isSliding = !isSliding;
@@ -593,8 +595,6 @@ namespace PreServer
                     front = null;
                 else
                 {
-                    if (angle > 35)
-                        frontSliding = true;
                     front = frontHit.transform.gameObject;
                 }
             }
@@ -611,9 +611,16 @@ namespace PreServer
                     middle = null;
                 else
                     middle = middleHit.transform.gameObject;
+                if(slideObject == null || slideObject != middleHit.transform.gameObject)
+                {
+                    slideObject = middleHit.transform.gameObject;
+                    slideTerrain = slideObject.GetComponent<TerrainCollider>();
+                }
             }
             else
             {
+                slideObject = null;
+                slideTerrain = null;
                 middle = null;
             }
 
@@ -663,37 +670,6 @@ namespace PreServer
 
             //isGrounded = (CheckGrounded(frontCollider) || CheckGrounded(backCollider));
             //isColidingInAir = (CheckGrounded(frontCollider) || CheckGrounded(backCollider));
-            if (Physics.Raycast(middleOrigin, dir, out middleHit, dis + 0.3f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
-            {
-                angle = Vector3.Angle(middleHit.normal, Vector3.up);
-                if (angle > 35 && angle < 70)
-                    middleSliding = true;
-            }
-            if (Physics.Raycast(backOrigin, dir, out backHit, dis + 0.3f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
-            {
-                angle = Vector3.Angle(backHit.normal, Vector3.up);
-                if (angle > 35 && angle < 70)
-                    backSliding = true;
-            }
-            if (middleSliding)
-            {
-                Vector3 forward = Vector3.Cross(middleHit.normal, Vector3.up);
-                slideDirection = Vector3.Cross(forward, middleHit.normal);
-            }
-            else if (frontSliding)
-            {
-                Vector3 forward = Vector3.Cross(frontHit.normal, Vector3.up);
-                slideDirection = Vector3.Cross(forward, frontHit.normal);
-            }
-            else if (backSliding)
-            {
-                Vector3 forward = Vector3.Cross(backHit.normal, Vector3.up);
-                slideDirection = Vector3.Cross(forward, backHit.normal);
-            }
-            else
-            {
-                //slideDirection = Vector3.zero;
-            }
         }
         bool didClimbHit = false;
         float climbAngle = 0;
@@ -825,56 +801,62 @@ namespace PreServer
         Vector3 slideDirection;
         void CheckSliding()
         {
-
-            Vector3 origin = transform.position/* + (transform.forward*1.5f)*/;
-            // Origin should be coming from inside of player
-            //Vector3 dir = /*transform.rotation.eulerAngles.x < 180 ? slideDirection : */-slideDirection;
-            //Debug.Log(transform.rotation.eulerAngles.x + "  " + transform.rotation.eulerAngles.y + " " + transform.rotation.eulerAngles.z);
-            if (transform.rotation.eulerAngles.x < 180)
+            if(slideTerrain != null && middle != null)
             {
-                //slideDirection = -slideDirection;
-                origin = transform.position;
-                origin += transform.forward * 2;
-            }
-            else
-            {
-                //slideDirection = -transform.forward;
-                origin = transform.position;
-            }
-            //dir = Quaternion.AngleAxis(transform.rotation.eulerAngles.y, transform.up) * dir;
-            origin.y += .35f;
-            //Debug.Log(dir.x + "  " + dir.y + " " + dir.z);
-            // Set distance depending on if player grounded or in air
-            //float dis = 0.3f;
-
-            // RaycastHits for each grounding ray
-            RaycastHit hit = new RaycastHit();
-
-            // Draw the rays
-            //Debug.DrawRay(origin, -slideDirection * (GetLength() * 0.65f), Color.black);
-
-            // If player is already grounded, check if they should remain
-            //if (states.isGrounded)
-            //{
-
-
-            if ((frontSliding || middleSliding || backSliding))
-            {
-                bool backCastHit = Physics.Raycast(origin, -slideDirection, out hit, GetLength() * 0.65f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore);
-                if (backCastHit)
+                if((double)Vector3.Angle(Vector3.up, transform.up) > (double)(slideTerrain.slideAngle))
                 {
-                    float angle = Vector3.Angle(hit.normal, Vector3.up);
-                    //If the back cast hit another slide, then you're still in the sliding state
-                    backCastNormal = hit.normal;
-                    if (angle > 35 && angle < 70)
-                        backCastHit = false;
+                    isSliding = true;
                 }
-                isSliding = !backCastHit;
             }
-            else
-            {
-                isSliding = false;
-            }
+            //Vector3 origin = transform.position/* + (transform.forward*1.5f)*/;
+            //// Origin should be coming from inside of player
+            ////Vector3 dir = /*transform.rotation.eulerAngles.x < 180 ? slideDirection : */-slideDirection;
+            ////Debug.Log(transform.rotation.eulerAngles.x + "  " + transform.rotation.eulerAngles.y + " " + transform.rotation.eulerAngles.z);
+            //if (transform.rotation.eulerAngles.x < 180)
+            //{
+            //    //slideDirection = -slideDirection;
+            //    origin = transform.position;
+            //    origin += transform.forward * 2;
+            //}
+            //else
+            //{
+            //    //slideDirection = -transform.forward;
+            //    origin = transform.position;
+            //}
+            ////dir = Quaternion.AngleAxis(transform.rotation.eulerAngles.y, transform.up) * dir;
+            //origin.y += .35f;
+            ////Debug.Log(dir.x + "  " + dir.y + " " + dir.z);
+            //// Set distance depending on if player grounded or in air
+            ////float dis = 0.3f;
+
+            //// RaycastHits for each grounding ray
+            //RaycastHit hit = new RaycastHit();
+
+            //// Draw the rays
+            ////Debug.DrawRay(origin, -slideDirection * (GetLength() * 0.65f), Color.black);
+
+            //// If player is already grounded, check if they should remain
+            ////if (states.isGrounded)
+            ////{
+
+
+            //if ((frontSliding || middleSliding || backSliding))
+            //{
+            //    bool backCastHit = Physics.Raycast(origin, -slideDirection, out hit, GetLength() * 0.65f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore);
+            //    if (backCastHit)
+            //    {
+            //        float angle = Vector3.Angle(hit.normal, Vector3.up);
+            //        //If the back cast hit another slide, then you're still in the sliding state
+            //        backCastNormal = hit.normal;
+            //        if (angle > 35 && angle < 70)
+            //            backCastHit = false;
+            //    }
+            //    isSliding = !backCastHit;
+            //}
+            //else
+            //{
+            //    isSliding = false;
+            //}
         }
 
         Vector3 backCastNormal;

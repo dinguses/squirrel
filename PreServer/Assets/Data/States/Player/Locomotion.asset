@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Locomotion
   m_EditorClassIdentifier: 
   onFixed: []
+  onLateUpdate: []
   onUpdate:
   - {fileID: 11400000, guid: 67317c74e54a59d4c9106f83cb8bcb23, type: 2}
   - {fileID: 11400000, guid: f677efc60e0b38143a7d515f1132797f, type: 2}

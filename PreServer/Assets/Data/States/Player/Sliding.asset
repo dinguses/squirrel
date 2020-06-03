@@ -13,14 +13,13 @@ MonoBehaviour:
   m_Name: Sliding
   m_EditorClassIdentifier: 
   onFixed: []
+  onLateUpdate: []
   onUpdate:
   - {fileID: 11400000, guid: 27ee309ca608d9c4b8b620caaad85818, type: 2}
-  - {fileID: 11400000, guid: bbd1dea15bde8f04fa472b4ae22c5749, type: 2}
   onEnter: []
   onExit: []
   actions:
   - {fileID: 11400000, guid: d3d2ee92667af2b408868919ca17a6d3, type: 2}
-  - {fileID: 11400000, guid: 0fefc443c939d994d8badbe13fdaaede, type: 2}
   stateName: Sliding
   idCount: 3
   transitions:

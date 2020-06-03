@@ -20,7 +20,7 @@ MonoBehaviour:
       x: 53
       y: 82
       width: 200
-      height: 430
+      height: 480
     windowTitle: State
     enterNode: 0
     targetNode: 0
@@ -70,10 +70,10 @@ MonoBehaviour:
     drawNode: {fileID: 11400000, guid: 3de6cb72c5d54a842957b3d8754294e2, type: 2}
     windowRect:
       serializedVersion: 2
-      x: 447
-      y: 87
+      x: 482
+      y: 195
       width: 200
-      height: 400
+      height: 440
     windowTitle: State
     enterNode: 0
     targetNode: 0
@@ -179,7 +179,7 @@ MonoBehaviour:
       x: 857
       y: 198
       width: 200
-      height: 430
+      height: 420
     windowTitle: State
     enterNode: 0
     targetNode: 0
@@ -205,7 +205,7 @@ MonoBehaviour:
       x: 662
       y: 490
       width: 200
-      height: 170
+      height: 100
     windowTitle: State
     enterNode: 0
     targetNode: 0
@@ -285,7 +285,7 @@ MonoBehaviour:
       x: 107
       y: 508
       width: 200
-      height: 370
+      height: 420
     windowTitle: State
     enterNode: 0
     targetNode: 0
@@ -499,7 +499,7 @@ MonoBehaviour:
       x: 447
       y: 794
       width: 200
-      height: 480
+      height: 585
     windowTitle: State
     enterNode: 0
     targetNode: 0
@@ -579,7 +579,7 @@ MonoBehaviour:
       x: 895
       y: 633
       width: 200
-      height: 340
+      height: 420
     windowTitle: State
     enterNode: 0
     targetNode: 0
@@ -632,7 +632,7 @@ MonoBehaviour:
       x: 1353
       y: 608
       width: 200
-      height: 340
+      height: 420
     windowTitle: State
     enterNode: 0
     targetNode: 0
@@ -737,9 +737,9 @@ MonoBehaviour:
     windowRect:
       serializedVersion: 2
       x: 1683
-      y: 85
+      y: 87
       width: 200
-      height: 370
+      height: 420
     windowTitle: State
     enterNode: 0
     targetNode: 0
@@ -785,33 +785,6 @@ MonoBehaviour:
       previousCondition: {fileID: 11400000, guid: 183a7fbf36cc6584c8f4a936b2e53754,
         type: 2}
       transitionId: 11
-  - id: 81
-    drawNode: {fileID: 11400000, guid: 02d1192eec6276044a75147866515bb8, type: 2}
-    windowRect:
-      serializedVersion: 2
-      x: 1255
-      y: 27
-      width: 200
-      height: 100
-    windowTitle: Condition
-    enterNode: 24
-    targetNode: 78
-    isDuplicate: 0
-    comment: 
-    isAssigned: 1
-    showDescription: 0
-    isOnCurrent: 0
-    collapse: 0
-    showActions: 1
-    showEnterExit: 0
-    previousCollapse: 0
-    stateRef:
-      currentState: {fileID: 0}
-      previousState: {fileID: 0}
-    transRef:
-      previousCondition: {fileID: 11400000, guid: 183a7fbf36cc6584c8f4a936b2e53754,
-        type: 2}
-      transitionId: 6
   - id: 83
     drawNode: {fileID: 11400000, guid: 02d1192eec6276044a75147866515bb8, type: 2}
     windowRect:
@@ -951,8 +924,8 @@ MonoBehaviour:
     drawNode: {fileID: 11400000, guid: 02d1192eec6276044a75147866515bb8, type: 2}
     windowRect:
       serializedVersion: 2
-      x: 999
-      y: 23
+      x: 948
+      y: 14
       width: 200
       height: 100
     windowTitle: Condition
@@ -981,7 +954,7 @@ MonoBehaviour:
       x: 625
       y: 8
       width: 200
-      height: 340
+      height: 420
     windowTitle: State
     enterNode: 0
     targetNode: 0
@@ -1135,4 +1108,31 @@ MonoBehaviour:
       previousCondition: {fileID: 11400000, guid: 74eadf5a2f91ed445bcd16b32c13ba02,
         type: 2}
       transitionId: 4
-  idCount: 100
+  - id: 100
+    drawNode: {fileID: 11400000, guid: 02d1192eec6276044a75147866515bb8, type: 2}
+    windowRect:
+      serializedVersion: 2
+      x: 1192
+      y: 28
+      width: 200
+      height: 100
+    windowTitle: Condition
+    enterNode: 24
+    targetNode: 78
+    isDuplicate: 0
+    comment: 
+    isAssigned: 1
+    showDescription: 0
+    isOnCurrent: 0
+    collapse: 0
+    showActions: 1
+    showEnterExit: 0
+    previousCollapse: 0
+    stateRef:
+      currentState: {fileID: 0}
+      previousState: {fileID: 0}
+    transRef:
+      previousCondition: {fileID: 11400000, guid: 183a7fbf36cc6584c8f4a936b2e53754,
+        type: 2}
+      transitionId: 10
+  idCount: 101
