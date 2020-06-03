@@ -12,7 +12,7 @@ namespace PreServer
         {
             if (other.name == "GrindCollider")
             {
-                Debug.Log("hit too?");
+                //Debug.Log("hit too?");
                 //states.NextPoint();
             }
         }

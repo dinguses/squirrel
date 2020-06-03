@@ -28,6 +28,9 @@ namespace PreServer
                 state.anim.SetBool(state.hashes.isGrinding, false);
                 state.doneAdjustingGrind = false;
 
+                state.facingPoint = Vector3.zero;
+                state.behindPoint = Vector3.zero;
+
                 state.frontCollider.enabled = true;
 
                 result = true;

@@ -224,15 +224,18 @@ namespace PreServer
         bool prevRunState = false;
         public override void UpdateParent()
         {
-            if (inGrindZone)
+            // Check squirrel distance to forward point
+            if (facingPoint != Vector3.zero)
             {
-                if (Vector3.Distance(mTransform.position, facingPoint) <= 1f)
+                if (Vector3.Distance(mTransform.position, facingPoint) <= 2.1f)
                 {
-                    Debug.Log("got too close, next point");
+                    Debug.Log(Vector3.Distance(mTransform.position, facingPoint) + " - got too close, next point");
+
                     frontCollider.enabled = false;
                     NextPoint();
                 }
             }
+
 
             delta = Time.deltaTime;
             if (climbState == ClimbState.NONE)
@@ -1016,7 +1019,7 @@ namespace PreServer
 
         public void BackLeftTest()
         {
-            if (!inJoint && !testRotate && doneAdjustingGrind)
+            if (!inJoint && /*!testRotate &&*/ doneAdjustingGrind)
             {
                 Debug.Log("purge?");
 
@@ -1117,77 +1120,41 @@ namespace PreServer
         /// </summary>
         public void NextPoint()
         {
-            if (!nextPointHit)
+            Debug.Log("Next Point");
+
+            // If the grind has more than 1 segment, move to next (or previous) point
+            if (grindPoints.Count > 2)
             {
-                Debug.Log("Next Point");
-
-                dashActive = false;
-
-                if (grindPoints.Count > 2)
+                if (facingPointPair.Key > behindPointPair.Key)
                 {
-                    if (facingPointPair.Key > behindPointPair.Key)
-                    {
-                        var newKey = facingPointPair.Key + 1;
-                        var bungus = grindPoints[newKey];
+                    var newKey = facingPointPair.Key + 1;
+                    var bungus = grindPoints[newKey];
 
-                        var hold = facingPoint;
-                        var holdPair = facingPointPair;
+                    var hold = facingPoint;
+                    var holdPair = facingPointPair;
 
-                        facingPoint = bungus;
-                        facingPointPair = new KeyValuePair<int, Vector3>(newKey, bungus);
-                        behindPoint = hold;
-                        behindPointPair = holdPair;
-
-                        //var trungo = grindCenterPair.Key + 1;
-                        //grindCenter = grindCenters[trungo];
-                        //grindCenterPair = new KeyValuePair<int, BoxCollider>(trungo, grindCenter);
-                    }
-
-                    if (facingPointPair.Key < behindPointPair.Key)
-                    {
-                        var newKey = facingPointPair.Key - 1;
-                        var bungus = grindPoints[newKey];
-
-                        var hold = facingPoint;
-                        var holdPair = facingPointPair;
-
-                        facingPoint = bungus;
-                        facingPointPair = new KeyValuePair<int, Vector3>(newKey, bungus);
-                        behindPoint = hold;
-                        behindPointPair = holdPair;
-
-                        //var trungo = grindCenterPair.Key - 1;
-                        //grindCenter = grindCenters[trungo];
-                        //grindCenterPair = new KeyValuePair<int, BoxCollider>(trungo, grindCenter);
-                    }
+                    facingPoint = bungus;
+                    facingPointPair = new KeyValuePair<int, Vector3>(newKey, bungus);
+                    behindPoint = hold;
+                    behindPointPair = holdPair;
                 }
 
-                var ttt = facingPoint;
-
-                Debug.Log("d1 - " + Vector3.Distance(mTransform.position, facingPoint));
-                Debug.Log("d2 - " + Vector3.Distance(behindPoint, facingPoint));
-
-                var testyyy = Vector3.Distance(mTransform.position, facingPoint) - Vector3.Distance(behindPoint, facingPoint);
-
-                if (Vector3.Distance(mTransform.position, facingPoint) > Vector3.Distance(behindPoint, facingPoint))
+                if (facingPointPair.Key < behindPointPair.Key)
                 {
-                    //mTransform.position = Vector3.MoveTowards(mTransform.position, facingPoint, testyyy);
-                }
+                    var newKey = facingPointPair.Key - 1;
+                    var bungus = grindPoints[newKey];
 
-                //if (movementVariables.moveAmount <= 0.5f)
-                /*mTransform.position = Vector3.MoveTowards(mTransform.position, facingPoint, 0.5f);
-                if (movementVariables.moveAmount <= 0.5f)
-                {
-                    mTransform.position = Vector3.MoveTowards(mTransform.position, facingPoint, 1f);
-                }*/
+                    var hold = facingPoint;
+                    var holdPair = facingPointPair;
 
-                frontCollider.enabled = true;
-
-                if (inJoint)
-                {
-                    nextPointHit = true;
+                    facingPoint = bungus;
+                    facingPointPair = new KeyValuePair<int, Vector3>(newKey, bungus);
+                    behindPoint = hold;
+                    behindPointPair = holdPair;
                 }
             }
+
+            frontCollider.enabled = true;
         }
 
         /// <summary>

@@ -13,6 +13,7 @@ namespace PreServer
             PlayerManager state = (PlayerManager)sm;
 
             bool retVal = (!state.anim.GetBool(targetBool) && state.inGrindZone);
+
             return retVal;
         }
     }

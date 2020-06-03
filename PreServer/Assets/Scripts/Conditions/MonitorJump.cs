@@ -29,6 +29,9 @@ namespace PreServer
                 state.anim.SetBool(state.hashes.waitForAnimation, false);
                 state.inGrindZone = false;
 
+                state.facingPoint = Vector3.zero;
+                state.behindPoint = Vector3.zero;
+
                 // Execute actions (Handle Jump Velocity)
                 onTrueAction.Execute(state);
             }
