@@ -35,6 +35,8 @@ namespace PreServer
             states.climbState = PlayerManager.ClimbState.NONE;
             if(states.isRun)
                 states.pauseSpeedHackTimer = true;
+            states.rigid.drag = 0;
+            states.isSliding = false;
         }
 
         public override void OnUpdate(StateManager sm)

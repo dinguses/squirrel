@@ -48,6 +48,7 @@ namespace PreServer
         Vector3 targetVelocity;
         public override void OnUpdate(StateManager sm)
         {
+            RotateBasedOnGround();
             Slide();
         }
 
@@ -149,7 +150,7 @@ namespace PreServer
                 {
                     //Slow me down if I'm not sliding
                     moveSpeed = Mathf.MoveTowards(moveSpeed, 0.0f, 15f * Time.deltaTime);
-                    Debug.LogError(moveSpeed);
+                    //Debug.LogError(moveSpeed);
                     moveDirection = SetVectorLength(moveDirection, Mathf.Abs(moveSpeed));
                     if (MoveInput != Vector3.zero)
                         moveDirection = Vector3.RotateTowards(moveDirection, normalized, turnSpeed * 0.1f * Time.deltaTime, 0.0f);
@@ -158,6 +159,8 @@ namespace PreServer
                     else
                         RotateLookDirection(vector3, turnSpeed * 0.1f);
                 }
+                if(states.isGrounded)
+                    moveDirection -= GroundNormal() * 0.5f;
                 //If my move speed is 0 then I am done sliding
                 if ((double)moveSpeed == 0.0)
                 {
@@ -297,10 +300,10 @@ namespace PreServer
         {
             Transform cam = Camera.main.transform;
             Vector3 zero = Vector3.zero;
-            if ((double)states.movementVariables.horizontal != 0.0)
-                zero += cam.right * states.movementVariables.horizontal;
-            if ((double)states.movementVariables.vertical != 0.0)
-                zero += cam.forward * states.movementVariables.vertical;
+            //if ((double)states.movementVariables.horizontal != 0.0)
+            //    zero += cam.right * states.movementVariables.horizontal;
+            //if ((double)states.movementVariables.vertical != 0.0)
+            //    zero += cam.forward * states.movementVariables.vertical;
             return ProjectVectorOnPlane(states.transform.up, zero).normalized;
 
             //float h = states.movementVariables.horizontal;
@@ -389,7 +392,7 @@ namespace PreServer
 
         private float GroundAngle()
         {
-            return Vector3.Angle(Vector3.up, states.transform.up);
+            return Vector3.Angle(Vector3.up, states.middleNormal);
         }
 
         private Vector3 GroundNormal()
@@ -428,7 +431,7 @@ namespace PreServer
         private bool HasWallCollided(out Vector3 normal)
         {
             RaycastHit hit = new RaycastHit();
-            if(moveSpeed >= 0)
+            if (moveSpeed >= 0)
             {
                 Vector3 origin = states.transform.position + (states.transform.up * 0.45f);
                 Vector3 direction = states.transform.forward;
@@ -450,6 +453,15 @@ namespace PreServer
             }
             normal = Vector3.zero;
             return false;
+        }
+
+        public float rotSpeed = 8;
+        public float rotationConstraint = 70;
+        void RotateBasedOnGround()
+        {
+            Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, states.GetRotationNormal()) * states.mTransform.rotation;
+            Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * 15f);
+            states.mTransform.rotation = targetRotation;
         }
     }
 }

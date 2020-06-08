@@ -494,18 +494,18 @@ namespace PreServer
             RaycastHit hitTop = new RaycastHit();
             RaycastHit hitTopLong = new RaycastHit();
 
-            if (stepUp)
-            {
-                Debug.DrawRay(bottomRay, mTransform.forward, Color.green);
-                Debug.DrawRay(topRay, mTransform.forward, Color.green);
-                Debug.DrawRay(topRayLong, mTransform.forward, Color.green);
-            }
-            else
-            {
-                Debug.DrawRay(bottomRay, mTransform.forward, Color.blue);
-                Debug.DrawRay(topRay, mTransform.forward, Color.blue);
-                Debug.DrawRay(topRayLong, mTransform.forward, Color.blue);
-            }
+            //if (stepUp)
+            //{
+            //    Debug.DrawRay(bottomRay, mTransform.forward, Color.green);
+            //    Debug.DrawRay(topRay, mTransform.forward, Color.green);
+            //    Debug.DrawRay(topRayLong, mTransform.forward, Color.green);
+            //}
+            //else
+            //{
+            //    Debug.DrawRay(bottomRay, mTransform.forward, Color.blue);
+            //    Debug.DrawRay(topRay, mTransform.forward, Color.blue);
+            //    Debug.DrawRay(topRayLong, mTransform.forward, Color.blue);
+            //}
 
             if (Physics.Raycast(bottomRay, mTransform.forward, out hitBottom, 1, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                 bottomHit = true;
@@ -536,21 +536,21 @@ namespace PreServer
         public void UpdateGroundNormals()
         {
             // Setup origin points for three different ground checking vector3s. One in middle of player, one in front, and one in back
-            Vector3 middleOrigin = transform.position;
-            Vector3 frontOrigin = transform.position;
-            Vector3 backOrigin = transform.position + (transform.forward / 4);
+            Vector3 middleOrigin = transform.position + (transform.up * 0.7f);
+            Vector3 frontOrigin = transform.position + (transform.up * 0.7f);
+            Vector3 backOrigin = transform.position + (transform.forward / 4) + (transform.up * 0.7f);
 
             middleOrigin += transform.forward;
             frontOrigin += transform.forward + transform.forward / 2;
             //backOrigin += states.mTransform.forward / 2;
 
-            // Origins should be coming from inside of player
-            middleOrigin.y += .7f;
-            frontOrigin.y += .7f;
-            backOrigin.y += .7f;
+            //// Origins should be coming from inside of player
+            //middleOrigin.y += .7f;
+            //frontOrigin.y += .7f;
+            //backOrigin.y += .7f;
 
             // Dir represents the downward direction
-            Vector3 dir = -Vector3.up;
+            Vector3 dir = -transform.up;
 
 
             //TODO: testing this
@@ -575,9 +575,9 @@ namespace PreServer
             RaycastHit backHit = new RaycastHit();
 
             // Draw the rays
-            Debug.DrawRay(frontOrigin, dir * dis, Color.green);
-            Debug.DrawRay(middleOrigin, dir * dis, Color.yellow);
-            Debug.DrawRay(backOrigin, dir * dis, Color.white);
+            //Debug.DrawRay(frontOrigin, dir * dis, Color.green);
+            //Debug.DrawRay(middleOrigin, dir * dis, Color.yellow);
+            //Debug.DrawRay(backOrigin, dir * dis, Color.white);
 
             // If player is already grounded, check if they should remain
             //if (states.isGrounded)
@@ -673,6 +673,71 @@ namespace PreServer
         }
         bool didClimbHit = false;
         float climbAngle = 0;
+
+        public Vector3 GetRotationNormal(float dis = 1.5f)
+        {
+            Vector3 backRight = transform.position + (transform.up * 0.25f) + (transform.right * 0.3f);
+            Vector3 backLeft = transform.position + (transform.up * 0.25f) - (transform.right * 0.3f);
+            Vector3 middleRight = backRight + (transform.forward);
+            Vector3 middleLeft = backLeft + (transform.forward);
+            Vector3 frontRight = backRight + (transform.forward * 2f);
+            Vector3 frontLeft = backLeft + (transform.forward * 2f);
+            RaycastHit backRightHit = new RaycastHit();
+            RaycastHit backLeftHit = new RaycastHit();
+            RaycastHit middleRightHit = new RaycastHit();
+            RaycastHit middleLeftHit = new RaycastHit();
+            RaycastHit frontRightHit = new RaycastHit();
+            RaycastHit frontLeftHit = new RaycastHit();
+            Vector3 dir = -Vector3.up;
+            if (!Physics.Raycast(backRight, dir, out backRightHit, dis, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                backRightHit.normal = Vector3.up;
+            }
+            if (!Physics.Raycast(backLeft, dir, out backLeftHit, dis, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                backLeftHit.normal = Vector3.up;
+            }
+            if (!Physics.Raycast(middleRight, dir, out middleRightHit, dis, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                middleRightHit.normal = Vector3.up;
+            }
+            if (!Physics.Raycast(middleLeft, dir, out middleLeftHit, dis, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                middleLeftHit.normal = Vector3.up;
+            }
+            if (!Physics.Raycast(frontRight, dir, out frontRightHit, dis, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                frontRightHit.normal = Vector3.up;
+            }
+            if (!Physics.Raycast(frontLeft, dir, out frontLeftHit, dis, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                frontLeftHit.normal = Vector3.up;
+            }
+            Debug.DrawRay(backRight, dir * dis, Color.green);
+            Debug.DrawRay(backLeft, dir * dis, Color.green);
+            Debug.DrawRay(middleRight, dir * dis, Color.green);
+            Debug.DrawRay(middleLeft, dir * dis, Color.green);
+            Debug.DrawRay(frontRight, dir * dis, Color.green);
+            Debug.DrawRay(frontLeft, dir * dis, Color.green);
+            //// Get the vectors that connect the raycast hit points
+
+            //Vector3 a = backRightHit.point - backLeftHit.point;
+            //Vector3 b = frontRightHit.point - backRightHit.point;
+            //Vector3 c = frontLeftHit.point - frontRightHit.point;
+            //Vector3 d = backRightHit.point - frontLeftHit.point;
+
+            //// Get the normal at each corner
+
+            //Vector3 crossBA = Vector3.Cross(b, a);
+            //Vector3 crossCB = Vector3.Cross(c, b);
+            //Vector3 crossDC = Vector3.Cross(d, c);
+            //Vector3 crossAD = Vector3.Cross(a, d);
+
+            //// Calculate composite normal
+
+            //return (crossBA + crossCB + crossDC + crossAD).normalized;
+            return (backRightHit.normal + backLeftHit.normal + middleRightHit.normal + middleLeftHit.normal + frontRightHit.normal + frontLeftHit.normal).normalized;
+        }
 
         //Checks to see if the face is hitting a slanted wall
         bool CheckGrounded(CapsuleCollider col)
@@ -803,60 +868,11 @@ namespace PreServer
         {
             if(slideTerrain != null && middle != null)
             {
-                if((double)Vector3.Angle(Vector3.up, transform.up) > (double)(slideTerrain.slideAngle))
+                if((double)Vector3.Angle(Vector3.up, middleNormal) > (double)(slideTerrain.slideAngle))
                 {
                     isSliding = true;
                 }
             }
-            //Vector3 origin = transform.position/* + (transform.forward*1.5f)*/;
-            //// Origin should be coming from inside of player
-            ////Vector3 dir = /*transform.rotation.eulerAngles.x < 180 ? slideDirection : */-slideDirection;
-            ////Debug.Log(transform.rotation.eulerAngles.x + "  " + transform.rotation.eulerAngles.y + " " + transform.rotation.eulerAngles.z);
-            //if (transform.rotation.eulerAngles.x < 180)
-            //{
-            //    //slideDirection = -slideDirection;
-            //    origin = transform.position;
-            //    origin += transform.forward * 2;
-            //}
-            //else
-            //{
-            //    //slideDirection = -transform.forward;
-            //    origin = transform.position;
-            //}
-            ////dir = Quaternion.AngleAxis(transform.rotation.eulerAngles.y, transform.up) * dir;
-            //origin.y += .35f;
-            ////Debug.Log(dir.x + "  " + dir.y + " " + dir.z);
-            //// Set distance depending on if player grounded or in air
-            ////float dis = 0.3f;
-
-            //// RaycastHits for each grounding ray
-            //RaycastHit hit = new RaycastHit();
-
-            //// Draw the rays
-            ////Debug.DrawRay(origin, -slideDirection * (GetLength() * 0.65f), Color.black);
-
-            //// If player is already grounded, check if they should remain
-            ////if (states.isGrounded)
-            ////{
-
-
-            //if ((frontSliding || middleSliding || backSliding))
-            //{
-            //    bool backCastHit = Physics.Raycast(origin, -slideDirection, out hit, GetLength() * 0.65f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore);
-            //    if (backCastHit)
-            //    {
-            //        float angle = Vector3.Angle(hit.normal, Vector3.up);
-            //        //If the back cast hit another slide, then you're still in the sliding state
-            //        backCastNormal = hit.normal;
-            //        if (angle > 35 && angle < 70)
-            //            backCastHit = false;
-            //    }
-            //    isSliding = !backCastHit;
-            //}
-            //else
-            //{
-            //    isSliding = false;
-            //}
         }
 
         Vector3 backCastNormal;

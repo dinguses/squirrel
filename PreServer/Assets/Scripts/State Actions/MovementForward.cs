@@ -119,15 +119,15 @@ namespace PreServer
                         // Set y for target vel
                         // If frontY is positive (upward slope) then add .2f to the velocity
                         // If frontY is negative (downward slope) then don't do anything
-                        targetVelocity.y = ((frontY > 0) ? frontY + 0.2f : frontY) * movementSpeed;
+                        //targetVelocity.y = ((frontY > 0) ? frontY + 0.2f : frontY) * movementSpeed;
 
-                        // If targetVelocity.y is greater than 0, then set it to 0
-                        // TODO: These two sections seem to cancel each other out
-                        // This cancels out the extra jump you could get off of slopes
-                        if (targetVelocity.y > 0)
-                        {
-                            targetVelocity.y = 0;
-                        }
+                        //// If targetVelocity.y is greater than 0, then set it to 0
+                        //// TODO: These two sections seem to cancel each other out
+                        //// This cancels out the extra jump you could get off of slopes
+                        //if (targetVelocity.y > 0)
+                        //{
+                        //    targetVelocity.y = 0;
+                        //}
                     }
                 }
 
@@ -144,7 +144,7 @@ namespace PreServer
 
                         // Stop moving and increase drag so that player doesn't slide while idling
                         // TODO: check what lower drag values work instead of 4000. Probably is too high.
-                        targetVelocity.y = 0;
+                        //targetVelocity.y = 0;
                         states.rigid.drag = 4000;
                     }
                 }

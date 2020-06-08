@@ -22,36 +22,37 @@ namespace PreServer
         {
             PlayerManager states = (PlayerManager)sm;
 
-            //If the front raycast hasn't hit anything then do another raycast 
-            //Otherwise just use the front normal
-            if (states.front == null)
-            {
-                //This raycast goes out the back and points diagonally behnd the player
-                //If this hits something then use that as the ground unless it hit a wall
-                Vector3 origin = states.transform.position;
-                origin += states.transform.up * 0.35f;
-                RaycastHit hit;
-                bool didHit;
-                Vector3 dir = -states.transform.forward - states.transform.up;
-                Debug.DrawRay(origin, dir * 0.6f, Color.green);
-                didHit = Physics.Raycast(origin, dir, out hit, 0.6f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore);
+            ground = states.GetRotationNormal();
+            ////If the front raycast hasn't hit anything then do another raycast 
+            ////Otherwise just use the front normal
+            //if (states.front == null)
+            //{
+            //    //This raycast goes out the back and points diagonally behnd the player
+            //    //If this hits something then use that as the ground unless it hit a wall
+            //    Vector3 origin = states.transform.position;
+            //    origin += states.transform.up * 0.35f;
+            //    RaycastHit hit;
+            //    bool didHit;
+            //    Vector3 dir = -states.transform.forward - states.transform.up;
+            //    Debug.DrawRay(origin, dir * 0.6f, Color.green);
+            //    didHit = Physics.Raycast(origin, dir, out hit, 0.6f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore);
 
-                if (didHit)
-                {
-                    float backAngle = Vector3.Angle(hit.normal, Vector3.up);
-                    if (backAngle >= 70)
-                        didHit = false;
-                    else
-                        ground = hit.normal;
-                }
+            //    if (didHit)
+            //    {
+            //        float backAngle = Vector3.Angle(hit.normal, Vector3.up);
+            //        if (backAngle >= 70)
+            //            didHit = false;
+            //        else
+            //            ground = hit.normal;
+            //    }
 
-                if (!didHit)
-                {
-                    ground = states.groundNormal;
-                }
-            }
-            else
-                ground = states.frontNormal;
+            //    if (!didHit)
+            //    {
+            //        ground = states.groundNormal;
+            //    }
+            //}
+            //else
+            //    ground = states.frontNormal;
 
             float angle = Vector3.Angle(ground, Vector3.up);
 

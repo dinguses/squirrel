@@ -46,10 +46,11 @@ namespace PreServer
 
             targetDir2.y = -states.mTransform.forward.y;
 
-           // Debug.Log("targetDir2 - " + targetDir2);
+            // Debug.Log("targetDir2 - " + targetDir2);
 
-
-            Quaternion tr = Quaternion.LookRotation(targetDir, states.groundNormal);
+            Vector3 rotationNormal = states.GetRotationNormal();
+            targetDir = SlidePlayer.ProjectVectorOnPlane(rotationNormal, targetDir);
+            Quaternion tr = Quaternion.LookRotation(targetDir, rotationNormal);
             Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * states.movementVariables.moveAmount * speed);
 
             //Rotate 180 ?

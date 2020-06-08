@@ -101,36 +101,37 @@ namespace PreServer
 
             //Debug.DrawRay(origin, dir * dis, Color.blue);
 
-            // If player is directly above a slope
-            if (Physics.Raycast(origin, dir, out hit, dis, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            //// If player is directly above a slope
+            //if (Physics.Raycast(origin, dir, out hit, dis, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            //{
+            //    // Get player's angle
+            Vector3 rotationNormal = states.GetRotationNormal(2.25f);
+            float angle = Vector3.Angle(rotationNormal, Vector3.up);
+            //    //Debug.Log(angle);
+            //    //Debug.DrawRay(hit.point, hit.normal, Color.red, 3.0f);
+            //    // when right above slope, pre-rotate towards that slope's angle
+            if (angle <= 85)
             {
-                // Get player's angle
-                float angle = Vector3.Angle(hit.normal, Vector3.up);
-                //Debug.Log(angle);
-                //Debug.DrawRay(hit.point, hit.normal, Color.red, 3.0f);
-                // when right above slope, pre-rotate towards that slope's angle
-                if (angle <= 35)
-                {
-                    Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, hit.normal) * states.mTransform.rotation;
-                    Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * 4.75f);
-                    states.mTransform.rotation = targetRotation;
-                }
-                else if (angle > 35 && angle < 70)
-                {
-                    Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, hit.normal) * states.mTransform.rotation;
-                    Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * 14.75f);
-                    states.mTransform.rotation = targetRotation;
-                }
-            }
-            // If player is not directly above slope
-            else
-            {
-                // Slowly rotate back towards 0 degrees
-
-                Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, Vector3.up) * states.mTransform.rotation;
-                Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * 1.75f);
+                Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, rotationNormal) * states.mTransform.rotation;
+                Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * 8f);
                 states.mTransform.rotation = targetRotation;
             }
+            //    else if (angle > 35 && angle < 70)
+            //    {
+            //        Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, hit.normal) * states.mTransform.rotation;
+            //        Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * 14.75f);
+            //        states.mTransform.rotation = targetRotation;
+            //    }
+            //}
+            //// If player is not directly above slope
+            //else
+            //{
+            //    // Slowly rotate back towards 0 degrees
+
+            //    Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, Vector3.up) * states.mTransform.rotation;
+            //    Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * 1.75f);
+            //    states.mTransform.rotation = targetRotation;
+            //}
 
             //TODO: properly implement step up logic for air movement
             if (states.stepUp)
