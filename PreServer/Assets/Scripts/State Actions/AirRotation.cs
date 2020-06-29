@@ -36,6 +36,7 @@ namespace PreServer
             }
             else
             {
+                //LOOK AT THIS DANISH, AIR ROTATION NOT QUITE THERE
                 float h = states.movementVariables.horizontal;
                 float v = states.movementVariables.vertical;
 

@@ -31,15 +31,16 @@ namespace PreServer
         Vector3 newDirection;
         Vector3 originalDirection;
         public bool debug = false;
+        Vector3 prevNormal;
 
         public override void OnEnter(StateManager sm)
         {
             states = (PlayerManager)sm;
 
             base.OnEnter(states);
-            if(camera == null && cameraTransform != null)
+            if(camera == null)
             {
-                camera = cameraTransform.value.GetComponent<CameraManager>();
+                camera = Camera.main.transform.parent.GetComponent<CameraManager>();
             }
 
             front = new RaycastHit();
@@ -53,6 +54,8 @@ namespace PreServer
             states.rigid.drag = 0;
             states.playerMesh.gameObject.SetActive(true);
             CheckUnder();
+            cameraAngle = 0;
+            prevNormal = states.climbHit.normal;
         }
         
         void SafeClimb()
@@ -191,14 +194,8 @@ namespace PreServer
                     states.rigid.velocity = Vector3.zero;
                     //Debug.Log("Front are you fucking things up, do I have to fix you?");
 
-                    tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, front.normal, Vector3.up);
-                    if (tempAngle < 90 && tempAngle > -90)
-                    {
-                        cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
-                        //moveCamera = true;
-                        if (camera != null)
-                            camera.ignoreInput = true;
-                    }
+                    //SetCameraAngle(states.climbHit.normal, -front.normal);
+
                     states.climbHit = front;
                     startPos = states.transform.position;
                     targetPos = states.climbHit.point + (states.climbHit.normal * offsetFromWall);
@@ -253,7 +250,7 @@ namespace PreServer
                 if(under.transform.tag == "Climb")
                 {
                     angle = Vector3.Angle(under.normal, states.climbHit.normal);
-                    Vector3 prevNormal = states.climbHit.normal;
+                    prevNormal = states.climbHit.normal;
                     states.climbHit = under;
                     //if(Mathf.Abs(angle - prevAngle) >= minTransferAngle)
                         //Debug.Log(Mathf.Abs(angle - prevAngle));
@@ -265,16 +262,6 @@ namespace PreServer
                         //Debug.Log("Under has detected a new climb to transition to");
                         states.rigid.velocity = Vector3.zero;
 
-                        //Camera rotations, checking if the camera needs to be repositioned based on where it is relative to the climb
-                        tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, under.normal, Vector3.up);
-                        if (tempAngle < 90 && tempAngle > -90)
-                        {
-                            cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
-                            //moveCamera = true;
-                            if (camera != null)
-                                camera.ignoreInput = true;
-                        }
-
                         ////Update variables for transfer
                         startPos = states.transform.position;
                         targetPos = states.climbHit.point + (states.climbHit.normal * offsetFromWall);
@@ -285,9 +272,8 @@ namespace PreServer
                         transitioning = true;
                         states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
                         SafeClimb();
-                        return;
                     }
-
+                    SetCameraAngle(prevNormal, under.normal);
                 }
                 //I didn't hit a climb but I must do something based on the angle of the hit
                 else
@@ -333,7 +319,7 @@ namespace PreServer
                     if (under.transform.tag == "Climb")
                     {
                         angle = Vector3.Angle(under.normal, states.climbHit.normal);
-                        Vector3 prevNormal = states.climbHit.normal;
+                        prevNormal = states.climbHit.normal;
                         states.climbHit = under;
                         //if(Mathf.Abs(angle - prevAngle) >= minTransferAngle)
                         //Debug.Log(Mathf.Abs(angle - prevAngle));
@@ -345,15 +331,6 @@ namespace PreServer
                             //Debug.Log("Under has detected a new climb to transition to");
                             states.rigid.velocity = Vector3.zero;
 
-                            //Camera rotations, checking if the camera needs to be repositioned based on where it is relative to the climb
-                            tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, under.normal, Vector3.up);
-                            if (tempAngle < 90 && tempAngle > -90)
-                            {
-                                cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
-                                //moveCamera = true;
-                                if (camera != null)
-                                    camera.ignoreInput = true;
-                            }
 
                             ////Update variables for transfer
                             startPos = states.transform.position;
@@ -365,8 +342,8 @@ namespace PreServer
                             transitioning = true;
                             states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
                             SafeClimb();
-                            return;
                         }
+                        SetCameraAngle(prevNormal, under.normal);
                     }
                 }
                 else if (Physics.Raycast(underOrigin, Quaternion.AngleAxis(-30f, states.climbHit.normal) * dir, out under, 1.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
@@ -374,7 +351,7 @@ namespace PreServer
                     if (under.transform.tag == "Climb")
                     {
                         angle = Vector3.Angle(under.normal, states.climbHit.normal);
-                        Vector3 prevNormal = states.climbHit.normal;
+                        prevNormal = states.climbHit.normal;
                         states.climbHit = under;
                         //if(Mathf.Abs(angle - prevAngle) >= minTransferAngle)
                         //Debug.Log(Mathf.Abs(angle - prevAngle));
@@ -387,14 +364,20 @@ namespace PreServer
                             states.rigid.velocity = Vector3.zero;
 
                             //Camera rotations, checking if the camera needs to be repositioned based on where it is relative to the climb
-                            tempAngle = Vector3.SignedAngle(cameraTransform.value.forward, under.normal, Vector3.up);
-                            if (tempAngle < 90 && tempAngle > -90)
-                            {
-                                cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
-                                //moveCamera = true;
-                                if (camera != null)
-                                    camera.ignoreInput = true;
-                            }
+                            //angle = Vector3.SignedAngle(prevNormal, under.normal, Vector3.up);
+                            //if (angle != 0 && camera != null)
+                            //{
+                            //    Debug.LogError("Adding amount: " + angle);
+                            //    //camera.debugAmount += angle;
+                            //}
+                            //tempAngle = Vector3.SignedAngle(prevNormal, under.normal, Vector3.up);
+                            //if (tempAngle < 90 && tempAngle > -90)
+                            //{
+                            //cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
+                            //cameraAngle = 0;
+                            //if (camera != null)
+                            //    camera.ignoreInput = true;
+                            //}
 
                             ////Update variables for transfer
                             startPos = states.transform.position;
@@ -406,8 +389,8 @@ namespace PreServer
                             transitioning = true;
                             states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
                             SafeClimb();
-                            return;
                         }
+                        SetCameraAngle(prevNormal, under.normal);
                     }
                 }
                 else
@@ -584,20 +567,57 @@ namespace PreServer
         {
             base.OnFixed(states);
 
-            //if (moveCamera)
-            //{
-            //    if (camera != null && tempAngle < 180 && tempAngle > -180)
-            //    {
-            //        camera.AddToYaw((cameraAngle * Time.deltaTime * 4));
-            //        tempAngle -= (cameraAngle * Time.deltaTime * 4);
-            //    }
-            //    else
-            //    {
-            //        moveCamera = false;
-            //        if (camera != null)
-            //            camera.ignoreInput = false;
-            //    }
-            //}
+            if (camera != null && Mathf.Abs(cameraAngle) > 0)
+            {
+                float angle = 0;
+                if (Mathf.Abs(cameraAngle) >= 1.5f)
+                {
+                    angle = 1.5f;
+                }
+                else if (Mathf.Abs(cameraAngle) >= 0.75f)
+                {
+                    angle = 0.75f;
+                }
+                else
+                {
+                    angle = Mathf.Abs(cameraAngle);
+                }
+                camera.AddToYaw(angle * (cameraAngle > 0 ? 1 : -1));
+                cameraAngle -= angle * (cameraAngle > 0 ? 1 : -1);
+            }
+        }
+
+        void SetCameraAngle(Vector3 prev, Vector3 curr)
+        {
+            //Camera rotations, checking if the camera needs to be repositioned based on where it is relative to the climb
+            angle = Vector3.SignedAngle(prev, curr, Vector3.up);
+            if (angle != 0 && camera != null)
+            {
+                Vector3 cameraForward = camera.transform.forward;
+                cameraForward.y = 0;
+                cameraForward.Normalize();
+
+                float a = Vector3.SignedAngle(-cameraForward, curr, Vector3.up);
+                //angle += (angle * 0.1f);
+                if(Mathf.Abs(a) > 45f)
+                {
+                    if(Mathf.Abs(a) > Mathf.Abs(cameraAngle))
+                        cameraAngle += a;
+                    else
+                        cameraAngle += angle;
+                    Debug.LogError("Adding angle: " + angle + " angle between camera: " + a);
+                }
+            }
+        }
+
+        void LogCameraAngle()
+        {
+            if(camera != null)
+            {
+                Vector3 cameraForward = camera.transform.forward;
+                cameraForward.y = 0;
+                Debug.Log(Vector3.SignedAngle(-cameraForward.normalized, states.climbHit.normal, Vector3.up));
+            }
         }
 
         Vector3 PosWithOffset(Vector3 origin, Vector3 target)

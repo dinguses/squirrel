@@ -15,7 +15,7 @@ MonoBehaviour:
   climbSpeed: 5.25
   rotationSpeed: 6
   cameraTransform: {fileID: 11400000, guid: 14fa444e8fc99754c9f013ced74737ae, type: 2}
-  dashSpeed: 40
-  dashTime: 0.15
   minTransferAngle: 30
+  angle: 0
+  debug: 0
   offsetFromWall: 0.05

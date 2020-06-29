@@ -33,7 +33,6 @@ namespace PreServer
         Vector3 prevPlayerPos;
         Vector3 currentRotation; //Used for camera zones
         Vector3 velocityCamSmooth = Vector3.zero;
-
         //Legacy variables that could be used later
         //public Vector3 camOffset = new Vector3(0, 4, -15);
         //Vector3 rotationSmoothVelocity;
@@ -43,7 +42,6 @@ namespace PreServer
         //public float maxDistance = 3f;
         //public float minDistance = 0.5f;
         //public float smooth;
-        
 
         public bool ignoreInput
         {
@@ -106,8 +104,11 @@ namespace PreServer
 
         public void AddToYaw(float val, bool fromCameraZone = false)
         {
-            if(!inCameraZone || fromCameraZone)
+            if (!inCameraZone || fromCameraZone)
+            {
                 yaw += val;
+                //Debug.LogError("Amount going into yaw: " + (yaw - prevYaw));
+            }
         }
 
         public float GetPitch()
@@ -148,17 +149,21 @@ namespace PreServer
             {
                 if (ignoreMouse)
                 {
-                    yaw += ignoreYaw ? 0 : (Input.GetAxis("RightStickHorizontal")) * mouseSens * 3f;
+                    yaw += ignoreYaw ? 0 : (Input.GetAxis("RightStickHorizontal")) * mouseSens * 0.5f;
                     pitch -= ignorePitch ? 0 : (Input.GetAxis("RightStickVertical")) * mouseSens * 0.75f;
                 }
                 else
                 {
-                    yaw += ignoreYaw ? 0 : (Input.GetAxis("RightStickHorizontal") + (Input.GetAxis("Mouse X") * .2f)) * mouseSens * 3f;
+                    yaw += ignoreYaw ? 0 : (Input.GetAxis("RightStickHorizontal") + (Input.GetAxis("Mouse X") * .2f)) * mouseSens * 0.5f;
                     pitch -= ignorePitch ? 0 : (Input.GetAxis("RightStickVertical") + (Input.GetAxis("Mouse Y") * .2f)) * mouseSens * 0.75f;
                 }
                 pitch = Mathf.Clamp(pitch, pitchMinMax.x, pitchMinMax.y);
             }
-
+            else
+            {
+                Debug.Log("PrevYaw: " + prevYaw + " Yaw: " + yaw);
+            }
+            
             if (!onRails)
             {
                 MoveCamera();
@@ -234,11 +239,11 @@ namespace PreServer
             //targetPos = transform.position;
             //transform.position = prevPosition;
 
-            Vector3 prevPosition = transform.position;
-            transform.position = targetPos;
-            transform.RotateAround(target.transform.position, Vector3.up, yaw - prevYaw);
-            targetPos = transform.position;
-            transform.position = prevPosition;
+            //Vector3 prevPosition = transform.position;
+            //transform.position = targetPos;
+            //transform.RotateAround(target.transform.position, Vector3.up, yaw - prevYaw);
+            //targetPos = transform.position;
+            //transform.position = prevPosition;
 
             //Debug.DrawRay(player.position, -1f * player.forward * distanceAway, Color.blue);
             //smoothPosition(transform.position, ref targetPos);
@@ -255,6 +260,7 @@ namespace PreServer
                 }
             }
             transform.position = targetPos;
+            transform.RotateAround(player.position, Vector3.up, yaw - prevYaw);
             float distance = Vector3.Distance(transform.position, player.position);
             float tempMin = 1f;
             float tempMax = 5f;
