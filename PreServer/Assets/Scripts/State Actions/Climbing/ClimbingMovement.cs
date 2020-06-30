@@ -601,7 +601,7 @@ namespace PreServer
                 //angle += (angle * 0.1f);
                 if(Mathf.Abs(a) > 45f)
                 {
-                    if(Mathf.Abs(a) > Mathf.Abs(cameraAngle))
+                    if(Mathf.Abs(a) > Mathf.Abs(angle))
                         cameraAngle += a;
                     else
                         cameraAngle += angle;
