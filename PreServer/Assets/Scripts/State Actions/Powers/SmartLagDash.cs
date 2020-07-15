@@ -542,7 +542,7 @@ namespace PreServer
                 }
                 if(temp != 1.75f)
                     path[path.Count - 1].lerper.Reset(path[path.Count - 1].lerper.startVal, path[path.Count - 1].lerper.endVal - (dir.normalized * (1.75f - temp)));
-                Debug.LogError("Hit the safety check");
+                //Debug.LogError("Hit the safety check");
             }
 
             do

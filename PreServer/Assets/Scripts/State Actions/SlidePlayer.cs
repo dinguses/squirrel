@@ -19,7 +19,8 @@ namespace PreServer
         float timer = 0;
         float gravity = 0;
         PlayerManager states;
-
+        Vector3 rotationNormal;
+        float timeOutPeriod = 0;
         public override void Execute(StateManager sm)
         {
 
@@ -31,15 +32,15 @@ namespace PreServer
 
             //timer = 0;
             //gravity = downwardsGravity;
-
+            timeOutPeriod = 0;
             lookDirection = states.transform.forward;
             targetDirection = SlopeDirection();
             moveDirection = states.rigid.velocity.normalized;
             if (moveDirection == Vector3.zero || moveDirection.magnitude < 1f)
                 moveDirection = states.transform.forward;
             moveSpeed = states.rigid.velocity.magnitude;
-            if (moveSpeed < 1f)
-                moveSpeed = 1f;
+            if (moveSpeed < 2f)
+                moveSpeed = 2f;
             states.rigid.velocity = Vector3.zero;
             moveDirection = ProjectVectorOnPlane(GroundNormal(), ProjectVectorOnPlane(states.transform.up, moveDirection));
             moveDirection = SetVectorLength(moveDirection, Mathf.Abs(moveSpeed));
@@ -48,8 +49,10 @@ namespace PreServer
         Vector3 targetVelocity;
         public override void OnUpdate(StateManager sm)
         {
-            RotateBasedOnGround();
+            rotationNormal = states.GetRotationNormal();
             Slide();
+            RotateBasedOnGround();
+            SlideRotation();
         }
 
         public override void OnLateUpdate(StateManager states)
@@ -121,6 +124,7 @@ namespace PreServer
                     }
                     else
                         targetDirection = SlopeDirection();
+                    Debug.DrawRay(states.transform.position, targetDirection, Color.green);
 
                     //Current 1 - a vector orthogonal to the target direction
                     Vector3 current1 = ProjectVectorOnPlane(targetDirection, moveDirection);
@@ -161,8 +165,8 @@ namespace PreServer
                 }
                 if(states.isGrounded)
                     moveDirection -= GroundNormal() * 0.5f;
-                //If my move speed is 0 then I am done sliding
-                if ((double)moveSpeed == 0.0)
+                //If my move speed is in between 0.3 and -0.3 then I am done sliding
+                if (((double)moveSpeed <= 0.5 && (double)moveSpeed >= -0.5 && IsContinueSliding() && timeOutPeriod >= 0.3f) || moveSpeed == 0.0)
                 {
                     states.isSliding = false;
                     //currentState = (Enum)MarioMachine.MarioStates.SlideRecover;
@@ -171,6 +175,7 @@ namespace PreServer
                 {
                     //artUpDirection = GroundNormal();
                 }
+                timeOutPeriod += Time.deltaTime;
             }
             //states.transform.forward = lookDirection;
         }
@@ -305,13 +310,6 @@ namespace PreServer
             //if ((double)states.movementVariables.vertical != 0.0)
             //    zero += cam.forward * states.movementVariables.vertical;
             return ProjectVectorOnPlane(states.transform.up, zero).normalized;
-
-            //float h = states.movementVariables.horizontal;
-            //float v = states.movementVariables.vertical;
-            //Vector3 targetDir = cam.forward * v;
-            //targetDir += cam.right * h;
-            //targetDir.y = 0;
-            //return targetDir;
         }
 
         public override void OnExit(StateManager sm)
@@ -459,8 +457,31 @@ namespace PreServer
         public float rotationConstraint = 70;
         void RotateBasedOnGround()
         {
-            Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, states.GetRotationNormal()) * states.mTransform.rotation;
+            Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, rotationNormal) * states.mTransform.rotation;
             Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * 15f);
+            states.mTransform.rotation = targetRotation;
+        }
+
+        void SlideRotation()
+        {
+            Transform cam = Camera.main.transform;
+            float h = states.movementVariables.horizontal;
+            float v = states.movementVariables.vertical;
+
+            Vector3 targetDir = cam.forward * v;
+            targetDir += cam.right * h;
+
+            var targetDir2 = targetDir;
+
+            targetDir.Normalize();
+            targetDir.y = 0;
+
+            if (targetDir == Vector3.zero)
+                targetDir = states.mTransform.forward;
+
+            targetDir = SlidePlayer.ProjectVectorOnPlane(rotationNormal, targetDir);
+            Quaternion tr = Quaternion.LookRotation(targetDir, rotationNormal);
+            Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * states.movementVariables.moveAmount * turnSpeed);
             states.mTransform.rotation = targetRotation;
         }
     }

@@ -714,12 +714,12 @@ namespace PreServer
             {
                 frontLeftHit.normal = Vector3.up;
             }
-            Debug.DrawRay(backRight, dir * dis, Color.green);
-            Debug.DrawRay(backLeft, dir * dis, Color.green);
-            Debug.DrawRay(middleRight, dir * dis, Color.green);
-            Debug.DrawRay(middleLeft, dir * dis, Color.green);
-            Debug.DrawRay(frontRight, dir * dis, Color.green);
-            Debug.DrawRay(frontLeft, dir * dis, Color.green);
+            //Debug.DrawRay(backRight, dir * dis, Color.green);
+            //Debug.DrawRay(backLeft, dir * dis, Color.green);
+            //Debug.DrawRay(middleRight, dir * dis, Color.green);
+            //Debug.DrawRay(middleLeft, dir * dis, Color.green);
+            //Debug.DrawRay(frontRight, dir * dis, Color.green);
+            //Debug.DrawRay(frontLeft, dir * dis, Color.green);
             //// Get the vectors that connect the raycast hit points
 
             //Vector3 a = backRightHit.point - backLeftHit.point;
