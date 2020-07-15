@@ -24,7 +24,7 @@ namespace PreServer
 
             //If the front raycast hasn't hit anything then do another raycast 
             //Otherwise just use the front normal
-            if (states.front == null)
+            /*if (states.front == null)
             {
                 //This raycast goes out the back and points diagonally behnd the player
                 //If this hits something then use that as the ground unless it hit a wall
@@ -50,22 +50,25 @@ namespace PreServer
                     ground = states.groundNormal;
                 }
             }
+            else*/
+            if (states.front == null)
+            {
+                ground = states.groundNormal;
+            }
             else
                 ground = states.frontNormal;
 
-            float angle = Vector3.Angle(ground, Vector3.up);
+            //float angle = Vector3.Angle(ground, Vector3.up);
 
-            float angle2 = Vector3.Angle(states.mTransform.up, Vector3.up);
+            //float angle2 = Vector3.Angle(states.mTransform.up, Vector3.up);
             //Debug.Log("angle 2 - " + angle2);
 
 
             // QUATERNION WAY
 
-            float amount = 15;
+            float amount = 30;
 
-            var test = states.GetComponent<Animation>();
-
-            if (states.rotateFast && !states.anim.GetBool(states.hashes.isLanding))
+            /*if (states.rotateFast && !states.anim.GetBool(states.hashes.isLanding))
             {
                 bool quickLand = states.anim.GetBool(states.hashes.QuickLand);
 
@@ -73,19 +76,19 @@ namespace PreServer
                     amount = 30;
                 //else
                 //    amount = 15;
-            }
+            }*/
 
-            if (angle < rotationConstraint)
-            {
+            //if (angle < rotationConstraint)
+            //{
                 Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, ground) * states.mTransform.rotation;
                 Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * amount);
                 states.mTransform.rotation = targetRotation;
-            }
+            //}
 
-            if (Mathf.Abs((angle2 - angle)) < 1.0f)
+            /*if (Mathf.Abs((angle2 - angle)) < 1.0f)
             {
                 states.anim.SetBool(states.hashes.QuickLand, false);
-            }
+            }*/
         }
     }
 }

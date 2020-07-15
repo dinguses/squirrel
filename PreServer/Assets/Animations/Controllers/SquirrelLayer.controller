@@ -488,6 +488,32 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!1102 &-6876684091100303833
+AnimatorState:
+  serializedVersion: 5
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: squ_climb_corner_acute
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 7400000, guid: 614caa1f11a57824989335dd627f8b94, type: 2}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
 --- !u!1101 &-6831423963909546704
 AnimatorStateTransition:
   m_ObjectHideFlags: 3
@@ -2691,7 +2717,7 @@ AnimatorStateMachine:
     m_Position: {x: 430, y: -890, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102924043051657756}
-    m_Position: {x: -40, y: -450, z: 0}
+    m_Position: {x: -90, y: -470, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 5957732093120647721}
     m_Position: {x: -280, y: -180, z: 0}
@@ -2722,6 +2748,12 @@ AnimatorStateMachine:
   - serializedVersion: 1
     m_State: {fileID: 6179359369328744378}
     m_Position: {x: 740, y: -1480, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: 2131562896940774835}
+    m_Position: {x: 775, y: -1415, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: -6876684091100303833}
+    m_Position: {x: 810, y: -1350, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -2853,6 +2885,32 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!1102 &2131562896940774835
+AnimatorState:
+  serializedVersion: 5
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: squ_ground_180_center
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 7400000, guid: b6b106a33c9263f48aacf2be5a60cf61, type: 2}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
 --- !u!1101 &2299516759828767086
 AnimatorStateTransition:
   m_ObjectHideFlags: 3
@@ -3592,7 +3650,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 25371eb1cab33bd449b058c45f4c704a, type: 2}
+  m_Motion: {fileID: 7400000, guid: b6b106a33c9263f48aacf2be5a60cf61, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: mirror180

@@ -55,7 +55,7 @@ namespace PreServer
             MainChatText.text += "<color=grey>Ratatusk has entered the room.</color>";
             lineCounter = 1;
 
-            chatAsset = (TextAsset)Resources.Load("testConvo");
+            chatAsset = (TextAsset)Resources.Load("testConvo3");
             testConvo.LoadXml(chatAsset.text);
             chatSteps = new List<ChatStep>();
 

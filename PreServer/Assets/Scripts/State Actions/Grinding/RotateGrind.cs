@@ -51,11 +51,9 @@ namespace PreServer
 
             var test1 = Mathf.Abs(states.movementVariables.horizontal);
             var test2 = Mathf.Abs(states.movementVariables.vertical);
-             
-            if (Vector3.Angle(targetDir, states.mTransform.forward) > 90 && (test1 >= .02 || test2 >= .02) && states.rotateBool /*&& states.anim.GetCurrentAnimatorClipInfo(1)[0].clip.name != "squ_grind_180"*/)
+
+            if (Vector3.Angle(targetDir, states.mTransform.forward) > 90 && (test1 >= .02 || test2 >= .02) && states.rotateBool && states.rotateDelayTest == 5)
             {
-                //Debug.Log(states.anim.GetCurrentAnimatorClipInfo(1)[0].clip.name);
-                //Debug.Log("GOTTA 180");
                 states.rotateBool = false;
                 //states.testRotate = true;
 

@@ -27,7 +27,12 @@ namespace PreServer
 
             // Move towards the grind center (In case you got misplaced a bit after 180ing)
             Vector3 grindCenterClosestPoint = GetPoint(states.rigid.position, states.facingPoint, states.behindPoint);
-            states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * 100f);
+            //states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * 5);
+
+
+
+
+            //states.frontCollider.enabled = false;
         }
 
         public override void Execute(StateManager states)
@@ -38,6 +43,9 @@ namespace PreServer
         public override void OnUpdate(StateManager sm)
         {
             base.OnUpdate(states);
+
+            if (states.rotateDelayTest < 5)
+                states.rotateDelayTest++;
 
             // TODO: This is old dash, need to upgrade it to new dash
             if (timer <= 0 && states.dashActive && states.CanDash() && !dashActivated)
@@ -79,8 +87,13 @@ namespace PreServer
                 states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity, states.delta * 10.5f);
 
                 // Move Player towards center should they not be on it
+
                 Vector3 grindCenterClosestPoint = GetPoint(states.rigid.position, states.facingPoint, states.behindPoint);
-                states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * 10f * (states.groundSpeedMult * 2));
+
+                //states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * 10f * (states.groundSpeedMult * 2));
+                states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * 50f);
+
+                Debug.DrawLine(states.rigid.position, grindCenterClosestPoint, Color.green);
 
                 // If you haven't fully adjusted to the grind center initially
                 if (!states.doneAdjustingGrind)
@@ -93,6 +106,10 @@ namespace PreServer
                         Debug.Log("Done adjusting!");
                         states.doneAdjustingGrind = true;
                     }
+                }
+                else
+                {
+                    states.frontCollider.enabled = true;
                 }
             }
 

@@ -182,6 +182,24 @@ namespace PreServer
                 state.movementVariables.moveAmount = 0;
                 state.rigid.velocity = new Vector3(0, 0, 0);
 
+                Vector3 testMiddle = state.mTransform.position + state.mTransform.forward;
+
+                Vector3 grindCenterClosestPoint = GetPoint(state.rigid.position, state.facingPoint, state.behindPoint);
+                Vector3 grindCenterClosestPointMiddle = GetPoint(testMiddle, state.facingPoint, state.behindPoint);
+
+                Debug.Log("Grind center closest point - " + grindCenterClosestPoint);
+                Debug.Log("Grind center closest pointMid - " + grindCenterClosestPointMiddle);
+
+                if (grindCenterClosestPointMiddle.y > grindCenterClosestPoint.y)
+                {
+                    float testt = grindCenterClosestPointMiddle.y - grindCenterClosestPoint.y;
+
+                    Debug.Log("it higher");
+                    var test = state.mTransform.position.y;
+                    state.mTransform.position = new Vector3(state.mTransform.position.x, test += testt, state.mTransform.position.z);
+                }
+
+
                 //state.frontCollider.enabled = false;
 
                 //GOTO
@@ -193,6 +211,11 @@ namespace PreServer
             }
 
             return result;
+        }
+
+        Vector3 GetPoint(Vector3 p, Vector3 a, Vector3 b)
+        {
+            return a + Vector3.Project(p - a, b - a);
         }
     }
 }

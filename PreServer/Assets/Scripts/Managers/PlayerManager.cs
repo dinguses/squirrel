@@ -107,6 +107,7 @@ namespace PreServer
         public bool testRotate = false;
         public bool doneAdjustingGrind = false;
         public bool nextPointHit = false;
+        public int rotateDelayTest = 0;
 
         public Camera mainCam;
         public GameObject front;
@@ -227,7 +228,7 @@ namespace PreServer
         public override void UpdateParent()
         {
             // Check squirrel distance to forward point
-            if (facingPoint != Vector3.zero)
+            if (facingPoint != Vector3.zero && currentState.name == "Grinding")
             {
                 if (Vector3.Distance(mTransform.position, facingPoint) <= 2.1f)
                 {
@@ -960,7 +961,7 @@ namespace PreServer
             }*/
 
             // Start a grind if you've entered a grind zone and were not already in one
-            if (other.tag == "Grind" && !inGrindZone)
+            if (other.tag == "Grind" && !inGrindZone && currentState.name != "WaitForAnimation")
             {
                 Debug.Log("entered grind collider?");
 
@@ -1102,6 +1103,7 @@ namespace PreServer
             testRotate = false;
 
             anim.SetBool(hashes.waitForAnimation, false);
+            rotateDelayTest = 0;
             //anim.SetBool(hashes.mirror180, false);
         }
 
@@ -1110,6 +1112,7 @@ namespace PreServer
         /// </summary>
         public void Start180()
         {
+            Debug.Log("Start 180");
             held180RotationAmt = 0;
         }
 
@@ -1152,6 +1155,20 @@ namespace PreServer
                 }
             }
 
+            //Debug.Log("d1 - " + Vector3.Distance(mTransform.position, facingPoint));
+            //Debug.Log("d2 - " + Vector3.Distance(behindPoint, facingPoint));
+
+            var testyyy = Vector3.Distance(mTransform.position, facingPoint) - Vector3.Distance(behindPoint, facingPoint);
+
+            Debug.Log("This is testyyy - " + testyyy);
+
+            mTransform.position = Vector3.MoveTowards(mTransform.position, facingPoint, testyyy / 8);
+
+            if (movementVariables.moveAmount <= 0.5f)
+            {
+                mTransform.position = Vector3.MoveTowards(mTransform.position, facingPoint, testyyy/4);
+            }
+
             frontCollider.enabled = true;
         }
 
@@ -1167,6 +1184,8 @@ namespace PreServer
             if (grindPoints.Count == 0)
             {
                 var grindMaster = grindColliderGen.gameObject.transform.parent.parent;
+
+                Debug.Log(grindMaster.name);
                 //var points = grindMaster.GetChild(2);
                 var points = grindMaster.GetChild(1);
 

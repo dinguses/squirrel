@@ -38,6 +38,7 @@ namespace PreServer
         public int squ_dash = Animator.StringToHash("squ_dash");
         public int squ_dash_air = Animator.StringToHash("squ_dash_air");
         public int squ_climb_corner = Animator.StringToHash("squ_climb_corner");
+        public int squ_climb_corner_acute = Animator.StringToHash("squ_climb_corner_acute");
         public int squ_jump = Animator.StringToHash("squ_jump");
 
         // NPC Animations

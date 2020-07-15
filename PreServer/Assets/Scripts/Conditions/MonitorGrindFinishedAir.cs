@@ -7,8 +7,8 @@ namespace PreServer
     /// Checks if player should no longer be grinding
     /// </summary>
 
-    [CreateAssetMenu(menuName = "Conditions/Monitor Grind Finished")]
-    public class MonitorGrindFinished : Condition
+    [CreateAssetMenu(menuName = "Conditions/Monitor Grind Finished Air")]
+    public class MonitorGrindFinishedAir : Condition
     {
         public override bool CheckCondition(StateManager sm)
         {
@@ -17,7 +17,7 @@ namespace PreServer
             bool result = false;
 
             // If player has left grind zone, they're no longer grinding
-            if (!state.inGrindZone && state.isGrounded)
+            if (!state.inGrindZone && !state.isGrounded)
             {
                 Debug.Log("Left the grind");
 
