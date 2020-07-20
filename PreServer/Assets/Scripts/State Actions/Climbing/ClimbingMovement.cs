@@ -205,7 +205,7 @@ namespace PreServer
                     inRot = false;
 
                     transitioning = true;
-                    states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
+                    states.anim.CrossFade(states.hashes.squ_climb_corner_acute, 0.2f);
                     SafeClimb();
                     return;
                 }
@@ -216,7 +216,7 @@ namespace PreServer
                         //Debug.LogError("Front has detected non-climbable surface, exit the climb");
                         states.rigid.velocity = Vector3.zero;
                         states.climbHit = front;
-                        //states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
+                        states.anim.CrossFade(states.hashes.squ_climb_corner_acute, 0.2f);
                         states.climbState = PlayerManager.ClimbState.EXITING;
                         return;
                     }
@@ -238,9 +238,9 @@ namespace PreServer
             Vector3 dir = -states.transform.forward + (-states.transform.up);
 
             // Draw the rays
-            Debug.DrawRay(underOrigin, dir * 1.5f, Color.green);
-            Debug.DrawRay(underOrigin, Quaternion.AngleAxis(30f, states.climbHit.normal) * dir * 1.5f, Color.red);
-            Debug.DrawRay(underOrigin, Quaternion.AngleAxis(-30f, states.climbHit.normal) * dir * 1.5f, Color.blue);
+            //Debug.DrawRay(underOrigin, dir * 1.5f, Color.green);
+            //Debug.DrawRay(underOrigin, Quaternion.AngleAxis(30f, states.climbHit.normal) * dir * 1.5f, Color.red);
+            //Debug.DrawRay(underOrigin, Quaternion.AngleAxis(-30f, states.climbHit.normal) * dir * 1.5f, Color.blue);
             if (Physics.Raycast(underOrigin, dir, out under, 1.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
                 //underside has hit something
@@ -468,6 +468,10 @@ namespace PreServer
                 climbRight = Vector3.Cross(hit.normal, Vector3.up);
                 climbUp = hit.normal;
             }
+
+            Debug.DrawRay(states.mTransform.position, climbForward * 5f, Color.red);
+            Debug.DrawRay(states.mTransform.position, climbRight * 5f, Color.blue);
+            Debug.DrawRay(states.mTransform.position, climbUp * 5f, Color.yellow);
         }
 
         void Move(StateManager sm)

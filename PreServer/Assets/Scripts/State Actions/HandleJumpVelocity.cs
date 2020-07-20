@@ -79,6 +79,7 @@ namespace PreServer
             {
                 currentVelocity += jumpSpeed * ((states.transform.up * 2f) + Vector3.up);
                 currentVelocity.y = jumpSpeed * Vector3.up.y;
+                //currentVelocity.y /= 1.1f;
                 states.jumpFromClimb = true;
                 states.jumpFromClimbTimer = 0;
                 states.jumpFromClimbTarget = Quaternion.LookRotation(states.climbHit.normal);

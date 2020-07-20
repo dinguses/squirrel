@@ -44,6 +44,8 @@ namespace PreServer
             states.rigid.velocity = Vector3.zero;
             moveDirection = ProjectVectorOnPlane(GroundNormal(), ProjectVectorOnPlane(states.transform.up, moveDirection));
             moveDirection = SetVectorLength(moveDirection, Mathf.Abs(moveSpeed));
+
+            states.anim.CrossFade(states.hashes.squ_sliding, 0.2f);
         }
         Vector3 currentVelocity;
         Vector3 targetVelocity;
