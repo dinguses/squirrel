@@ -6,11 +6,19 @@ public class FollowObject : MonoBehaviour
 {
     public Transform target;
     public float followSpeed;
-    public float offset;
     public enum OffsetDirection { NONE, FORWARD, UP, RIGHT }
-    public OffsetDirection direction;
     public enum UpdateTick { NORMAL, LATE, FIXED }
     public UpdateTick update;
+    public Offset[] offsets;
+
+    [System.Serializable]
+    public class Offset
+    {
+        public OffsetDirection direction;
+        public float offset;
+
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -41,19 +49,22 @@ public class FollowObject : MonoBehaviour
         if (target != null)
         {
             Vector3 off = Vector3.zero;
-            if (offset != 0)
+            if (offsets.Length > 0)
             {
-                switch (direction)
+                for (int i = 0; i < offsets.Length; ++i)
                 {
-                    case OffsetDirection.FORWARD:
-                        off = target.forward * offset;
-                        break;
-                    case OffsetDirection.RIGHT:
-                        off = target.right * offset;
-                        break;
-                    case OffsetDirection.UP:
-                        off = target.up * offset;
-                        break;
+                    switch (offsets[i].direction)
+                    {
+                        case OffsetDirection.FORWARD:
+                            off += target.forward * offsets[i].offset;
+                            break;
+                        case OffsetDirection.RIGHT:
+                            off += target.right * offsets[i].offset;
+                            break;
+                        case OffsetDirection.UP:
+                            off += target.up * offsets[i].offset;
+                            break;
+                    }
                 }
             }
             Vector3 targetPos = target.position + off;

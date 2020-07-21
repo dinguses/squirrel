@@ -80,7 +80,7 @@ namespace PreServer
 
             //Make the move direction orthoganal to the player's up
             Vector3 vector3 = ProjectVectorOnPlane(states.transform.up, moveDirection);
-
+            lookDirection = states.transform.forward;
             //TIME TO FIGURE OUT THIS SHIT
             //If I hit a wall then reflect off of it otherwise keep going
             Vector3 normal = Vector3.zero;
@@ -101,13 +101,13 @@ namespace PreServer
                 Vector3 to = ProjectVectorOnPlane(states.transform.up, SlopeDirection());
 
                 //Make the input orthogonal to the ground normal
-                Vector3 normalized = ProjectVectorOnPlane(GroundNormal(), MoveInput).normalized;
+                //Vector3 normalized = ProjectVectorOnPlane(GroundNormal(), MoveInput).normalized;
 
                 //Flag 1 - Angle between move direction and slope direction
                 bool flag1 = (double)Vector3.Angle(vector3, to) < 90.0;
 
-                //Flag 2 - Angle between look direction and slope direction
-                bool flag2 = (double)Vector3.Angle(lookDirection, to) > 140.0;
+                ////Flag 2 - Angle between look direction and slope direction
+                //bool flag2 = (double)Vector3.Angle(lookDirection, to) > 140.0;
 
                 //Change move direction to be orthogonal to the current slope and set its length to the move speed
                 moveDirection = ProjectVectorOnPlane(GroundNormal(), moveDirection);
@@ -119,14 +119,25 @@ namespace PreServer
                 {
                     //If angle between move direction and slope direction < 90 and there is input, turn a little
                     //otherwise face the slope's direction
-                    if (flag1 && MoveInput != Vector3.zero && ((double)Vector3.Angle(MoveInput, to) < 110.0 && (double)Vector3.Angle(vector3, to) < 70.0))
+                    //if (flag1 && MoveInput != Vector3.zero && ((double)Vector3.Angle(MoveInput, to) < 110.0 && (double)Vector3.Angle(vector3, to) < 70.0))
+                    //{
+                    //    targetDirection = Vector3.RotateTowards(targetDirection, normalized, turnSpeed * 0.4f * Time.deltaTime, 0.0f);
+                    //    targetDirection = ClampAngleOnPlane(SlopeDirection(), targetDirection, 70f, GroundNormal());
+                    //}
+                    //else
+                        
+                    if(flag1 && MoveInput != Vector3.zero)
                     {
-                        targetDirection = Vector3.RotateTowards(targetDirection, normalized, turnSpeed * 0.4f * Time.deltaTime, 0.0f);
-                        targetDirection = ClampAngleOnPlane(SlopeDirection(), targetDirection, 70f, GroundNormal());
+                        bool isBackwards = Vector3.Angle(states.transform.forward, targetDirection) > 90;
+                        targetDirection = Vector3.RotateTowards(targetDirection, isBackwards ? -lookDirection : lookDirection, turnSpeed * Time.deltaTime, 0.0f);
+                        targetDirection = ClampAngleOnPlane(SlopeDirection(), targetDirection, 45f, GroundNormal());
                     }
                     else
+                    {
+                        Debug.LogError("Move Input is zero");
                         targetDirection = SlopeDirection();
-                    Debug.DrawRay(states.transform.position, targetDirection, Color.green);
+                    }
+                    //Debug.DrawRay(states.transform.position, targetDirection, Color.green);
 
                     //Current 1 - a vector orthogonal to the target direction
                     Vector3 current1 = ProjectVectorOnPlane(targetDirection, moveDirection);
@@ -143,14 +154,18 @@ namespace PreServer
 
                     //I'm guessing this part of the code has to do with which direction I'm facing to know which way to rotate me
                     //Flag 1 - Angle between move direction and slope direction < 90
-                    if (flag1)
-                    {
-                        //Flag 2 - Angle between look direction and slope direction > 140
-                        if (flag2)
-                            RotateLookDirection(-targetDirection, turnSpeed * 0.05f);
-                        else
-                            RotateLookDirection(targetDirection, turnSpeed * 0.15f);
-                    }
+                    //if (flag1)
+                    //{
+                    //    //Flag 2 - Angle between look direction and slope direction > 140
+                    //    if (flag2)
+                    //    {
+                    //        RotateLookDirection(-targetDirection, turnSpeed * 0.05f);
+                    //    }
+                    //    else
+                    //    {
+                    //        RotateLookDirection(targetDirection, turnSpeed * 0.15f);
+                    //    }
+                    //}
                 }
                 else
                 {
@@ -159,14 +174,23 @@ namespace PreServer
                     //Debug.LogError(moveSpeed);
                     moveDirection = SetVectorLength(moveDirection, Mathf.Abs(moveSpeed));
                     if (MoveInput != Vector3.zero)
-                        moveDirection = Vector3.RotateTowards(moveDirection, normalized, turnSpeed * 0.1f * Time.deltaTime, 0.0f);
-                    if ((double)moveSpeed < 0.0)
-                        RotateLookDirection(-vector3, turnSpeed * 0.1f);
-                    else
-                        RotateLookDirection(vector3, turnSpeed * 0.1f);
+                    {
+                        moveDirection = Vector3.RotateTowards(moveDirection, lookDirection, turnSpeed * 0.1f * Time.deltaTime, 0.0f);
+                    }
+                    //if (MoveInput != Vector3.zero)
+                    //    moveDirection = Vector3.RotateTowards(moveDirection, normalized, turnSpeed * 0.1f * Time.deltaTime, 0.0f);
+                    //if ((double)moveSpeed < 0.0)
+                    //{
+                    //    RotateLookDirection(-vector3, turnSpeed * 0.1f);
+                    //}
+                    //else
+                    //{
+                    //    RotateLookDirection(vector3, turnSpeed * 0.1f);
+                    //}
+                    timeOutPeriod = 0;
                 }
                 if(states.isGrounded)
-                    moveDirection -= GroundNormal() * 0.5f;
+                    moveDirection -= GroundNormal() * 0.25f;
                 //If my move speed is in between 0.3 and -0.3 then I am done sliding
                 if (((double)moveSpeed <= 0.5 && (double)moveSpeed >= -0.5 && IsContinueSliding() && timeOutPeriod >= 0.3f) || moveSpeed == 0.0)
                 {
@@ -307,10 +331,10 @@ namespace PreServer
         {
             Transform cam = Camera.main.transform;
             Vector3 zero = Vector3.zero;
-            //if ((double)states.movementVariables.horizontal != 0.0)
-            //    zero += cam.right * states.movementVariables.horizontal;
-            //if ((double)states.movementVariables.vertical != 0.0)
-            //    zero += cam.forward * states.movementVariables.vertical;
+            if ((double)states.movementVariables.horizontal != 0.0)
+                zero += cam.right * states.movementVariables.horizontal;
+            if ((double)states.movementVariables.vertical != 0.0)
+                zero += cam.forward * states.movementVariables.vertical;
             return ProjectVectorOnPlane(states.transform.up, zero).normalized;
         }
 
@@ -418,7 +442,7 @@ namespace PreServer
 
         private Vector3 SlopeDirection()
         {
-            Vector3 normal = states.middleNormal;
+            Vector3 normal = rotationNormal;
             return Vector3.Cross(Vector3.Cross(normal, -Vector3.up), normal);
         }
 
@@ -473,17 +497,34 @@ namespace PreServer
             Vector3 targetDir = cam.forward * v;
             targetDir += cam.right * h;
 
-            var targetDir2 = targetDir;
-
             targetDir.Normalize();
             targetDir.y = 0;
 
-            if (targetDir == Vector3.zero)
-                targetDir = states.mTransform.forward;
+            Vector3 slopeDir = SlopeDirection();
+            bool isBackwards = Vector3.Angle(states.transform.forward, slopeDir) > 90;
+            if (slopeDir != Vector3.zero)
+            {
+                if (targetDir == Vector3.zero)
+                    targetDir = isBackwards ? -slopeDir : slopeDir;
 
-            targetDir = SlidePlayer.ProjectVectorOnPlane(rotationNormal, targetDir);
+                targetDir = ProjectVectorOnPlane(rotationNormal, targetDir);
+                float angle = Vector3.SignedAngle((isBackwards ? -slopeDir : slopeDir), targetDir, rotationNormal);
+                if (Mathf.Abs(angle) > 45f)
+                {
+                    targetDir = Quaternion.AngleAxis(45 * Mathf.Sign(angle), rotationNormal) * (isBackwards ? -slopeDir : slopeDir);
+                }
+                Debug.DrawRay(states.transform.position, targetDir * 5f, Color.green);
+                Debug.DrawRay(states.transform.position, slopeDir * 6f, Color.blue);
+            }
+            else
+            {
+                if (targetDir == Vector3.zero)
+                    targetDir = states.transform.forward;
+                targetDir = ProjectVectorOnPlane(rotationNormal, targetDir);
+            }
+
             Quaternion tr = Quaternion.LookRotation(targetDir, rotationNormal);
-            Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * states.movementVariables.moveAmount * turnSpeed);
+            Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * turnSpeed * 0.15f);
             states.mTransform.rotation = targetRotation;
         }
     }
