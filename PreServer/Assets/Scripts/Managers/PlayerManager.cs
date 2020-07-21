@@ -408,6 +408,10 @@ namespace PreServer
             {
                 mTransform.position = new Vector3(-545f, 60f, 311);
             }
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                mTransform.position = new Vector3(133f, 25f, -197);
+            }
         }
 
         public bool pauseSpeedHackTimer = false;
@@ -802,6 +806,7 @@ namespace PreServer
             }
 
             anim.SetBool(hashes.UpIdle, UpIdle);
+            anim.SetBool(hashes.isSliding, isSliding);
         }
 
         void SetClimbAnimStates()

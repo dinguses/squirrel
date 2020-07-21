@@ -26,6 +26,7 @@ namespace PreServer
         public int rotateFloat = Animator.StringToHash("rotateFloat");
         public int climbCorner = Animator.StringToHash("climbCorner");
         public int mirror180 = Animator.StringToHash("mirror180");
+        public int isSliding = Animator.StringToHash("isSliding");
 
         // Squirrel Animations
         public int squ_idle = Animator.StringToHash("squ_idle");
@@ -40,6 +41,7 @@ namespace PreServer
         public int squ_climb_corner = Animator.StringToHash("squ_climb_corner");
         public int squ_climb_corner_acute = Animator.StringToHash("squ_climb_corner_acute");
         public int squ_jump = Animator.StringToHash("squ_jump");
+        public int squ_sliding = Animator.StringToHash("squ_sliding");
 
         // NPC Animations
         public int npc_idle = Animator.StringToHash("NPC_IDLE");
