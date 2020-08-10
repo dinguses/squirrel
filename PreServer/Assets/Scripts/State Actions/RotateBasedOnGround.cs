@@ -23,6 +23,16 @@ namespace PreServer
             PlayerManager states = (PlayerManager)sm;
 
             ground = states.GetRotationNormal();
+            //Vector3 origin = states.transform.position + (states.transform.up * 0.2f) + (states.transform.forward * 1.75f);
+            //RaycastHit hit = new RaycastHit();
+            //Vector3 dir = SlidePlayer.ProjectVectorOnPlane(Vector3.up, states.transform.forward);
+            //Debug.DrawRay(origin, dir * 0.5f, Color.blue);
+            ////Raycast in front of the squirrel, used to check if we've hit a ceiling, ground, or another climb-able surface
+            //if (Physics.SphereCast(origin, 0.2f, states.transform.forward, out hit, 0.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            //{
+            //    ground = (hit.normal + ground).normalized;
+            //    Debug.DrawRay(hit.point, hit.normal, Color.black);
+            //}
             ////If the front raycast hasn't hit anything then do another raycast 
             ////Otherwise just use the front normal
             //if (states.front == null)

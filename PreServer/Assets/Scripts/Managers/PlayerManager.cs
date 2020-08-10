@@ -319,7 +319,7 @@ namespace PreServer
             SpeedHackCooldown();
             if (slideMomentum != Vector3.zero)
             {
-                slideMomentum = Vector3.Lerp(slideMomentum, Vector3.zero, delta * 2f);
+                slideMomentum = Vector3.Lerp(slideMomentum, Vector3.zero, delta);
                 if (slideMomentum.magnitude <= 0.1f)
                     slideMomentum = Vector3.zero;
             }

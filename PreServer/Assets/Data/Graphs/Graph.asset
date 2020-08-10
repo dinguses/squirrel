@@ -70,8 +70,8 @@ MonoBehaviour:
     drawNode: {fileID: 11400000, guid: 3de6cb72c5d54a842957b3d8754294e2, type: 2}
     windowRect:
       serializedVersion: 2
-      x: 482
-      y: 195
+      x: 483
+      y: 210
       width: 200
       height: 440
     windowTitle: State
@@ -176,8 +176,8 @@ MonoBehaviour:
     drawNode: {fileID: 11400000, guid: 3de6cb72c5d54a842957b3d8754294e2, type: 2}
     windowRect:
       serializedVersion: 2
-      x: 857
-      y: 198
+      x: 836
+      y: 231
       width: 200
       height: 420
     windowTitle: State
@@ -362,8 +362,8 @@ MonoBehaviour:
     drawNode: {fileID: 11400000, guid: 02d1192eec6276044a75147866515bb8, type: 2}
     windowRect:
       serializedVersion: 2
-      x: 1215
-      y: 414
+      x: 1238
+      y: 335
       width: 200
       height: 100
     windowTitle: Condition
@@ -1162,4 +1162,31 @@ MonoBehaviour:
       previousCondition: {fileID: 11400000, guid: 2cacfe2bf5148f14ca94d6be2a9cdb44,
         type: 2}
       transitionId: 11
-  idCount: 102
+  - id: 102
+    drawNode: {fileID: 11400000, guid: 02d1192eec6276044a75147866515bb8, type: 2}
+    windowRect:
+      serializedVersion: 2
+      x: 1183
+      y: 442
+      width: 200
+      height: 100
+    windowTitle: Condition
+    enterNode: 37
+    targetNode: 24
+    isDuplicate: 0
+    comment: 
+    isAssigned: 1
+    showDescription: 0
+    isOnCurrent: 0
+    collapse: 0
+    showActions: 1
+    showEnterExit: 0
+    previousCollapse: 0
+    stateRef:
+      currentState: {fileID: 0}
+      previousState: {fileID: 0}
+    transRef:
+      previousCondition: {fileID: 11400000, guid: 6c54041beb90dc84e8e556db36345165,
+        type: 2}
+      transitionId: 3
+  idCount: 103

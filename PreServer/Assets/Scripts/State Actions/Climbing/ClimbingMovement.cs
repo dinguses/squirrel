@@ -609,7 +609,7 @@ namespace PreServer
                         cameraAngle += a;
                     else
                         cameraAngle += angle;
-                    Debug.LogError("Adding angle: " + angle + " angle between camera: " + a);
+                    //Debug.LogError("Adding angle: " + angle + " angle between camera: " + a);
                 }
             }
         }

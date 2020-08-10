@@ -167,7 +167,7 @@ namespace PreServer
 
 
             // Apply velocity to player
-            states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity, states.delta * movementTime);
+            states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity + states.slideMomentum, states.delta * movementTime);
         }
     }
 }
