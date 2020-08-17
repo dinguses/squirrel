@@ -20,9 +20,13 @@ MonoBehaviour:
   actions:
   - {fileID: 11400000, guid: d3d2ee92667af2b408868919ca17a6d3, type: 2}
   stateName: Sliding
-  idCount: 3
+  idCount: 4
   transitions:
   - id: 2
     condition: {fileID: 11400000, guid: 18d19b7ebccb5eb4aae3f7ec825eefa9, type: 2}
     targetState: {fileID: 11400000, guid: 0225933b0bf4587438730a98b935d45e, type: 2}
+    disable: 0
+  - id: 3
+    condition: {fileID: 11400000, guid: 6c54041beb90dc84e8e556db36345165, type: 2}
+    targetState: {fileID: 11400000, guid: 79c7f8040eac1954590da60b276a0b99, type: 2}
     disable: 0

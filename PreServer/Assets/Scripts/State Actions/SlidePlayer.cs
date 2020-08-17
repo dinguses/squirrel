@@ -38,9 +38,9 @@ namespace PreServer
             moveDirection = states.rigid.velocity.normalized;
             if (moveDirection == Vector3.zero || moveDirection.magnitude < 1f)
                 moveDirection = states.transform.forward;
-            moveSpeed = states.rigid.velocity.magnitude;
-            if (moveSpeed < 2f)
-                moveSpeed = 2f;
+            moveSpeed = states.rigid.velocity.magnitude * 0.5f;
+            if (moveSpeed < 1f)
+                moveSpeed = 1f;
             states.rigid.velocity = Vector3.zero;
             moveDirection = ProjectVectorOnPlane(GroundNormal(), ProjectVectorOnPlane(states.transform.up, moveDirection));
             moveDirection = SetVectorLength(moveDirection, Mathf.Abs(moveSpeed));
@@ -134,7 +134,6 @@ namespace PreServer
                     }
                     else
                     {
-                        Debug.LogError("Move Input is zero");
                         targetDirection = SlopeDirection();
                     }
                     //Debug.DrawRay(states.transform.position, targetDirection, Color.green);
@@ -143,7 +142,8 @@ namespace PreServer
                     Vector3 current1 = ProjectVectorOnPlane(targetDirection, moveDirection);
 
                     Vector3 current2 = moveDirection - current1;
-
+                    //Debug.DrawRay(states.transform.position, current1 * 5f, Color.green);
+                    //Debug.DrawRay(states.transform.position, current2 * 5f, Color.blue);
                     //take the direction I'm moving towards and add it to the slide direction while increasing the slide speed 
                     moveDirection = Vector3.MoveTowards(current1, Vector3.zero, 5f * Time.deltaTime) + Vector3.MoveTowards(current2, targetDirection * maxSlideSpeed, 20f * Time.deltaTime);
                     moveSpeed = moveDirection.magnitude;
@@ -192,16 +192,19 @@ namespace PreServer
                 if(states.isGrounded)
                     moveDirection -= GroundNormal() * 0.25f;
                 //If my move speed is in between 0.3 and -0.3 then I am done sliding
-                if (((double)moveSpeed <= 0.5 && (double)moveSpeed >= -0.5 && IsContinueSliding() && timeOutPeriod >= 0.3f) || moveSpeed == 0.0)
+                if (((double)moveSpeed <= 0.5 && (double)moveSpeed >= -0.5 && IsContinueSliding() && timeOutPeriod >= 0.15f) || moveSpeed == 0.0 || !states.isGrounded)
                 {
                     states.isSliding = false;
+                    //Debug.LogError("Exiting slide");
+
                     //currentState = (Enum)MarioMachine.MarioStates.SlideRecover;
                 }
                 else
                 {
                     //artUpDirection = GroundNormal();
                 }
-                timeOutPeriod += Time.deltaTime;
+                if (((double)moveSpeed <= 0.5 && (double)moveSpeed >= -0.5))
+                    timeOutPeriod += Time.deltaTime;
             }
             //states.transform.forward = lookDirection;
         }
@@ -340,6 +343,7 @@ namespace PreServer
 
         public override void OnExit(StateManager sm)
         {
+            states.slideMomentum = ProjectVectorOnPlane(Vector3.up, moveDirection.normalized * moveSpeed);
             //timer = 0;
             //gravity = downwardsGravity;
             //if (states.isGrounded)
@@ -483,7 +487,31 @@ namespace PreServer
         public float rotationConstraint = 70;
         void RotateBasedOnGround()
         {
-            Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, rotationNormal) * states.mTransform.rotation;
+            Vector3 normal = rotationNormal;
+            if (SlopeDirection() != Vector3.zero)
+            {
+                bool isBackwards = Vector3.Angle(states.transform.forward, SlopeDirection()) > 90;
+                Vector3 origin = states.transform.position + (states.transform.up * 0.2f) + (moveDirection * Time.deltaTime);
+                RaycastHit hit = new RaycastHit();
+                Vector3 dir = states.transform.forward;
+                if (isBackwards)
+                {
+                    dir *= -1;
+                }
+                else
+                {
+                    origin += (states.transform.forward * 1.9f);
+                }
+                dir -= states.transform.up * 0.1f;
+                Debug.DrawRay(origin, dir * 0.5f, Color.blue);
+                //Raycast in front of the squirrel, used to check if we've hit a ceiling, ground, or another climb-able surface
+                if (Physics.SphereCast(origin, 0.4f, states.transform.forward, out hit, 0.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+                {
+                    normal = (hit.normal + rotationNormal).normalized;
+                    Debug.DrawRay(hit.point, hit.normal, Color.black);
+                }
+            }
+            Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, normal) * states.mTransform.rotation;
             Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * 15f);
             states.mTransform.rotation = targetRotation;
         }
@@ -513,8 +541,7 @@ namespace PreServer
                 {
                     targetDir = Quaternion.AngleAxis(45 * Mathf.Sign(angle), rotationNormal) * (isBackwards ? -slopeDir : slopeDir);
                 }
-                Debug.DrawRay(states.transform.position, targetDir * 5f, Color.green);
-                Debug.DrawRay(states.transform.position, slopeDir * 6f, Color.blue);
+                
             }
             else
             {

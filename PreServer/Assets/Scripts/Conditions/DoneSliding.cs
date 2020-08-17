@@ -60,7 +60,7 @@ namespace PreServer
 
             result = state.isSliding;
 
-            return !state.isSliding;
+            return !state.isSliding && state.isGrounded;
         }
 
         /*bool CheckAngle(float angle)
