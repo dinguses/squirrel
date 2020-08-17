@@ -91,14 +91,14 @@ namespace PreServer
                 Vector3 grindCenterClosestPoint = GetPoint(states.rigid.position, states.facingPoint, states.behindPoint);
 
                 //states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * 10f * (states.groundSpeedMult * 2));
-                states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * 50f);
+                states.rigid.position = Vector3.Lerp(states.rigid.position, grindCenterClosestPoint, Time.deltaTime * 20f);
 
                 Debug.DrawLine(states.rigid.position, grindCenterClosestPoint, Color.green);
 
                 // If you haven't fully adjusted to the grind center initially
-                if (!states.doneAdjustingGrind)
+                if (!states.doneAdjustingGrind || Vector3.Distance(states.rigid.position, grindCenterClosestPoint) > .1f)
                 {
-                    Debug.Log("cc - " + Vector3.Distance(states.rigid.position, grindCenterClosestPoint));
+                    //Debug.Log("cc - " + Vector3.Distance(states.rigid.position, grindCenterClosestPoint));
 
                     // If position is close enough to grind center, adjusting is done
                     if (Vector3.Distance(states.rigid.position, grindCenterClosestPoint) < .1f)
@@ -109,7 +109,7 @@ namespace PreServer
                 }
                 else
                 {
-                    states.frontCollider.enabled = true;
+                    //states.frontCollider.enabled = true;
                 }
             }
 
@@ -133,6 +133,8 @@ namespace PreServer
             base.OnExit(states);
 
             states.frontCollider.enabled = true;
+
+            states.grindTimer = 0f;
 
             if (states.dashActive)
             {

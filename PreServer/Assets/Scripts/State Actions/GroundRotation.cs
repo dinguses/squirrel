@@ -58,7 +58,9 @@ namespace PreServer
             var testAngleSide = Vector3.Angle(targetDir2, states.mTransform.right);
 
             // Rotate 180 - disabled to test rotation
-            if (testAngle > 160 && testAngle < 200)
+            
+            // COME BACK - Disabled ground 180s to see how it feels without them
+            /*if (testAngle > 160 && testAngle < 200)
             {
                 states.testINT = 0;
 
@@ -82,7 +84,7 @@ namespace PreServer
 
                 //states.storedTargetDir = targetDir;
                 states.storedTargetDir = targetDir3;
-            }
+            }*/
 
 
             //float direction = 0;

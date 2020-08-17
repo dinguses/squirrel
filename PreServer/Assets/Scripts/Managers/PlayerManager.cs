@@ -98,6 +98,7 @@ namespace PreServer
         //public KeyValuePair<int, BoxCollider> grindCenterPair;
         //public BoxCollider grindCenter;
         public bool inJoint = false;
+        public float grindTimer = 0.25f;
 
         public bool rotateBool = false;
         public SkinnedMeshRenderer playerMesh;
@@ -225,8 +226,16 @@ namespace PreServer
         }
         public bool runRanOut = false;
         bool prevRunState = false;
+
         public override void UpdateParent()
         {
+            anim.SetFloat(hashes.grindTimer, grindTimer);
+
+            if (grindTimer <= 0.25f)
+            {
+                grindTimer += 0.01f;
+            }
+
             // Check squirrel distance to forward point
             if (facingPoint != Vector3.zero && currentState.name == "Grinding")
             {
@@ -936,15 +945,22 @@ namespace PreServer
             // For the crushers
             if (other.tag == "hurty")
             {
-                if (inFinalZone || !inChallenge3Room)
+                if (SceneManager.GetActiveScene().name == "Plaza")
                 {
-                    mTransform.position = new Vector3(-545f, 60f, 311);
-                    restartFinalCrusher = true;
+                    mTransform.position = new Vector3(-82.6f, 9.2f, 3.7f);
                 }
-
                 else
                 {
-                    mTransform.position = new Vector3(-286f, 22f, 61f);
+                    if (inFinalZone || !inChallenge3Room)
+                    {
+                        mTransform.position = new Vector3(-545f, 60f, 311);
+                        restartFinalCrusher = true;
+                    }
+
+                    else
+                    {
+                        mTransform.position = new Vector3(-286f, 22f, 61f);
+                    }
                 }
             }
 
@@ -966,7 +982,7 @@ namespace PreServer
             }*/
 
             // Start a grind if you've entered a grind zone and were not already in one
-            if (other.tag == "Grind" && !inGrindZone && currentState.name != "WaitForAnimation")
+            if (other.tag == "Grind" && !inGrindZone && grindTimer >= 0.25f && currentState.name != "WaitForAnimation")
             {
                 Debug.Log("entered grind collider?");
 
@@ -1028,6 +1044,8 @@ namespace PreServer
                 Debug.Log("purge?");
 
                 Debug.Log("isGrounded: " + isGrounded);
+
+                grindTimer = 0f;
 
                 PurgeGrindPoints();
                 inGrindZone = false;
@@ -1171,7 +1189,7 @@ namespace PreServer
 
             if (movementVariables.moveAmount <= 0.5f)
             {
-                mTransform.position = Vector3.MoveTowards(mTransform.position, facingPoint, testyyy/4);
+                mTransform.position = Vector3.MoveTowards(mTransform.position, facingPoint, testyyy/16);
             }
 
             frontCollider.enabled = true;

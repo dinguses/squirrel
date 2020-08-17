@@ -23,7 +23,7 @@ namespace PreServer
             Vector3 reusable = (state.mTransform.position + (state.mTransform.forward));
 
             // If player is in grind zone and has landed on the ground of the grind
-            if (state.inGrindZone /*&& state.isGrounded*/)
+            if (state.inGrindZone /*&& state.isGrounded*/ && state.grindTimer >= 0.25f)
             {
                 // Go through all grindpoints and find the closest point to the player
                 foreach (KeyValuePair<int, Vector3> grindPoint in state.grindPoints)
@@ -106,6 +106,7 @@ namespace PreServer
                     state.behindPointPair = closestPoint;
                 }
 
+                #region oldGrindCenter
                 // Figure out what grind center to move along
                 //if (state.grindPoints.Count > 2)
                 //{
@@ -130,7 +131,7 @@ namespace PreServer
                 //        //state.grindCenter = state.grindCenters[state.facingPointPair.Key];
                 //        //state.grindCenterPair = new KeyValuePair<int, BoxCollider>(state.facingPointPair.Key, state.grindCenter);
                 //    }
-                    
+
                 //    else
                 //    {
                 //        string test = "GrindCenter_" + state.behindPointPair.Key.ToString() + state.facingPointPair.Key.ToString();
@@ -150,12 +151,12 @@ namespace PreServer
 
                 //        state.grindCenter = state.grindCenters2[test];
                 //        state.grindCenterPair2 = new KeyValuePair<string, BoxCollider>(test, state.grindCenter);*/
-                        
+
                 //        //state.grindCenter = state.grindCenters[state.behindPointPair.Key];
                 //        //state.grindCenterPair = new KeyValuePair<int, BoxCollider>(state.behindPointPair.Key, state.grindCenter);
                 //    }
                 //}
-                
+                #endregion
 
                 // No gravity on grinds
                 state.rigid.useGravity = false;
@@ -196,11 +197,10 @@ namespace PreServer
 
                     Debug.Log("it higher");
                     var test = state.mTransform.position.y;
-                    state.mTransform.position = new Vector3(state.mTransform.position.x, test += testt, state.mTransform.position.z);
+                    //state.mTransform.position = new Vector3(state.mTransform.position.x, test + testt, state.mTransform.position.z);
                 }
 
-
-                //state.frontCollider.enabled = false;
+                state.frontCollider.enabled = false;
 
                 //GOTO
                 //state.frontCollider.enabled = false;
