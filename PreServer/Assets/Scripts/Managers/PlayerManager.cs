@@ -863,7 +863,7 @@ namespace PreServer
             //Vector3 topRay = mTransform.position + (mTransform.forward * 0.9f) + (mTransform.up * 0.5f);
 
             //Debug.DrawRay(topRay, mTransform.forward, Color.blue);
-            if (didClimbHit/*Physics.SphereCast(topRay, 0.3f, mTransform.forward, out climbHit, 1, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore)*/)
+            if (didClimbHit && !dashActive/*Physics.SphereCast(topRay, 0.3f, mTransform.forward, out climbHit, 1, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore)*/)
             {
                 if (/*climbAngle >= 70 && climbAngle <= 90 && */climbHit.transform.tag == "Climb"/* && (prevClimbT != climbHit.transform || isGrounded)*/)
                 {

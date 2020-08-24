@@ -46,6 +46,7 @@ namespace PreServer
             front = new RaycastHit();
             under = new RaycastHit();
             transitioning = false;
+            lagDashCooldown = 0;
             states.isGrounded = false;
             states.dashInAirCounter = 0;
             moveCamera = false;
@@ -154,8 +155,8 @@ namespace PreServer
                 // top is in entering/exiting climb
 
                 //states.anim.SetBool(states.hashes.climbCorner, true);
-                
 
+                states.lagDashCooldown = 100f;
                 Transfer(states);
                 //Rotate(states);
                 //Move(states);
@@ -171,6 +172,8 @@ namespace PreServer
                 Move(states);
                 CheckRaycast(states);
             }
+            if (Input.GetKeyDown(KeyCode.O))
+                rotateBasedOnCamera = !rotateBasedOnCamera;
             Debug.DrawRay(states.climbHit.point, states.climbHit.normal * 3f, Color.black);
         }
 
@@ -205,6 +208,7 @@ namespace PreServer
                     inRot = false;
 
                     transitioning = true;
+                    lagDashCooldown = states.lagDashCooldown;
                     states.anim.CrossFade(states.hashes.squ_climb_corner_acute, 0.2f);
                     SafeClimb();
                     return;
@@ -270,6 +274,7 @@ namespace PreServer
                         inPos = false;
                         inRot = false;
                         transitioning = true;
+                        lagDashCooldown = states.lagDashCooldown;
                         states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
                         SafeClimb();
                     }
@@ -340,6 +345,7 @@ namespace PreServer
                             inPos = false;
                             inRot = false;
                             transitioning = true;
+                            lagDashCooldown = states.lagDashCooldown;
                             states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
                             SafeClimb();
                         }
@@ -387,6 +393,7 @@ namespace PreServer
                             inPos = false;
                             inRot = false;
                             transitioning = true;
+                            lagDashCooldown = states.lagDashCooldown;
                             states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
                             SafeClimb();
                         }
@@ -406,6 +413,7 @@ namespace PreServer
             }
         }
         Quaternion prevRotation;
+        bool rotateBasedOnCamera = false;
         void Rotate(StateManager sm)
         {
             if (cameraTransform.value == null)
@@ -416,16 +424,32 @@ namespace PreServer
             float v = states.movementVariables.vertical;
 
             //Get the angle between the camera's forward and the climb's up and get it in 360 degrees
-            float angle = -Vector3.Angle(climbUp, cameraTransform.value.forward);
-            angle = (Vector3.Angle(climbRight, cameraTransform.value.forward) > 90f) ? 360f - angle : angle;
+            Vector3 camForward = cameraTransform.value.forward;
+            Vector3 camRight = cameraTransform.value.right;
+            camForward.y = 0;
+            camForward.Normalize();
+            camRight.y = 0;
+            camRight.Normalize();
+
+            float rotateAngle = -Vector3.Angle(climbUp, camForward);
+            rotateAngle = (Vector3.Angle(climbRight, camForward) > 90f) ? 360f - rotateAngle : rotateAngle;
 
             //rotating climb up and climb right based on camera's position
-            Vector3 climbForwardAlt = (Quaternion.AngleAxis(angle, climbUp) * -climbForward);
-            Vector3 climbRightAlt = (Quaternion.AngleAxis(angle, climbUp) * -climbRight);
-            if (climbForwardAlt == Vector3.zero)
-                climbForwardAlt = cameraTransform.value.forward;
-            if(climbRightAlt == Vector3.zero)
-                climbRightAlt = cameraTransform.value.right;
+            Vector3 climbForwardAlt = climbForward;
+            Vector3 climbRightAlt = climbRight;
+
+            if (rotateBasedOnCamera)
+            {
+                climbForwardAlt = (Quaternion.AngleAxis(rotateAngle, climbUp) * -climbForward);
+                climbRightAlt = (Quaternion.AngleAxis(rotateAngle, climbUp) * -climbRight);
+                if(climbForwardAlt == Vector3.zero)
+                    climbForwardAlt = climbForward;
+                if (climbRightAlt == Vector3.zero)
+                    climbRightAlt = climbRight;
+            }
+
+            Debug.DrawRay(states.mTransform.position, climbForwardAlt * 5f, Color.magenta);
+            Debug.DrawRay(states.mTransform.position, climbRightAlt * 5f, Color.cyan);
 
             Vector3 targetDir = climbForwardAlt * v;
             targetDir += (climbRightAlt * h);
@@ -498,6 +522,7 @@ namespace PreServer
         Quaternion targetRot;
         public float offsetFromWall = 0.3f;
         float delta;
+        float lagDashCooldown = 0;
         void Transfer(StateManager sm)
         {
             delta = Time.deltaTime * 4;
@@ -506,6 +531,7 @@ namespace PreServer
             {
                 //Debug.Log(Time.frameCount + " || I am in rotation");
                 transitioning = false;
+                states.lagDashCooldown = lagDashCooldown;
                 ignoreGravity = false;
                 //Vector3 tp = Vector3.Lerp(startPos, targetPos, 0.99f);
                 states.transform.position = targetPos;
