@@ -70,7 +70,11 @@ namespace PreServer
         {
             player = (PlayerManager)states; //Set the player
             player.dashInAirCounter++; //Increment the in air counter (NOTE: THIS COUNTER IS NOT USED BUT CAN BE USED LATER IF WE WANT TO LIMIT IN AIR DASHES)
-
+            if (camera == null)
+            {
+                camera = Camera.main.transform.parent.GetComponent<CameraManager>();
+            }
+            cameraAngle = 0;
             if (path == null)
                 path = new List<Path>();
             t = 0;
@@ -416,7 +420,7 @@ namespace PreServer
             else
             {
                 if (climbHit.transform.tag == "Climb")
-                {
+                {                    
                     //end the current path at the hit point and set up the information for the new path
                     target = GetPoint(climbHit.point, start, tempPos - up); //might subtract dir * (length of squirrel) later
                     path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
@@ -481,7 +485,7 @@ namespace PreServer
                     }
                     else
                     {
-                        return underInfo;
+                        //return underInfo;
                     }
                     //else if (Physics.Raycast(temp - up * 0.5f, -up, out underInfo, 0.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                     //{
@@ -672,6 +676,8 @@ namespace PreServer
                         player.rigid.useGravity = false;
                         player.rigid.velocity = Vector3.zero;
                         player.rigid.drag = 0;
+                        if(player.climbState == PlayerManager.ClimbState.CLIMBING && path.Count > 1)
+                            SetCameraAngle(states.transform.up, path[path.Count - 1].up);
                     }
                     if (!player.anim.GetBool(player.hashes.isDashing))
                     {
@@ -731,7 +737,9 @@ namespace PreServer
                     ++pathIndex;
                     //Add any remaining time from the previous path into the current so we don't go an extra frame or 2 over
                     if (pathIndex < path.Count)
+                    {
                         path[pathIndex].lerper.Update(path[pathIndex - 1].GetRemainder() / path[pathIndex].time);
+                    }
                 }
             }
         }
@@ -926,6 +934,60 @@ namespace PreServer
             }
         }
 
+        float cameraAngle = 0;
+        CameraManager camera;
+        float prevCameraAmount = 0;
+        FloatLerper camLerper;
+        public override void OnLateUpdate(StateManager states)
+        {
+            base.OnLateUpdate(states);
+
+            if (camera != null && camLerper != null && !camLerper.done)
+            {
+                prevCameraAmount = camLerper.GetValue();
+                camLerper.Update(t / totalTime);
+                camera.AddToYaw(camLerper.GetValue() - prevCameraAmount);
+            }
+        }
+
+        void SetCameraAngle(Vector3 prev, Vector3 curr)
+        {
+            prevCameraAmount = 0;
+            totalTime = 0;
+            for(int i = 0; i < path.Count; ++i)
+            {
+                totalTime += path[i].time;
+            }
+
+            //Camera rotations, checking if the camera needs to be repositioned based on where it is relative to the climb
+            float angle = Vector3.SignedAngle(prev, curr, Vector3.up);
+            if (angle != 0 && camera != null)
+            {
+                Vector3 cameraForward = camera.transform.forward;
+                cameraForward.y = 0;
+                cameraForward.Normalize();
+
+                float a = Vector3.SignedAngle(-cameraForward, curr, Vector3.up);
+                //angle += (angle * 0.1f);
+                if (Mathf.Abs(a) > 45f)
+                {
+                    if (Mathf.Abs(a) > Mathf.Abs(angle))
+                        camLerper = new FloatLerper(0, a);
+                    else
+                        camLerper = new FloatLerper(0, angle);
+                    //Debug.LogError("Adding angle: " + angle + " angle between camera: " + a);
+                }
+            }
+        }
+
+        void LogCameraAngle()
+        {
+            if (camera != null)
+            {
+                Vector3 cameraForward = camera.transform.forward;
+                cameraForward.y = 0;
+            }
+        }
         public override void OnExit(StateManager states)
         {
             int pathsCompleted = 0;
@@ -1143,5 +1205,51 @@ namespace PreServer
         }
     }
 
+    public class FloatLerper
+    {
+        float value = 0;
+        float startVal = 0;
+        float _endVal = 0;
+        public float endVal
+        {
+            get { return _endVal; }
+            set
+            {
+                lerpVal = 0;
+                startVal = _endVal;
+                _endVal = value;
+            }
+        }
+
+        float lerpVal = 0;
+        public bool done { get { return value == endVal; } }
+        public FloatLerper(float s, float e)
+        {
+            startVal = s;
+            value = s;
+            endVal = e;
+        }
+
+        public void Reset(float s, float e)
+        {
+            startVal = s;
+            endVal = e;
+        }
+
+        public void Update(float amount)
+        {
+            if (value != endVal)
+            {
+                lerpVal += amount;
+                lerpVal = Mathf.Clamp(lerpVal, 0, 1);
+                value = Mathf.Lerp(startVal, endVal, lerpVal);
+            }
+        }
+
+        public float GetValue()
+        {
+            return value;
+        }
+    }
 
 }
