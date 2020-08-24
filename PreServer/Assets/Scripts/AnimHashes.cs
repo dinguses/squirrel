@@ -28,6 +28,7 @@ namespace PreServer
         public int mirror180 = Animator.StringToHash("mirror180");
         public int isSliding = Animator.StringToHash("isSliding");
         public int grindTimer = Animator.StringToHash("grindTimer");
+        public int groundedState = Animator.StringToHash("groundedState");
 
         // Squirrel Animations
         public int squ_idle = Animator.StringToHash("squ_idle");

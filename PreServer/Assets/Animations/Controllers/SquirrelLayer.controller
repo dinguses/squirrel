@@ -88,6 +88,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 3
     m_ConditionEvent: TimeSinceGrounded
     m_EventTreshold: 0.15
+  - m_ConditionMode: 1
+    m_ConditionEvent: groundedState
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102103684488512814}
   m_Solo: 0
@@ -1702,6 +1705,12 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 0}
+  - m_Name: groundedState
+    m_Type: 4
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 0}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -2826,7 +2835,7 @@ AnimatorStateMachine:
     m_Position: {x: 350, y: -60, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102103684488512814}
-    m_Position: {x: 490, y: -410, z: 0}
+    m_Position: {x: 420, y: -500, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102030562028347122}
     m_Position: {x: 810, y: -410, z: 0}
@@ -2859,7 +2868,7 @@ AnimatorStateMachine:
     m_Position: {x: 140, y: -1020, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -8121358683874279241}
-    m_Position: {x: 600, y: -1050, z: 0}
+    m_Position: {x: 580, y: -1070, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 8103117842533199339}
     m_Position: {x: 800, y: -1270, z: 0}

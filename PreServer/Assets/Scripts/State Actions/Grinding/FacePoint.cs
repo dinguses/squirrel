@@ -23,7 +23,7 @@ namespace PreServer
 
             // Set the rotation
 
-            states.mTransform.rotation = Quaternion.Slerp(states.mTransform.rotation, _lookRotation, states.delta * 9.0f * states.groundSpeedMult);
+            states.mTransform.rotation = Quaternion.Slerp(states.mTransform.rotation, _lookRotation, states.delta * 10.0f * states.groundSpeedMult);
         }
     }
 }

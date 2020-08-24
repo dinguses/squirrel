@@ -60,32 +60,34 @@ namespace PreServer
             // Rotate 180 - disabled to test rotation
             
             // COME BACK - Disabled ground 180s to see how it feels without them
-            /*if (testAngle > 160 && testAngle < 200)
+            if (states.ground180Enabled)
             {
-                states.testINT = 0;
+                if (testAngle > 160 && testAngle < 200)
+                {
+                    states.testINT = 0;
 
-                //Debug.Log("test angle - " + testAngle);
-                //Debug.Log("test angle side - " + testAngleSide);
+                    //Debug.Log("test angle - " + testAngle);
+                    //Debug.Log("test angle side - " + testAngleSide);
 
-                // If the player should be rotating to the left
-                //if (testAngleSide > 90)
-                //{
-                //    //states.anim.SetBool(states.hashes.mirror180, true);
-                //    states.anim.CrossFade(states.hashes.squ_ground_180_mirror, 0.01f);
-                //}
-                //else
-                //{
-                states.middlePivot = states.mTransform.position + states.mTransform.forward;
-                states.anim.CrossFade(states.hashes.squ_ground_180, 0.01f);
-                //}
+                    // If the player should be rotating to the left
+                    //if (testAngleSide > 90)
+                    //{
+                    //    //states.anim.SetBool(states.hashes.mirror180, true);
+                    //    states.anim.CrossFade(states.hashes.squ_ground_180_mirror, 0.01f);
+                    //}
+                    //else
+                    //{
+                    states.middlePivot = states.mTransform.position + states.mTransform.forward;
+                    states.anim.CrossFade(states.hashes.squ_ground_180, 0.01f);
+                    //}
 
-                states.anim.SetBool(states.hashes.waitForAnimation, true);
-                states.rigid.velocity = Vector3.zero;
+                    states.anim.SetBool(states.hashes.waitForAnimation, true);
+                    states.rigid.velocity = Vector3.zero;
 
-                //states.storedTargetDir = targetDir;
-                states.storedTargetDir = targetDir3;
-            }*/
-
+                    //states.storedTargetDir = targetDir;
+                    states.storedTargetDir = targetDir3;
+                }
+            }
 
             //float direction = 0;
             //float speedOut = 0;

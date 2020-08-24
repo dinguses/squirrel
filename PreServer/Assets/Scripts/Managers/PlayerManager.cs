@@ -165,6 +165,8 @@ namespace PreServer
         public TimeManager tm;
         public GameObject slideObject;
         public TerrainCollider slideTerrain;
+
+        public bool ground180Enabled = true;
         private void Start()
         {
             climbHit = new RaycastHit();
@@ -230,6 +232,7 @@ namespace PreServer
         public override void UpdateParent()
         {
             anim.SetFloat(hashes.grindTimer, grindTimer);
+            anim.SetBool(hashes.groundedState, (currentState.name == "Locomotion") ? true : false);
 
             if (grindTimer <= 0.25f)
             {
@@ -420,6 +423,10 @@ namespace PreServer
             if (Input.GetKeyDown(KeyCode.C))
             {
                 mTransform.position = new Vector3(133f, 25f, -197);
+            }
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                ground180Enabled = !ground180Enabled;
             }
         }
 
