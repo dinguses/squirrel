@@ -42,6 +42,7 @@ namespace PreServer
             {
                 camera = Camera.main.transform.parent.GetComponent<CameraManager>();
             }
+            transferSpeedMult = 1f;
 
             front = new RaycastHit();
             under = new RaycastHit();
@@ -209,6 +210,7 @@ namespace PreServer
 
                     transitioning = true;
                     lagDashCooldown = states.lagDashCooldown;
+                    transferSpeedMult = 2f;
                     states.anim.CrossFade(states.hashes.squ_climb_corner_acute, 0.2f);
                     SafeClimb();
                     return;
@@ -275,6 +277,7 @@ namespace PreServer
                         inRot = false;
                         transitioning = true;
                         lagDashCooldown = states.lagDashCooldown;
+                        transferSpeedMult = 1f;
                         states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
                         SafeClimb();
                     }
@@ -346,6 +349,7 @@ namespace PreServer
                             inRot = false;
                             transitioning = true;
                             lagDashCooldown = states.lagDashCooldown;
+                            transferSpeedMult = 1f;
                             states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
                             SafeClimb();
                         }
@@ -394,6 +398,7 @@ namespace PreServer
                             inRot = false;
                             transitioning = true;
                             lagDashCooldown = states.lagDashCooldown;
+                            transferSpeedMult = 1f;
                             states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
                             SafeClimb();
                         }
@@ -523,9 +528,10 @@ namespace PreServer
         public float offsetFromWall = 0.3f;
         float delta;
         float lagDashCooldown = 0;
+        float transferSpeedMult = 1f;
         void Transfer(StateManager sm)
         {
-            delta = Time.deltaTime * 4;
+            delta = Time.deltaTime * 4 * transferSpeedMult;
 
             if (inPos && inRot)
             {
@@ -661,6 +667,9 @@ namespace PreServer
         public override void OnExit(StateManager sm)
         {
             base.OnExit(states);
+            if(states.lagDashCooldown > 1f)
+                states.lagDashCooldown = lagDashCooldown;
+
             //states.rigid.velocity = Vector3.zero;
             moveCamera = false;
             if (camera != null)
