@@ -74,7 +74,7 @@ namespace PreServer
             {
                 camera = Camera.main.transform.parent.GetComponent<CameraManager>();
             }
-            cameraAngle = 0;
+
             if (path == null)
                 path = new List<Path>();
             t = 0;
@@ -934,30 +934,29 @@ namespace PreServer
             }
         }
 
-        float cameraAngle = 0;
         CameraManager camera;
-        float prevCameraAmount = 0;
-        FloatLerper camLerper;
+        //float prevCameraAmount = 0;
+        //FloatLerper camLerper;
         public override void OnLateUpdate(StateManager states)
         {
             base.OnLateUpdate(states);
 
-            if (camera != null && camLerper != null && !camLerper.done)
-            {
-                prevCameraAmount = camLerper.GetValue();
-                camLerper.Update(t / totalTime);
-                camera.AddToYaw(camLerper.GetValue() - prevCameraAmount);
-            }
+            //if (camera != null && camLerper != null && !camLerper.done)
+            //{
+            //    prevCameraAmount = camLerper.GetValue();
+            //    camLerper.Update(t / totalTime);
+            //    camera.AddToYaw(camLerper.GetValue() - prevCameraAmount);
+            //}
         }
 
         void SetCameraAngle(Vector3 prev, Vector3 curr)
         {
-            prevCameraAmount = 0;
-            totalTime = 0;
-            for(int i = 0; i < path.Count; ++i)
-            {
-                totalTime += path[i].time;
-            }
+            //prevCameraAmount = 0;
+            //totalTime = 0;
+            //for(int i = 0; i < path.Count; ++i)
+            //{
+            //    totalTime += path[i].time;
+            //}
 
             //Camera rotations, checking if the camera needs to be repositioned based on where it is relative to the climb
             float angle = Vector3.SignedAngle(prev, curr, Vector3.up);
@@ -971,10 +970,16 @@ namespace PreServer
                 //angle += (angle * 0.1f);
                 if (Mathf.Abs(a) > 45f)
                 {
-                    if (Mathf.Abs(a) > Mathf.Abs(angle))
-                        camLerper = new FloatLerper(0, a);
-                    else
-                        camLerper = new FloatLerper(0, angle);
+                    //if (Mathf.Abs(a) > Mathf.Abs(angle))
+                    //{
+                        camera.AddCamAdjustment(new CameraAdjustment(new Vector2(0, a), 3f));
+                        //camLerper = new FloatLerper(0, a);
+                    //}
+                    //else
+                    //{
+                    //    camera.AddCamAdjustment(new CameraAdjustment(new Vector2(0, angle), 3f));
+                    //    //camLerper = new FloatLerper(0, angle);
+                    //}
                     //Debug.LogError("Adding angle: " + angle + " angle between camera: " + a);
                 }
             }

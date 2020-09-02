@@ -603,24 +603,24 @@ namespace PreServer
         {
             base.OnFixed(states);
 
-            if (camera != null && Mathf.Abs(cameraAngle) > 0)
-            {
-                float angle = 0;
-                if (Mathf.Abs(cameraAngle) >= 1.5f)
-                {
-                    angle = 1.5f;
-                }
-                else if (Mathf.Abs(cameraAngle) >= 0.75f)
-                {
-                    angle = 0.75f;
-                }
-                else
-                {
-                    angle = Mathf.Abs(cameraAngle);
-                }
-                camera.AddToYaw(angle * (cameraAngle > 0 ? 1 : -1));
-                cameraAngle -= angle * (cameraAngle > 0 ? 1 : -1);
-            }
+            //if (camera != null && Mathf.Abs(cameraAngle) > 0)
+            //{
+            //    float angle = 0;
+            //    if (Mathf.Abs(cameraAngle) >= 1.5f)
+            //    {
+            //        angle = 1.5f;
+            //    }
+            //    else if (Mathf.Abs(cameraAngle) >= 0.75f)
+            //    {
+            //        angle = 0.75f;
+            //    }
+            //    else
+            //    {
+            //        angle = Mathf.Abs(cameraAngle);
+            //    }
+            //    camera.AddToYaw(angle * (cameraAngle > 0 ? 1 : -1));
+            //    cameraAngle -= angle * (cameraAngle > 0 ? 1 : -1);
+            //}
         }
 
         void SetCameraAngle(Vector3 prev, Vector3 curr)
@@ -635,13 +635,24 @@ namespace PreServer
 
                 float a = Vector3.SignedAngle(-cameraForward, curr, Vector3.up);
                 //angle += (angle * 0.1f);
+                CameraAdjustment camState = camera.GetCamAdjustState(states.currentState.name);
+                if (camState != null)
+                    a -= camState.adjustmentValue.y;
                 if(Mathf.Abs(a) > 45f)
                 {
-                    if(Mathf.Abs(a) > Mathf.Abs(angle))
-                        cameraAngle += a;
-                    else
-                        cameraAngle += angle;
-                    //Debug.LogError("Adding angle: " + angle + " angle between camera: " + a);
+                    if (camState != null)
+                        a += camState.adjustmentValue.y;
+                    //if (Mathf.Abs(a) > Mathf.Abs(angle))
+                    //{
+                        camera.AddCamAdjustment(new CameraAdjustment(new Vector2(0, a), 1.5f, states.currentState.name));
+                        //cameraAngle += a;
+                    //}
+                    //else
+                    //{
+                    //    camera.AddCamAdjustment(new CameraAdjustment(new Vector2(0, angle), 1.5f, states.currentState.name));
+                    //    cameraAngle += angle;
+                    //}
+                    ////Debug.LogError("Adding angle: " + angle + " angle between camera: " + a);
                 }
             }
         }

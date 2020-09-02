@@ -97,6 +97,8 @@ namespace PreServer
         }
         bool _onRails = false;
 
+        List<CameraAdjustment> camAdjustments = new List<CameraAdjustment>();
+
         public float GetYaw()
         {
             return yaw;
@@ -128,6 +130,34 @@ namespace PreServer
         public void SetCurrentRotation(Vector3 v)
         {
             currentRotation = v;
+        }
+
+        public void AddCamAdjustment(CameraAdjustment c)
+        {
+            if (c.checkState)
+            {
+                for(int i = 0; i < camAdjustments.Count; ++i)
+                {
+                    if (c.state == camAdjustments[i].state)
+                    {
+                        camAdjustments[i].UpdateValues(c);
+                        return;
+                    }
+                }
+            }
+            camAdjustments.Add(c);
+        }
+
+        public CameraAdjustment GetCamAdjustState(string state)
+        {
+            for (int i = 0; i < camAdjustments.Count; ++i)
+            {
+                if (state == camAdjustments[i].state)
+                {
+                    return camAdjustments[i];
+                }
+            }
+            return null;
         }
 
         private void Start()
@@ -166,6 +196,25 @@ namespace PreServer
             
             if (!onRails)
             {
+                if(camAdjustments.Count > 0)
+                {
+                    if (camAdjustments[0].checkState)
+                    {
+                        if(camAdjustments[0].state != PlayerManager.ptr.currentState.name)
+                            camAdjustments.RemoveAt(0);
+                    }
+                    if (camAdjustments.Count > 0)
+                    {
+                        Vector2 camAdjust = camAdjustments[0].Update(pitch - prevPitch, yaw - prevYaw);
+                        if (camAdjust.x != 0)
+                            AddToPitch(camAdjust.x);
+                        if (camAdjust.y != 0)
+                            AddToYaw(camAdjust.y);
+                        if (camAdjustments[0].Done())
+                            camAdjustments.RemoveAt(0);
+                    }
+                }
+
                 MoveCamera();
             }
             if (Input.GetKeyDown(KeyCode.P))
@@ -251,7 +300,7 @@ namespace PreServer
             Vector3 temp = targetPos;
             targetPos = Vector3.Lerp(transform.position, targetPos, Time.unscaledDeltaTime * camFollowSpeed);
             CompensateForWalls(characterOffset, temp, ref targetPos);
-
+            //CompensateForSides(ref targetPos);
             if (prevPlayerPos != player.position)
             {
                 if(Physics.Raycast(targetPos + (Vector3.up * 0.1f), Vector3.down, 0.2f, 1, QueryTriggerInteraction.Ignore))
@@ -298,6 +347,47 @@ namespace PreServer
             return false;
         }
 
+        bool CompensateForSides(ref Vector3 toTarget)
+        {
+            int count = 0;
+            
+            RaycastHit rightSideHit = new RaycastHit();
+            count += Physics.SphereCast(transform.position, 0.2f, transform.right, out rightSideHit, 0.3f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore) ? 1 : 0;
+
+            
+            RaycastHit leftSideHit = new RaycastHit();
+            count += Physics.SphereCast(transform.position, 0.2f, -transform.right, out leftSideHit, 0.3f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore) ? 2 : 0;
+
+            //1 - right side hit, 2 - left side hit, 3 - both hit
+            switch (count)
+            {
+                case 1:
+                    if(rightSideHit.distance < 0.2f)
+                    {
+                        toTarget += (-transform.right * (0.2f - rightSideHit.distance));
+                    }
+                    return true;
+                case 2:
+                    if (leftSideHit.distance < 0.2f)
+                    {
+                        toTarget += (transform.right * (0.2f - leftSideHit.distance));
+                    }
+                    return true;
+                case 3:
+                    float avg = (leftSideHit.distance + rightSideHit.distance) * 0.5f;
+                    if(leftSideHit.distance > rightSideHit.distance)
+                    {
+                        toTarget += (-transform.right * (avg - rightSideHit.distance));
+                    }
+                    else if(leftSideHit.distance < rightSideHit.distance)
+                    {
+                        toTarget += (transform.right * (avg - leftSideHit.distance));
+                    }
+                    return true;
+            }
+            return false;
+        }
+
         void smoothPosition(Vector3 fromPos, ref Vector3 toPos)
         {
             toPos = Vector3.SmoothDamp(fromPos, toPos, ref velocityCamSmooth, camSmoothDampTime);
@@ -332,5 +422,87 @@ namespace PreServer
         {
 
         }
+    }
+}
+[System.Serializable]
+public class CameraAdjustment
+{
+    bool done = false;
+    public Vector2 adjustmentValue;//x = pitch, y = yaw
+    public float speed;
+    Vector2 amount;
+    public string state;
+    public bool checkState;
+    public CameraAdjustment(Vector2 adjVal, float s, string st = "")
+    {
+        adjustmentValue = adjVal;
+        speed = s;
+        state = st;
+        checkState = st.Length > 0;
+        amount = Vector2.zero;
+    }
+
+    public void UpdateValues(CameraAdjustment c)
+    {
+        adjustmentValue.x = c.adjustmentValue.x;
+        adjustmentValue.y = c.adjustmentValue.y;
+        speed = c.speed;
+    }
+
+    public Vector2 Update(float pitch, float yaw)
+    {
+        amount = Vector2.zero;
+
+        if(Mathf.Abs(adjustmentValue.x) - pitch > 0)
+            adjustmentValue.x -= pitch;
+        else
+            adjustmentValue.x = 0;
+
+        if (Mathf.Abs(adjustmentValue.y) - yaw > 0)
+            adjustmentValue.y -= yaw;
+        else
+            adjustmentValue.y = 0;
+
+        if (Mathf.Abs(adjustmentValue.x) >= speed)
+        {
+            amount.x = speed;
+        }
+        else if (Mathf.Abs(adjustmentValue.x) >= speed * 0.5f)
+        {
+            amount.x = speed * 0.5f;
+        }
+        else
+        {
+            amount.x = Mathf.Abs(adjustmentValue.x);
+        }
+
+        if (Mathf.Abs(adjustmentValue.y) >= speed)
+        {
+            amount.y = speed;
+        }
+        else if (Mathf.Abs(adjustmentValue.y) >= speed * 0.5f)
+        {
+            amount.y = speed * 0.5f;
+        }
+        else
+        {
+            amount.y = Mathf.Abs(adjustmentValue.y);
+        }
+        amount.x *= Mathf.Sign(adjustmentValue.x);
+        amount.y *= Mathf.Sign(adjustmentValue.y);
+        adjustmentValue.x -= amount.x;
+        adjustmentValue.y -= amount.y;
+        //Debug.Log(adjustmentValue);
+        if (adjustmentValue == Vector2.zero)
+        {
+            done = true;
+        }
+        return amount;
+    }
+
+
+    public bool Done()
+    {
+        return done;
     }
 }
