@@ -22,7 +22,7 @@ namespace PreServer
         //public StateManagerVariable playerStates;
         public PlayerManagerVariable playerStates;
         public ActionBatch inputUpdateBatch;
-
+        bool dashButtonPressed = false;
         public override void Execute()
         {
             inputUpdateBatch.Execute();
@@ -53,7 +53,14 @@ namespace PreServer
                     playerStates.value.isRun = false;
 
                 if (!playerStates.value.dashActive && playerStates.value.CanDash())
-                    playerStates.value.dashActive = (dash.value || dashAxis.value > 0);
+                {
+                    playerStates.value.dashActive = (dash.value || dashAxis.value > 0) && !dashButtonPressed;
+                }
+
+                if (dash.value || dashAxis.value > 0)
+                    dashButtonPressed = true;
+                else
+                    dashButtonPressed = false;
 
                 if (!playerStates.value.newDashActive && playerStates.value.CanNewDash())
                     playerStates.value.newDashActive = newDash.value;

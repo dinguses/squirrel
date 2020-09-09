@@ -173,8 +173,8 @@ namespace PreServer
                 Move(states);
                 CheckRaycast(states);
             }
-            if (Input.GetKeyDown(KeyCode.O))
-                rotateBasedOnCamera = !rotateBasedOnCamera;
+            //if (Input.GetKeyDown(KeyCode.O))
+            //    rotateBasedOnCamera = !rotateBasedOnCamera;
             Debug.DrawRay(states.climbHit.point, states.climbHit.normal * 3f, Color.black);
         }
 
@@ -418,7 +418,7 @@ namespace PreServer
             }
         }
         Quaternion prevRotation;
-        bool rotateBasedOnCamera = false;
+        //bool rotateBasedOnCamera = false;
         void Rotate(StateManager sm)
         {
             if (cameraTransform.value == null)
@@ -436,22 +436,26 @@ namespace PreServer
             camRight.y = 0;
             camRight.Normalize();
 
-            float rotateAngle = -Vector3.Angle(climbUp, camForward);
-            rotateAngle = (Vector3.Angle(climbRight, camForward) > 90f) ? 360f - rotateAngle : rotateAngle;
+            //float rotateAngle = -Vector3.Angle(climbUp, camForward);
+            //rotateAngle = (Vector3.Angle(climbRight, camForward) > 90f) ? 360f - rotateAngle : rotateAngle;
 
             //rotating climb up and climb right based on camera's position
             Vector3 climbForwardAlt = climbForward;
             Vector3 climbRightAlt = climbRight;
 
-            if (rotateBasedOnCamera)
-            {
-                climbForwardAlt = (Quaternion.AngleAxis(rotateAngle, climbUp) * -climbForward);
-                climbRightAlt = (Quaternion.AngleAxis(rotateAngle, climbUp) * -climbRight);
-                if(climbForwardAlt == Vector3.zero)
-                    climbForwardAlt = climbForward;
-                if (climbRightAlt == Vector3.zero)
-                    climbRightAlt = climbRight;
-            }
+            //float sAngle = Vector3.SignedAngle(climbRight, camForward, Vector3.up);
+            //climbRightAlt = (sAngle <= 45f || sAngle >= 135f) ? climbRight : - climbRight;
+            //Debug.Log("ANGLE: " + Vector3.Angle(climbRight, camForward) + " || SIGNED ANGLE: " + Vector3.SignedAngle(climbRight, camForward, Vector3.up));
+            
+            //if (rotateBasedOnCamera)
+            //{
+            //    climbForwardAlt = (Quaternion.AngleAxis(rotateAngle, climbUp) * -climbForward);
+            //    climbRightAlt = (Quaternion.AngleAxis(rotateAngle, climbUp) * -climbRight);
+            //    if(climbForwardAlt == Vector3.zero)
+            //        climbForwardAlt = climbForward;
+            //    if (climbRightAlt == Vector3.zero)
+            //        climbRightAlt = climbRight;
+            //}
 
             Debug.DrawRay(states.mTransform.position, climbForwardAlt * 5f, Color.magenta);
             Debug.DrawRay(states.mTransform.position, climbRightAlt * 5f, Color.cyan);

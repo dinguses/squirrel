@@ -148,10 +148,10 @@ namespace PreServer
                     pos = GetPoint(player.transform.position, player.climbHit.point, player.climbHit.point - (dir * distance));
                     player.transform.position = pos;
                 }
-                CalculatePathClimb(distance, player.climbHit.transform == null ? (player.transform.up.normalized * 0.25f) : (player.climbHit.normal.normalized * 0.25f), dir, pos, totalTime, states.transform.rotation);
+                CalculatePathClimb(distance, player.climbHit.transform == null ? (player.transform.up.normalized * 0.45f) : (player.climbHit.normal.normalized * 0.45f), dir, pos, totalTime, states.transform.rotation);
             }
             else
-                CalculatePath(distance, (player.transform.up * 0.25f), dir, pos, totalTime, states.transform.rotation);
+                CalculatePath(distance, (player.transform.up * 0.45f), dir, pos, totalTime, states.transform.rotation);
 
             if (fullDistanceUsed)
             {
@@ -165,7 +165,11 @@ namespace PreServer
                 distanceFactor += Vector3.Distance(path[i].lerper.startVal, path[i].lerper.endVal);
             }
             distanceFactor /= distance;
-            
+            //if (path.Count > 0)
+            //{
+            //    ((PlayerManager)states).path = path;
+            //    ((PlayerManager)states).drawPath = true;
+            //}
         }
 
         /// <summary>
@@ -185,13 +189,16 @@ namespace PreServer
             path[path.Count - 1].slerper = new QuaternionSlerper(startRot, Quaternion.FromToRotation(player.transform.up, up.normalized) * player.transform.rotation);
             path[path.Count - 1].up = up.normalized;
             //Check if the path will hit any object including triggers
-            if (Physics.Raycast(start + up, dir, out triggerInfo, remainingDistance, Layers.ignoreLayersController, QueryTriggerInteraction.Collide))
+            //CHANGED TO SPHERECAST
+            //IMPORTANT NOTE, ONLY CHECKING MIDDLE AND NOT BOTTOM, BOTTOM OF SQUIRREL IS WHAT MATTERS
+            if (Physics.SphereCast(start + up, 0.375f, dir, out triggerInfo, remainingDistance, Layers.ignoreLayersController, QueryTriggerInteraction.Collide))
             {
+                ConvertHitInfo(ref triggerInfo, start + up, dir, up.normalized);
                 //Debug.LogError(/*Time.frameCount + */"Smart Lag Dash, triggerInfo.transform.tag: " + triggerInfo.transform.tag);
                 //Trigger is hit, check if it is a grind
                 if (triggerInfo.transform.tag == "Grind")
                 {
-                    target = triggerInfo.point - up;
+                    target = triggerInfo.point - (up.normalized * 0.375f);
                     path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
                     remainingDistance = 0;
                     remainingTime = 0;
@@ -201,14 +208,17 @@ namespace PreServer
                     RaycastHit hitInfo = new RaycastHit();
                     //If a grind has not been hit, then check again ignoring triggers this time
                     //Check if a wall is hit on the path, if it is then modify the distance and time based on the wall hit
-                    if (Physics.Raycast(start + up, dir, out hitInfo, remainingDistance, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+                    //CHANGED TO SPHERECAST
+                    if (Physics.SphereCast(start + up, 0.375f, dir, out hitInfo, remainingDistance, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                     {
+                        ConvertHitInfo(ref hitInfo, start + up, dir, up.normalized);
                         float angle = Vector3.Angle(hitInfo.normal, Vector3.up);
+                        //Debug.Log(angle);
                         //if the player hit either a surface that it cannot traverse, a climb, or is in the air
-                        if (angle >= 90 || hitInfo.transform.tag == "Climb" || !player.isGrounded)
+                        if (angle >= 46 || hitInfo.transform.tag == "Climb" || !player.isGrounded)
                         {
                             //move the target point back the length of the squirrel and end the dash
-                            target = hitInfo.point - (dir * 2f) - up;
+                            target = hitInfo.point - (dir * 2f) - (up.normalized * 0.375f);
                             path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
                             remainingDistance = 0;
                             remainingTime = 0;
@@ -216,10 +226,10 @@ namespace PreServer
                         else
                         {
                             //end the current path at the hit point and set up the information for the new path
-                            target = hitInfo.point - up; //might subtract dir * (length of squirrel) later
+                            target = hitInfo.point - (up.normalized * 0.375f); //might subtract dir * (length of squirrel) later
                             path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
 
-                            up = hitInfo.normal * 0.25f;
+                            up = hitInfo.normal * 0.45f;
                             dir = (Quaternion.FromToRotation(player.transform.up, hitInfo.normal) * player.transform.rotation) * Vector3.forward.normalized;
 
                             //subtract the distance and time from the respective remainings
@@ -267,6 +277,21 @@ namespace PreServer
             }
         }
 
+        void ConvertHitInfo(ref RaycastHit hit, Vector3 start, Vector3 dir, Vector3 up)
+        {
+            RaycastHit secondHit = new RaycastHit();
+            if(Physics.Linecast(start, hit.point + dir * 0.1f - up * 0.025f, out secondHit, Layers.ignoreLayersController, QueryTriggerInteraction.Collide))
+            {
+                hit.normal = secondHit.normal;
+                //Debug.LogError("Changing normals");
+            }
+            //Debug.DrawRay(hit.point, hit.normal * 5f, Color.green, 5f);
+            Vector3 hitDir = hit.point - start;
+            dir = Vector3.Project(hitDir, dir);
+            hit.point = start + dir;
+            //Debug.DrawRay(hit.point, hit.normal * 5f, Color.cyan, 5f);
+        }
+
         /// <summary>
         /// Recursive function used to generate a path based on distance
         /// </summary>
@@ -287,13 +312,17 @@ namespace PreServer
             Vector3 target = Vector3.zero;
             Vector3 tempPos = start;
             RaycastHit underInfo = CheckUnder(remainingDistance, start, up, dir, out tempPos);
-            if (Physics.Raycast(start + up, dir, out triggerInfo, remainingDistance, Layers.ignoreLayersController, QueryTriggerInteraction.Collide))
+            if (Physics.SphereCast(start + up, 0.375f, dir, out triggerInfo, remainingDistance, Layers.ignoreLayersController, QueryTriggerInteraction.Collide))
             {
+                ConvertHitInfo(ref triggerInfo, start + up, dir, up.normalized);
                 if(underInfo.transform != null)
                 {
                     //Under has been hit, figure out which one is closer
-                    if (Vector3.Distance(start, GetPoint(underInfo.point, start, tempPos - up)) < triggerInfo.distance)
+                    if (Vector3.Distance(start, GetPoint(underInfo.point, start, tempPos - (up.normalized * 0.25f))) < triggerInfo.distance)
                     {
+                        //Debug.LogError("CLIMB HIT CLOSER || CLIMB HIT: " + Vector3.Distance(start, GetPoint(underInfo.point, start, tempPos - (up.normalized * 0.25f))) + " || TRIGGER HIT: " + triggerInfo.distance);
+                        //Debug.DrawRay(tempPos - (up.normalized * 0.25f), underInfo.normal, Color.yellow,50);
+                        //Debug.DrawRay(triggerInfo.point, triggerInfo.normal, Color.red, 50);
                         CheckClimbHit(underInfo, start, tempPos, ref target, ref dir, ref up, ref remainingTime, ref remainingDistance);
                     }
                     else
@@ -316,7 +345,7 @@ namespace PreServer
                 {
                     //If a wall isn't hit, then use up the rest of the distance because ain't nothing gonna stop us baby!!!!
                     //path[path.Count - 1].time = Mathf.Abs(remainingTime);
-                    target = tempPos - up - dir;//start + dir * Mathf.Abs(remainingDistance);
+                    target = tempPos - (up.normalized * 0.25f) - dir;//start + dir * Mathf.Abs(remainingDistance);
                     path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
                     if (Vector3.Distance(start, target) >= remainingDistance)
                         fullDistanceUsed = true;
@@ -349,7 +378,7 @@ namespace PreServer
         {
             if (triggerInfo.transform.tag == "Grind")
             {
-                target = triggerInfo.point - up;
+                target = triggerInfo.point - (up.normalized * 0.375f);
                 path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
                 remainingDistance = 0;
                 remainingTime = 0;
@@ -360,14 +389,15 @@ namespace PreServer
                 RaycastHit hitInfo = new RaycastHit();
                 //If a grind has not been hit, then check again ignoring triggers this time
                 //Check if a wall is hit on the path, if it is then modify the distance and time based on the wall hit
-                if (Physics.Raycast(start + up, dir, out hitInfo, remainingDistance, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+                if (Physics.SphereCast(start + up, 0.375f, dir, out hitInfo, remainingDistance, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                 {
+                    ConvertHitInfo(ref hitInfo, start + up, dir, up.normalized);
                     float angle = Vector3.Angle(up, hitInfo.normal);
                     //if the player hit either a surface that it cannot traverse, a climb, or is in the air
-                    if (angle >= 90 || hitInfo.transform.tag != "Climb")
+                    if (angle >= 90 && hitInfo.transform.tag != "Climb" || hitInfo.transform.tag != "Climb")
                     {
                         //move the target point back the length of the squirrel and end the dash
-                        target = hitInfo.point - (dir * 2f) - up;
+                        target = hitInfo.point - (dir * 2f) - (up.normalized * 0.375f);
                         path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
                         remainingDistance = 0;
                         remainingTime = 0;
@@ -376,10 +406,10 @@ namespace PreServer
                     else
                     {
                         //end the current path at the hit point and set up the information for the new path
-                        target = hitInfo.point - up; //might subtract dir * (length of squirrel) later
+                        target = hitInfo.point - (up.normalized * 0.375f); //might subtract dir * (length of squirrel) later
                         path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
 
-                        up = hitInfo.normal * 0.25f;
+                        up = hitInfo.normal * 0.45f;
                         dir = (Quaternion.FromToRotation(player.transform.up, hitInfo.normal) * player.transform.rotation) * Vector3.forward.normalized;
 
                         //subtract the distance and time from the respective remainings
@@ -394,7 +424,7 @@ namespace PreServer
                     {
                         //If a wall isn't hit, then use up the rest of the distance because ain't nothing gonna stop us baby!!!!
                         //path[path.Count - 1].time = Mathf.Abs(remainingTime);
-                        target = tempPos - up - (dir * 1.75f);//start + dir * Mathf.Abs(remainingDistance);
+                        target = tempPos - (up.normalized * 0.25f) - (dir * 1.75f);//start + dir * Mathf.Abs(remainingDistance);
                         path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
                         remainingDistance = 0;
                         remainingTime = 0;
@@ -449,7 +479,7 @@ namespace PreServer
         {
             //Nothing in that direction will hit us now check if there is anything underneath
             float tempRemaining = distance;
-            temp = start + up;
+            temp = start + (up.normalized * 0.25f);
             RaycastHit underInfo = new RaycastHit();
             //Vector3 newDir = /*(-dir * 0.15f)*/ - up;
             while (tempRemaining > 0)
@@ -476,7 +506,7 @@ namespace PreServer
                 }
                 else
                 {
-                    if(Physics.Raycast(temp - up * 2f, -dir, out underInfo, 0.15f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+                    if(Physics.Raycast(temp - (up.normalized * 0.25f) * 2f, -dir, out underInfo, 0.15f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                     {
                         if (underInfo.normal.normalized != up.normalized || underInfo.transform.tag != "Climb")
                         {
@@ -552,7 +582,8 @@ namespace PreServer
             do
             {
                 dir = path[path.Count - 1].lerper.endVal - path[path.Count - 1].lerper.startVal;
-                safe = !Physics.Raycast(path[path.Count - 1].lerper.endVal + (path[path.Count - 1].up * 0.25f), dir, out hit, 2f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore);
+                //CHANGED TO SPHERECAST
+                safe = !Physics.SphereCast(path[path.Count - 1].lerper.endVal + (path[path.Count - 1].up * 0.45f), 0.375f, dir, out hit, 2f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore);
                 if (!safe)
                 {
                     dist = Vector3.Distance(path[path.Count - 1].lerper.endVal, path[path.Count - 1].lerper.startVal);
@@ -712,7 +743,7 @@ namespace PreServer
         {
             for(int i = 0; i < path.Count; ++i)
             {
-                Debug.DrawLine(path[i].lerper.startVal, path[i].lerper.endVal, Color.black);
+                Debug.DrawLine(path[i].lerper.startVal/* + (path[i].up * 0.45f)*/, path[i].lerper.endVal/* + (path[i].up * 0.45f)*/, Color.black);
             }
         }
 
@@ -779,19 +810,28 @@ namespace PreServer
 
         void RotateBasedOnGround(StateManager states)
         {
-            Vector3 center = states.transform.position;
-            center += states.transform.forward + (states.transform.up * 0.2f);
-
-            // Dir represents the downward direction
-            Vector3 dir = -states.transform.up * 0.5f;
-
-            // Draw the rays
-            //Debug.DrawRay(center, dir * 5f, Color.red);
-            RaycastHit hit = new RaycastHit();
-            if (Physics.Raycast(center, dir, out hit, 5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            if(player.climbState == PlayerManager.ClimbState.CLIMBING)
             {
-                states.transform.rotation = Quaternion.Slerp(states.transform.rotation, Quaternion.FromToRotation(states.transform.up, hit.normal) * states.transform.rotation, Time.unscaledDeltaTime * rotationSpeed);
+                Vector3 center = states.transform.position;
+                center += states.transform.forward + (states.transform.up * 0.2f);
+
+                // Dir represents the downward direction
+                Vector3 dir = -states.transform.up * 0.5f;
+
+                // Draw the rays
+                //Debug.DrawRay(center, dir * 5f, Color.red);
+                RaycastHit hit = new RaycastHit();
+                if (Physics.Raycast(center, dir, out hit, 5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+                {
+                    states.transform.rotation = Quaternion.Slerp(states.transform.rotation, Quaternion.FromToRotation(states.transform.up, hit.normal) * states.transform.rotation, Time.unscaledDeltaTime * rotationSpeed);
+                }
             }
+            else
+            {
+                Vector3 rotationNormal = ((PlayerManager)states).GetRotationNormal();
+                states.transform.rotation = Quaternion.Slerp(states.transform.rotation, Quaternion.FromToRotation(states.transform.up, rotationNormal) * states.transform.rotation, Time.unscaledDeltaTime * rotationSpeed);
+            }
+
         }
 
         void GetGhostTime()
@@ -995,25 +1035,28 @@ namespace PreServer
         }
         public override void OnExit(StateManager states)
         {
-            int pathsCompleted = 0;
-            for (int i = 0; i < path.Count; ++i)
-            {
-                pathsCompleted += path[i].lerper.done ? 1 : 0;
-            }
-            Debug.Log("Completed " + pathsCompleted + " path(s) in " + t + " seconds, total time: " + totalTime + " slowMoTimer: " + slowMoTimer);
+            //int pathsCompleted = 0;
+            //for (int i = 0; i < path.Count; ++i)
+            //{
+            //    pathsCompleted += path[i].lerper.done ? 1 : 0;
+            //}
+            //Debug.Log("Completed " + pathsCompleted + " path(s) in " + t + " seconds, total time: " + totalTime + " slowMoTimer: " + slowMoTimer);
             player.anim.SetBool(player.hashes.isDashing, false);
             base.OnExit(states);
-            while (path.Count > 0)
-                path.RemoveAt(0);
+
             pathIndex = 0;
             player.lagDashCooldown = 1.0f;
             if (player.climbState == PlayerManager.ClimbState.NONE)
             {
-                player.rigid.velocity = states.transform.forward * endMomentum;
+                Vector3 additionalMomentum = (path[path.Count - 1].lerper.endVal - path[path.Count - 1].lerper.startVal).normalized * endMomentum;
+                //additionalMomentum.y *= 0.5f;
+                player.rigid.velocity = additionalMomentum;
                 player.rigid.useGravity = true;
             }
             if (player.isGrounded || player.climbState != PlayerManager.ClimbState.NONE)
                 player.pauseSpeedHackTimer = false;
+            while (path.Count > 0)
+                path.RemoveAt(0);
         }
     }
 
