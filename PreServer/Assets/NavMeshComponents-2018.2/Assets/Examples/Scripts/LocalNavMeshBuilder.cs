@@ -1,7 +1,7 @@
-using UnityEngine;
-using UnityEngine.AI;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.AI;
 using NavMeshBuilder = UnityEngine.AI.NavMeshBuilder;
 
 // Build and update a localized navmesh from the sources marked by NavMeshSourceTag

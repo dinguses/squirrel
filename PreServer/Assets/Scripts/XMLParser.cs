@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Xml;
+﻿using System;
 using System.Collections.Generic;
-using System;
+using System.Xml;
+using UnityEngine;
 
 namespace PreServer
 {
@@ -24,7 +23,7 @@ namespace PreServer
             npcActions = new List<NPCAction>();
             npcUsernames = new List<NPCUsername>();
 
-            actionsTextAsset = (TextAsset) Resources.Load("npcActionsNew");
+            actionsTextAsset = (TextAsset)Resources.Load("npcActionsTestWrite");
             usernamesTextAsset = (TextAsset)Resources.Load("npcUsernames");
 
             if (!System.IO.File.Exists(Application.persistentDataPath + "/npcActions.xml") || resetXML)
@@ -43,14 +42,14 @@ namespace PreServer
 
         public void UpdateAction(int actionId)
         {
-            XmlNode actionNode = actionsDoc.SelectSingleNode("//action[@id='"+actionId+"']/@gen");
+            XmlNode actionNode = actionsDoc.SelectSingleNode("//action[@id='" + actionId + "']/@gen");
             actionNode.Value = "1";
             actionsDoc.Save(Application.persistentDataPath + "/npcActions.xml");
         }
 
         public void UpdateUsername(string userName)
         {
-            XmlNode usernameNode = usernameDoc.SelectSingleNode("//un[@name='"+userName+"']/@gen");
+            XmlNode usernameNode = usernameDoc.SelectSingleNode("//un[@name='" + userName + "']/@gen");
             usernameNode.Value = "1";
             usernameDoc.Save(Application.persistentDataPath + "/npcUsernames.xml");
         }
@@ -114,7 +113,7 @@ namespace PreServer
 
                 foreach (XmlElement stepsNode in node.SelectNodes("steps/step"))
                 {
-                    switch(stepsNode.GetAttribute("type"))
+                    switch (stepsNode.GetAttribute("type"))
                     {
                         case "move":
                             MoveStep moveStep = new MoveStep();

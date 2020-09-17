@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using SO;
 using UnityEngine;
-using SO;
 namespace PreServer
 {
     /// <summary>
@@ -38,7 +36,7 @@ namespace PreServer
             states = (PlayerManager)sm;
 
             base.OnEnter(states);
-            if(camera == null)
+            if (camera == null)
             {
                 camera = Camera.main.transform.parent.GetComponent<CameraManager>();
             }
@@ -59,7 +57,7 @@ namespace PreServer
             cameraAngle = 0;
             prevNormal = states.climbHit.normal;
         }
-        
+
         void SafeClimb()
         {
             originalDirection = targetRot * Vector3.forward.normalized;
@@ -210,7 +208,10 @@ namespace PreServer
 
                     transitioning = true;
                     lagDashCooldown = states.lagDashCooldown;
-                    transferSpeedMult = 2f;
+
+                    // 9/2/20: Acute corner transfer best value - 1.15f
+                    // Animation speed - .75f
+                    transferSpeedMult = 1.15f;
                     states.anim.CrossFade(states.hashes.squ_climb_corner_acute, 0.2f);
                     SafeClimb();
                     return;
@@ -253,13 +254,13 @@ namespace PreServer
                 underHit = true;
                 float angle = Vector3.Angle(under.normal, Vector3.up);
                 //If I hit another climb, check if I should transfer to it
-                if(under.transform.tag == "Climb")
+                if (under.transform.tag == "Climb")
                 {
                     angle = Vector3.Angle(under.normal, states.climbHit.normal);
                     prevNormal = states.climbHit.normal;
                     states.climbHit = under;
                     //if(Mathf.Abs(angle - prevAngle) >= minTransferAngle)
-                        //Debug.Log(Mathf.Abs(angle - prevAngle));
+                    //Debug.Log(Mathf.Abs(angle - prevAngle));
                     //if the angle between the new climb and the current one is greater than the transfer amount, then transfer to it
                     if (Mathf.Abs(angle - prevAngle) >= minTransferAngle)
                     {
@@ -423,8 +424,8 @@ namespace PreServer
         {
             if (cameraTransform.value == null)
                 return;
-           //keep track fo previous rotation in case we need to revert back to it, in the the case of detecting an unclimbable surface
-            prevRotation = states.mTransform.rotation; 
+            //keep track fo previous rotation in case we need to revert back to it, in the the case of detecting an unclimbable surface
+            prevRotation = states.mTransform.rotation;
             float h = states.movementVariables.horizontal;
             float v = states.movementVariables.vertical;
 
@@ -447,7 +448,7 @@ namespace PreServer
             {
                 climbForwardAlt = (Quaternion.AngleAxis(rotateAngle, climbUp) * -climbForward);
                 climbRightAlt = (Quaternion.AngleAxis(rotateAngle, climbUp) * -climbRight);
-                if(climbForwardAlt == Vector3.zero)
+                if (climbForwardAlt == Vector3.zero)
                     climbForwardAlt = climbForward;
                 if (climbRightAlt == Vector3.zero)
                     climbRightAlt = climbRight;
@@ -509,7 +510,7 @@ namespace PreServer
             testOrigin.y += .5f;
             //Debug.DrawRay(origin2, -Vector3.up, Color.red);
             Vector3 targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * climbSpeed * states.climbSpeedMult;
-            if(!ignoreGravity)
+            if (!ignoreGravity)
                 targetVelocity -= climbUp.normalized * targetVelocity.magnitude * 0.5f;
             //if (transitioning)
             //    targetVelocity = Quaternion.Inverse(targetRot) * targetVelocity;
@@ -558,7 +559,7 @@ namespace PreServer
                         targetRotation = targetRot;
                     states.mTransform.rotation = targetRotation;
                 }
-                    //Debug.Log(Time.frameCount + " || still rotating: " + inRot);
+                //Debug.Log(Time.frameCount + " || still rotating: " + inRot);
             }
 
             if (!inPos)
@@ -635,9 +636,9 @@ namespace PreServer
 
                 float a = Vector3.SignedAngle(-cameraForward, curr, Vector3.up);
                 //angle += (angle * 0.1f);
-                if(Mathf.Abs(a) > 45f)
+                if (Mathf.Abs(a) > 45f)
                 {
-                    if(Mathf.Abs(a) > Mathf.Abs(angle))
+                    if (Mathf.Abs(a) > Mathf.Abs(angle))
                         cameraAngle += a;
                     else
                         cameraAngle += angle;
@@ -648,7 +649,7 @@ namespace PreServer
 
         void LogCameraAngle()
         {
-            if(camera != null)
+            if (camera != null)
             {
                 Vector3 cameraForward = camera.transform.forward;
                 cameraForward.y = 0;
@@ -667,7 +668,7 @@ namespace PreServer
         public override void OnExit(StateManager sm)
         {
             base.OnExit(states);
-            if(states.lagDashCooldown > 1f)
+            if (states.lagDashCooldown > 1f)
                 states.lagDashCooldown = lagDashCooldown;
 
             //states.rigid.velocity = Vector3.zero;

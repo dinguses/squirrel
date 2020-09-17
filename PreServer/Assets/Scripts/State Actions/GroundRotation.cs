@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using SO;
 using UnityEngine;
-using SO;
 
 namespace PreServer
 {
@@ -58,9 +56,9 @@ namespace PreServer
             var testAngleSide = Vector3.Angle(targetDir2, states.mTransform.right);
 
             // Rotate 180 - disabled to test rotation
-            
+
             // COME BACK - Disabled ground 180s to see how it feels without them
-            if (states.ground180Enabled)
+            /*if (states.ground180Enabled)
             {
                 if (testAngle > 160 && testAngle < 200)
                 {
@@ -87,7 +85,7 @@ namespace PreServer
                     //states.storedTargetDir = targetDir;
                     states.storedTargetDir = targetDir3;
                 }
-            }
+            }*/
 
             //float direction = 0;
             //float speedOut = 0;

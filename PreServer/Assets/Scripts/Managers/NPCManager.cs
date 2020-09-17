@@ -1,8 +1,8 @@
-﻿using UnityEngine;
+﻿using SO;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using SO;
+using UnityEngine;
 using UnityEngine.AI;
 
 namespace PreServer

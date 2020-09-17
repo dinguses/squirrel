@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace PreServer
 {
@@ -23,8 +21,8 @@ namespace PreServer
             Vector3 frontOrigin = states.mTransform.position;
             Vector3 backOrigin = states.mTransform.position;
 
-            middleOrigin+= states.mTransform.forward;
-            frontOrigin+= states.mTransform.forward + states.mTransform.forward / 2;
+            middleOrigin += states.mTransform.forward;
+            frontOrigin += states.mTransform.forward + states.mTransform.forward / 2;
             //backOrigin += states.mTransform.forward / 2;
 
             // Origins should be coming from inside of player
@@ -65,51 +63,51 @@ namespace PreServer
             // If player is already grounded, check if they should remain
             //if (states.isGrounded)
             //{
-                float angle = 0;
-                if (Physics.SphereCast(middleOrigin, 0.3f, dir, out middleHit, dis, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
-                {
-                    states.middleNormal = middleHit.normal;
-                    //states.middle = middleHit.transform.gameObject;
-                    angle = Vector3.Angle(middleHit.normal, Vector3.up);
-                    if (angle >= 70)
-                        states.middle = null;
-                    else
-                        states.middle = middleHit.transform.gameObject;
-            }
-                else
-                {
+            float angle = 0;
+            if (Physics.SphereCast(middleOrigin, 0.3f, dir, out middleHit, dis, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                states.middleNormal = middleHit.normal;
+                //states.middle = middleHit.transform.gameObject;
+                angle = Vector3.Angle(middleHit.normal, Vector3.up);
+                if (angle >= 70)
                     states.middle = null;
-                }
-
-                if (Physics.Raycast(frontOrigin, dir, out frontHit, dis + 0.3f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
-                {
-                    states.frontNormal = frontHit.normal;
-                    //states.front = frontHit.transform.gameObject;
-                    angle = Vector3.Angle(frontHit.normal, Vector3.up);
-                    if (angle >= 70)
-                        states.front = null;
-                    else
-                        states.front = frontHit.transform.gameObject;
-                }
                 else
-                {
+                    states.middle = middleHit.transform.gameObject;
+            }
+            else
+            {
+                states.middle = null;
+            }
+
+            if (Physics.Raycast(frontOrigin, dir, out frontHit, dis + 0.3f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                states.frontNormal = frontHit.normal;
+                //states.front = frontHit.transform.gameObject;
+                angle = Vector3.Angle(frontHit.normal, Vector3.up);
+                if (angle >= 70)
                     states.front = null;
-                }
-
-                if (Physics.SphereCast(backOrigin, 0.3f, dir, out backHit, dis, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
-                {
-                    states.backNormal = backHit.normal;
-                    //states.back = backHit.transform.gameObject;
-                    angle = Vector3.Angle(backHit.normal, Vector3.up);
-                    if (angle >= 70)
-                        states.back = null;
-                    else
-                        states.back = backHit.transform.gameObject;
-                }
                 else
-                {
+                    states.front = frontHit.transform.gameObject;
+            }
+            else
+            {
+                states.front = null;
+            }
+
+            if (Physics.SphereCast(backOrigin, 0.3f, dir, out backHit, dis, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                states.backNormal = backHit.normal;
+                //states.back = backHit.transform.gameObject;
+                angle = Vector3.Angle(backHit.normal, Vector3.up);
+                if (angle >= 70)
                     states.back = null;
-                }
+                else
+                    states.back = backHit.transform.gameObject;
+            }
+            else
+            {
+                states.back = null;
+            }
             //}
 
             //// If player is not grounded, see if they should be

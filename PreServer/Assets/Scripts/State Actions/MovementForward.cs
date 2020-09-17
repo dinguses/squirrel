@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace PreServer
 {
@@ -171,10 +169,10 @@ namespace PreServer
                     positive = true;
                 //Debug.Log(states.mTransform.forward.z);
 
-               /*if (positive)
-                    test.z += .2f;
-                else
-                    test.z -= -.2f;*/
+                /*if (positive)
+                     test.z += .2f;
+                 else
+                     test.z -= -.2f;*/
                 test.y = test.y + .25f;
                 states.rigid.position = Vector3.Lerp(states.rigid.position, test + (states.mTransform.forward / 4), states.delta * 10);
                 //states.rigid.velocity = new Vector3(states.rigid.velocity.x, 0, states.rigid.velocity.z);
@@ -215,7 +213,7 @@ namespace PreServer
             //    targetVelocity = targetVelocity * 5;
             //}
 
-            
+
             states.targetVelocity = targetVelocity;
             states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity + states.slideMomentum, states.delta * movementTime);
             //Debug.Log(states.rigid.velocity);

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 namespace PreServer
 {
     /// <summary>
@@ -33,7 +31,7 @@ namespace PreServer
             states = (PlayerManager)sm;
 
             states.climbState = PlayerManager.ClimbState.NONE;
-            if(states.isRun)
+            if (states.isRun)
                 states.pauseSpeedHackTimer = true;
             states.rigid.drag = 0;
             states.isSliding = false;
@@ -66,7 +64,7 @@ namespace PreServer
         {
             if (!states.isRun)
                 states.speedHackRecover = 0.1f;
-            if(!states.dashActive)
+            if (!states.dashActive)
                 states.pauseSpeedHackTimer = false;
         }
     }

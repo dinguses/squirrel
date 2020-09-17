@@ -99,6 +99,7 @@ namespace PreServer
         //public BoxCollider grindCenter;
         public bool inJoint = false;
         public float grindTimer = 0.25f;
+        public bool comingBackFrom180;
 
         public bool rotateBool = false;
         public SkinnedMeshRenderer playerMesh;
@@ -989,9 +990,9 @@ namespace PreServer
             }*/
 
             // Start a grind if you've entered a grind zone and were not already in one
-            if (other.tag == "Grind" && !inGrindZone && grindTimer >= 0.25f && currentState.name != "WaitForAnimation")
+            if (other.tag == "Grind" && !inGrindZone && grindTimer >= 0.15f && currentState.name != "WaitForAnimation")
             {
-                Debug.Log("entered grind collider?");
+                Debug.Log(Time.frameCount + " - entered grind collider?");
 
                 inGrindZone = true;
 
@@ -1036,6 +1037,11 @@ namespace PreServer
                 inGrindZone = false;
                 doneAdjustingGrind = false;
             }*/
+
+            if (other.tag == "Grind" && currentState.name != "Grinding" && currentState.name != "WaitForAnimation")
+            {
+                inGrindZone = false;
+            }
 
             if (other.tag == "joint")
             {
@@ -1151,6 +1157,11 @@ namespace PreServer
         /// </summary>
         public void NextPoint()
         {
+            if (facingPointPair.Key == 0 || facingPointPair.Key == (grindPoints.Count - 1))
+            {
+                return;
+            }
+
             Debug.Log("Next Point");
 
             // If the grind has more than 1 segment, move to next (or previous) point

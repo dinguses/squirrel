@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace PreServer
 {
@@ -12,7 +10,7 @@ namespace PreServer
         {
             if (states.currentState.name == "Grinding" && (other.name == "GrindColliderFront" || other.name == "GrindCollider"))
             {
-                Debug.Log("Entered end");
+                Debug.Log(Time.frameCount + " - Entered end");
                 //states.NextPoint();
 
                 if (states.movementVariables.moveAmount <= 0.5f)

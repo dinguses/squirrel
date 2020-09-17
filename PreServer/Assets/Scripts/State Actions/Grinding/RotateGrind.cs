@@ -1,6 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
-using SO;
+﻿using SO;
+using UnityEngine;
 
 namespace PreServer
 {
@@ -55,6 +54,7 @@ namespace PreServer
             if (Vector3.Angle(targetDir, states.mTransform.forward) > 90 && (test1 >= .02 || test2 >= .02) && states.rotateBool && states.rotateDelayTest == 5)
             {
                 states.rotateBool = false;
+                states.comingBackFrom180 = true;
                 //states.testRotate = true;
 
                 var holdFacing = states.facingPoint;
@@ -71,7 +71,7 @@ namespace PreServer
 
                 states.anim.CrossFade(states.hashes.squ_grind_180, 0.01f);
 
-                states.rigid.velocity = new Vector3 (0,0,0);
+                states.rigid.velocity = new Vector3(0, 0, 0);
             }
 
             Quaternion tr = Quaternion.LookRotation(targetDir, states.groundNormal);

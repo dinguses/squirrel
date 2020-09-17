@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace PreServer
 {
@@ -7,7 +6,7 @@ namespace PreServer
     /// Executing a 180  turn on the grind
     /// </summary>
 
-    [CreateAssetMenu (menuName = "Actions/State Actions/Grind 180")]
+    [CreateAssetMenu(menuName = "Actions/State Actions/Grind 180")]
     public class Grind180 : StateActions
     {
         public override void Execute(StateManager sm)
@@ -29,7 +28,7 @@ namespace PreServer
 
                 //if (states.inGrindZone)
                 //{
-                    states.mTransform.RotateAround(states.middlePivot, states.mTransform.up, rotateAmount);
+                states.mTransform.RotateAround(states.middlePivot, states.mTransform.up, rotateAmount);
                 //}
 
                 /*else

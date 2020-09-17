@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace PreServer
 {
@@ -132,7 +130,7 @@ namespace PreServer
                     Vector3 targetVelocity2 = blueSquirrel.transform.right * states.movementVariables.horizontal * 100.5f;
                     //Vector3 currentVelocity = blueSquirrel.GetComponent<Rigidbody>().velocity;
                     //blueSquirrel.GetComponent<Rigidbody>().velocity = Vector3.Lerp(currentVelocity, targetVelocity, states.delta * 10.5f);
-                   // blueSquirrel.GetComponent<Rigidbody>().velocity = Vector3.Lerp(currentVelocity, targetVelocity2, states.delta * 10.5f);
+                    // blueSquirrel.GetComponent<Rigidbody>().velocity = Vector3.Lerp(currentVelocity, targetVelocity2, states.delta * 10.5f);
 
                     if (Input.GetKeyUp("joystick button 5"))
                     {
@@ -237,7 +235,7 @@ namespace PreServer
 
         void CheckRaycast(StateManager sm)
         {
-            
+
         }
 
         public override void OnExit(StateManager sm)
@@ -253,7 +251,7 @@ namespace PreServer
             states.anim.SetBool(states.hashes.isDashing, false);
             states.timeSinceJump = Time.realtimeSinceStartup;
             //states.anim.SetLayerWeight(2, 1);
-            
+
             if (states.isGrounded)
                 states.pauseSpeedHackTimer = false;
             //states.anim.CrossFade(states.hashes.sq, 0.2f);

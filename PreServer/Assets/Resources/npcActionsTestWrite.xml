@@ -1,0 +1,21 @@
+<!--?xml version="1.0" encoding="UTF-8"?-->
+<actions>
+  <action id="0" gen="0">
+    <reqs>
+      <req id="0" value="toilet_lass" />
+    </reqs>
+    <steps>
+      <step type="move" point="toilet_001" />
+      <step type="wait" time="13" />
+    </steps>
+  </action>
+  <action id="1" gen="0">
+    <reqs>
+      <req id="0" value="toilet_lad" />
+    </reqs>
+    <steps>
+      <step type="move" point="toilet_001" />
+      <step type="wait" time="13" />
+    </steps>
+  </action>
+</actions>

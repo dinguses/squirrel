@@ -1,0 +1,47 @@
+<!--?xml version="1.0" encoding="UTF-8"?-->
+<actions>
+  <action id="0" gen="0">
+    <reqs>
+      <req id="0" value="toilet_lass" />
+      <req id="1" value="f" />
+      <req id="2" value="t" />
+    </reqs>
+    <steps>
+      <step type="move" point="toilet_001" />
+      <step type="wait" time="13" />
+    </steps>
+  </action>
+  <action id="1" gen="0">
+    <reqs>
+      <req id="0" value="toilet_lad" />
+      <req id="1" value="m" />
+      <req id="2" value="t" />
+    </reqs>
+    <steps>
+      <step type="move" point="toilet_001" />
+      <step type="wait" time="13" />
+    </steps>
+  </action>
+  <action id="2" gen="0">
+    <reqs>
+      <req id="0" value="toilet_lass2" />
+      <req id="1" value="f" />
+      <req id="2" value="t" />
+    </reqs>
+    <steps>
+      <step type="move" point="toilet_001" />
+      <step type="wait" time="13" />
+    </steps>
+  </action>
+  <action id="3" gen="0">
+    <reqs>
+      <req id="0" value="toilet_lad2" />
+      <req id="1" value="m" />
+      <req id="2" value="t" />
+    </reqs>
+    <steps>
+      <step type="move" point="toilet_001" />
+      <step type="wait" time="13" />
+    </steps>
+  </action>
+</actions>

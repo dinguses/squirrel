@@ -32,7 +32,7 @@ namespace PreServer
         float heldDownTimer = 0;
         bool timeScaleSet = false; //has the timescale been set
         bool pathChanged = false;
-        
+
 
         //Rotation Variables
         public float rotationSpeed = 16f;//speed the player rotates at
@@ -143,7 +143,7 @@ namespace PreServer
                 if (player.climbHit.transform != null)
                 {
                     states.transform.rotation = Quaternion.FromToRotation(player.transform.up, player.climbHit.normal) * player.transform.rotation;
-                    dir = states.transform.rotation  * Vector3.forward.normalized;
+                    dir = states.transform.rotation * Vector3.forward.normalized;
                     //pos = player.climbHit.point;
                     pos = GetPoint(player.transform.position, player.climbHit.point, player.climbHit.point - (dir * distance));
                     player.transform.position = pos;
@@ -165,7 +165,7 @@ namespace PreServer
                 distanceFactor += Vector3.Distance(path[i].lerper.startVal, path[i].lerper.endVal);
             }
             distanceFactor /= distance;
-            
+
         }
 
         /// <summary>
@@ -289,7 +289,7 @@ namespace PreServer
             RaycastHit underInfo = CheckUnder(remainingDistance, start, up, dir, out tempPos);
             if (Physics.Raycast(start + up, dir, out triggerInfo, remainingDistance, Layers.ignoreLayersController, QueryTriggerInteraction.Collide))
             {
-                if(underInfo.transform != null)
+                if (underInfo.transform != null)
                 {
                     //Under has been hit, figure out which one is closer
                     if (Vector3.Distance(start, GetPoint(underInfo.point, start, tempPos - up)) < triggerInfo.distance)
@@ -308,7 +308,7 @@ namespace PreServer
             }
             else
             {
-                if(underInfo.transform != null)
+                if (underInfo.transform != null)
                 {
                     CheckClimbHit(underInfo, start, tempPos, ref target, ref dir, ref up, ref remainingTime, ref remainingDistance);
                 }
@@ -420,7 +420,7 @@ namespace PreServer
             else
             {
                 if (climbHit.transform.tag == "Climb")
-                {                    
+                {
                     //end the current path at the hit point and set up the information for the new path
                     target = GetPoint(climbHit.point, start, tempPos - up); //might subtract dir * (length of squirrel) later
                     path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
@@ -476,7 +476,7 @@ namespace PreServer
                 }
                 else
                 {
-                    if(Physics.Raycast(temp - up * 2f, -dir, out underInfo, 0.15f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+                    if (Physics.Raycast(temp - up * 2f, -dir, out underInfo, 0.15f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                     {
                         if (underInfo.normal.normalized != up.normalized || underInfo.transform.tag != "Climb")
                         {
@@ -524,7 +524,7 @@ namespace PreServer
             Vector3 dir = Vector3.zero;
             RaycastHit hit = new RaycastHit();
             float dist = 0;
-            if(player.climbState == PlayerManager.ClimbState.CLIMBING)
+            if (player.climbState == PlayerManager.ClimbState.CLIMBING)
             {
                 dist = Vector3.Distance(path[path.Count - 1].lerper.endVal, path[path.Count - 1].lerper.startVal);
                 dir = path[path.Count - 1].lerper.endVal - path[path.Count - 1].lerper.startVal;
@@ -544,7 +544,7 @@ namespace PreServer
                         temp = 0;
                     }
                 }
-                if(temp != 1.75f)
+                if (temp != 1.75f)
                     path[path.Count - 1].lerper.Reset(path[path.Count - 1].lerper.startVal, path[path.Count - 1].lerper.endVal - (dir.normalized * (1.75f - temp)));
                 //Debug.LogError("Hit the safety check");
             }
@@ -556,7 +556,7 @@ namespace PreServer
                 if (!safe)
                 {
                     dist = Vector3.Distance(path[path.Count - 1].lerper.endVal, path[path.Count - 1].lerper.startVal);
-                    if(dist < 2f)
+                    if (dist < 2f)
                     {
                         path.RemoveAt(path.Count - 1);
                         continue;
@@ -573,7 +573,7 @@ namespace PreServer
         public override void OnUpdate(StateManager states)
         {
             base.OnUpdate(states);
-            if(heldDownTimer <= .15f && buttonHeld)
+            if (heldDownTimer <= .15f && buttonHeld)
             {
                 heldDownTimer += Time.unscaledDeltaTime;
                 if (Input.GetAxisRaw("DashCont") != 1f && !Input.GetButton("Dash"))
@@ -664,7 +664,7 @@ namespace PreServer
                 }
                 else
                 {
-                    if(path.Count == 0)
+                    if (path.Count == 0)
                     {
                         GeneratePath(player, false);
                     }
@@ -676,7 +676,7 @@ namespace PreServer
                         player.rigid.useGravity = false;
                         player.rigid.velocity = Vector3.zero;
                         player.rigid.drag = 0;
-                        if(player.climbState == PlayerManager.ClimbState.CLIMBING && path.Count > 1)
+                        if (player.climbState == PlayerManager.ClimbState.CLIMBING && path.Count > 1)
                             SetCameraAngle(states.transform.up, path[path.Count - 1].up);
                     }
                     if (!player.anim.GetBool(player.hashes.isDashing))
@@ -710,7 +710,7 @@ namespace PreServer
 
         void DrawPath()
         {
-            for(int i = 0; i < path.Count; ++i)
+            for (int i = 0; i < path.Count; ++i)
             {
                 Debug.DrawLine(path[i].lerper.startVal, path[i].lerper.endVal, Color.black);
             }
@@ -763,7 +763,7 @@ namespace PreServer
             player.movementVariables.moveDirection = targetDir;
 
             Quaternion tr = Quaternion.LookRotation(targetDir, player.groundNormal);
-            if(Quaternion.Angle(tr, startRotation) > rotationCutoff)
+            if (Quaternion.Angle(tr, startRotation) > rotationCutoff)
             {
                 if (Quaternion.Angle(tr, minRotation) <= Quaternion.Angle(tr, maxRotation))
                     tr = minRotation;
@@ -771,7 +771,7 @@ namespace PreServer
                     tr = maxRotation;
             }
             Quaternion targetRotation = Quaternion.Slerp(player.transform.rotation, tr, Time.unscaledDeltaTime * player.movementVariables.moveAmount * rotationSpeed);
-            
+
             player.transform.rotation = targetRotation;
             //if (blueSquirrel != null)
             //    blueSquirrel.transform.rotation = targetRotation;
@@ -828,7 +828,7 @@ namespace PreServer
                 //currentBSPathTime += Time.unscaledDeltaTime * 0.4f;
                 while (currentBSPathTime > 0 && bsPathIndex < path.Count)
                 {
-                    if(currentBSPathTime > path[bsPathIndex].time)
+                    if (currentBSPathTime > path[bsPathIndex].time)
                     {
                         path[bsPathIndex].Update(path[bsPathIndex].time);
                         currentBSPathTime -= path[bsPathIndex].time;
@@ -840,13 +840,13 @@ namespace PreServer
                         currentBSPathTime = 0;
                     }
                 }
-                if(bsPathIndex >= path.Count)
+                if (bsPathIndex >= path.Count)
                 {
                     bsPathIndex = 0;
                     ResetPath();
                     bsTrail.transform.position = path[bsPathIndex].lerper.startVal + path[bsPathIndex].up * 0.25f;
                     //trail.Clear();
-                    for(int i = 0; i < line.positionCount; ++i)
+                    for (int i = 0; i < line.positionCount; ++i)
                     {
                         line.SetPosition(i, path[bsPathIndex].lerper.startVal + path[bsPathIndex].up * 0.25f);
                     }
@@ -928,7 +928,7 @@ namespace PreServer
 
         void ResetPath()
         {
-            for(int i = 0; i < path.Count; ++i)
+            for (int i = 0; i < path.Count; ++i)
             {
                 path[i].Reset();
             }
@@ -954,7 +954,7 @@ namespace PreServer
         {
             prevCameraAmount = 0;
             totalTime = 0;
-            for(int i = 0; i < path.Count; ++i)
+            for (int i = 0; i < path.Count; ++i)
             {
                 totalTime += path[i].time;
             }

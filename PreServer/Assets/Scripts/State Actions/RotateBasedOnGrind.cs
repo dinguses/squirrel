@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace PreServer
 {
@@ -80,9 +78,9 @@ namespace PreServer
 
             //if (angle < rotationConstraint)
             //{
-                Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, ground) * states.mTransform.rotation;
-                Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * amount);
-                states.mTransform.rotation = targetRotation;
+            Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, ground) * states.mTransform.rotation;
+            Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * amount);
+            states.mTransform.rotation = targetRotation;
             //}
 
             /*if (Mathf.Abs((angle2 - angle)) < 1.0f)

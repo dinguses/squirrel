@@ -1,6 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace PreServer
 {
@@ -8,7 +7,7 @@ namespace PreServer
     /// Checks if player should be grinding
     /// </summary>
 
-    [CreateAssetMenu (menuName = "Conditions/Monitor Grind")]
+    [CreateAssetMenu(menuName = "Conditions/Monitor Grind")]
     public class MonitorGrind : Condition
     {
         public override bool CheckCondition(StateManager sm)
@@ -41,7 +40,7 @@ namespace PreServer
                     otherPoint = new KeyValuePair<int, Vector3>(1, state.grindPoints[1]);
                     otherPointValue = otherPoint.Value;
                 }
-                
+
                 // If the grind point is the last on the grind, the other point must be the 2nd to last
                 else if (closestPoint.Key == (state.grindPoints.Count - 1))
                 {
@@ -178,29 +177,10 @@ namespace PreServer
                     state.anim.CrossFade(state.hashes.squ_grind_idle, 0.1f);
                 }
 
-                
+
                 // Stop the player's previous movement
                 state.movementVariables.moveAmount = 0;
                 state.rigid.velocity = new Vector3(0, 0, 0);
-
-                Vector3 testMiddle = state.mTransform.position + state.mTransform.forward;
-
-                Vector3 grindCenterClosestPoint = GetPoint(state.rigid.position, state.facingPoint, state.behindPoint);
-                Vector3 grindCenterClosestPointMiddle = GetPoint(testMiddle, state.facingPoint, state.behindPoint);
-
-                Debug.Log("Grind center closest point - " + grindCenterClosestPoint);
-                Debug.Log("Grind center closest pointMid - " + grindCenterClosestPointMiddle);
-
-                if (grindCenterClosestPointMiddle.y > grindCenterClosestPoint.y)
-                {
-                    float testt = grindCenterClosestPointMiddle.y - grindCenterClosestPoint.y;
-
-                    Debug.Log("it higher");
-                    var test = state.mTransform.position.y;
-                    //state.mTransform.position = new Vector3(state.mTransform.position.x, test + testt, state.mTransform.position.z);
-                }
-
-                state.frontCollider.enabled = false;
 
                 //GOTO
                 //state.frontCollider.enabled = false;

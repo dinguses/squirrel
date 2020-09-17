@@ -1,8 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEditor;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace PreServer
 {
@@ -81,7 +79,7 @@ namespace PreServer
             shirtColors = Resources.LoadAll<Material>("NPC/Materials/Shirts");
             makeupColors = Resources.LoadAll<Material>("NPC/Materials/Makeup");
 
-            combinedHairColors =  hairColors.Concat(Resources.LoadAll<Material>("NPC/Premium/Materials/Hair")).ToArray();
+            combinedHairColors = hairColors.Concat(Resources.LoadAll<Material>("NPC/Premium/Materials/Hair")).ToArray();
             combinedShirtColors = shirtColors.Concat(Resources.LoadAll<Material>("NPC/Premium/Materials/Shirts")).ToArray();
 
             // Needed because hair meshes do not have uniform scale and this info is not stored in the mesh file
@@ -275,6 +273,7 @@ namespace PreServer
             }
 
             // Create an NPC from Prefab and locate the bones we'll need for attatching objects and such
+            Debug.Log(spawner.position);
             GameObject newNPC = Instantiate(Resources.Load<GameObject>(isMale ? "NPC/MALE_NPC" : "NPC/FEMALE_NPC"), spawner.position, spawner.rotation);
 
             // If NPC is random, they have no ID

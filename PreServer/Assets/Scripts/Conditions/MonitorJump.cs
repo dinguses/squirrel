@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace PreServer
 {
@@ -27,10 +26,11 @@ namespace PreServer
                 state.rigid.useGravity = true;
                 state.anim.SetBool(state.hashes.isGrinding, false);
                 state.anim.SetBool(state.hashes.waitForAnimation, false);
-                state.inGrindZone = false;
+                //state.inGrindZone = false;
 
                 state.facingPoint = Vector3.zero;
                 state.behindPoint = Vector3.zero;
+                state.comingBackFrom180 = false;
 
                 // Execute actions (Handle Jump Velocity)
                 onTrueAction.Execute(state);
