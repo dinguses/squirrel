@@ -166,6 +166,7 @@ namespace PreServer
         public TimeManager tm;
         public GameObject slideObject;
         public TerrainCollider slideTerrain;
+        public GameObject midSection;
 
         public bool ground180Enabled = true;
         private void Start()
@@ -357,7 +358,9 @@ namespace PreServer
             dashCooldown.fillAmount = 1 - lagDashCooldown;
             speedHack.fillAmount = speedHackAmount / 2f;
             #endregion
-
+            
+            //RotateSections();
+            
             //TODO: try using climbHit instead of bottomHit
             //if (dashActive && didClimbHit && climbState == ClimbState.NONE)
             //{
@@ -428,6 +431,22 @@ namespace PreServer
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 ground180Enabled = !ground180Enabled;
+            }
+        }
+
+        void RotateSections()
+        {
+            Vector3 origin = transform.position + (transform.up * 0.2f) + (transform.forward * 1.75f);
+            RaycastHit hit = new RaycastHit();
+            Vector3 dir = (transform.forward * 0.2f) - transform.up;
+            Debug.DrawRay(origin, dir * 0.5f, Color.blue);
+            //Raycast in front of the squirrel, used to check if we've hit a ceiling, ground, or another climb-able surface
+            if (Physics.Raycast(origin, dir, out hit, 0.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                Quaternion tr = Quaternion.FromToRotation(midSection.transform.up, hit.normal) * midSection.transform.rotation;
+                Quaternion targetRotation = Quaternion.Slerp(midSection.transform.rotation, tr, delta * 15);
+                midSection.transform.rotation = targetRotation;
+                Debug.Log("Rotating midsection");
             }
         }
 
@@ -768,8 +787,8 @@ namespace PreServer
 
             //return Physics.CheckBox(new Vector3(col.bounds.center.x, col.bounds.center.y - (col.bounds.size.y - (col.bounds.size.y * 0.5f)), col.bounds.center.z), new Vector3(col.bounds.size.x * 1.5f, col.bounds.size.y * 0.5f, col.bounds.size.z * 1.5f) * 0.5f, col.transform.rotation, groundLayer);
             //return Physics.CheckCapsule(col.bounds.center, new Vector3(col.bounds.center.x, col.bounds.min.y, col.bounds.center.z), col.radius * 0.9f, groundLayer, QueryTriggerInteraction.Ignore);
-            Vector3 topRay = mTransform.position + (mTransform.forward * 0.9f) + (mTransform.up * 0.5f);
-            if(Physics.SphereCast(topRay, 0.3f, mTransform.forward, out climbHit, 1, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            Vector3 topRay = mTransform.position + (mTransform.forward * 1.6f) + (mTransform.up * 0.5f);
+            if(Physics.SphereCast(topRay, 0.3f, mTransform.forward, out climbHit, .15f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
                 didClimbHit = true;
                 climbAngle = Vector3.Angle(climbHit.normal, Vector3.up);
@@ -1278,10 +1297,25 @@ namespace PreServer
         {
             return !isSliding && !dashActive && (isGrounded || climbState == ClimbState.CLIMBING)/* && (isGrounded || dashInAirCounter == 0)*/ && !runRanOut /*&& speedHackRecover <= 0*/;
         }
-
+        public bool drawPath;
+        public List<Path> path;
         private void OnDrawGizmos()
         {
 
+            if(drawPath)
+            {
+                Gizmos.color = Color.red;
+                float c = 0;
+                for (int i = 0; i < path.Count; ++i)
+                {
+                   c = 0;
+                   while (c <= 1)
+                   {
+                        Gizmos.DrawSphere(Vector3.Lerp(path[i].lerper.startVal, path[i].lerper.endVal, c) + (path[i].up * 0.45f), 0.375f);
+                        c += 0.05f;
+                   }
+                }
+            }
             //Visualize climbHit
             //var topFloat = .5f;
             //var topRay = transform.position + (transform.forward * .9f) + (transform.up * topFloat);

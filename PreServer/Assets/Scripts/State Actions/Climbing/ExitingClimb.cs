@@ -174,6 +174,7 @@ namespace PreServer
         public override void OnExit(StateManager sm)
         {
             base.OnExit(states);
+            ((PlayerManager)states).UpdateGroundNormals();
             states.rigid.velocity = Vector3.zero;
             states.rigid.useGravity = true;
             states.anim.SetBool(states.hashes.isClimbing, false);
