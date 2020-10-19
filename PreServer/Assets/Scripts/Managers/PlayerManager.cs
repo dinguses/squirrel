@@ -1299,6 +1299,7 @@ namespace PreServer
         }
         public bool drawPath;
         public List<Path> path;
+        public ClimbingVariables climbingVariables;
         private void OnDrawGizmos()
         {
 

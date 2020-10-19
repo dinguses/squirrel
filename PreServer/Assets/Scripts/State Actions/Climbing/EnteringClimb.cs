@@ -15,7 +15,6 @@ namespace PreServer
         Vector3 targetPos;
         Quaternion startRot;
         Quaternion targetRot;
-        public float offsetFromWall = 0.3f;
         float delta;
         bool moveCamera = false;
         public TransformVariable cameraTransform;
@@ -24,9 +23,7 @@ namespace PreServer
         float tempAngle = 0;
         PlayerManager states;
         public bool debug = false;
-        public float angle = 0;
-        Vector3 newDirection;
-        Vector3 originalDirection;
+        float angle = 0;
 
         public override void OnEnter(StateManager sm)
         {
@@ -41,7 +38,7 @@ namespace PreServer
             startPos = states.transform.position;
             states.pauseSpeedHackTimer = false;
             //startRot = states.transform.rotation;
-            targetPos = states.climbHit.point + (states.climbHit.normal * offsetFromWall);
+            targetPos = states.climbHit.point + (states.climbHit.normal * states.climbingVariables.offsetFromWall);
             targetRot = Quaternion.FromToRotation(states.transform.up, states.climbHit.normal) * states.transform.rotation;
             t = 0;
             inPos = true;
@@ -63,10 +60,13 @@ namespace PreServer
 
         void SafeClimb()
         {
-            originalDirection = targetRot * Vector3.forward.normalized;
-            newDirection = originalDirection;
+            
             //This is under the assumption that the climbhit will never be inside a mesh collider
             RaycastHit hit = new RaycastHit();
+
+            Vector3 originalDirection = targetRot * Vector3.forward.normalized;
+            Vector3 newDirection = originalDirection;
+
             //Check to see the position we will end up at is colliding with the length of the squirrel's collider
             //if there is any object in the way, then move the target position backwards
             while (Physics.Raycast(targetPos + states.climbHit.normal * 0.1f, originalDirection, out hit, 2f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
@@ -79,6 +79,20 @@ namespace PreServer
                 }
                 targetPos -= (originalDirection.normalized * 0.2f);
             }
+
+            //if (Physics.Raycast(targetPos + states.climbHit.normal * 0.1f + targetRot * Vector3.forward * 2f, -states.climbHit.normal, out hit, 0.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            //{
+            //    if (hit.transform.tag != "Climb")
+            //    {
+            //        Debug.LogError("Didn't hit climb");
+            //        AdjustTargetPostion(hit, originalDirection);
+            //    }
+            //}
+            //else
+            //{
+            //    Debug.LogError("Hit nothing");
+            //    AdjustTargetPostion(hit, originalDirection);
+            //}
 
             angle = 0;
             newDirection = originalDirection;
@@ -142,6 +156,41 @@ namespace PreServer
             //Debug.DrawRay(targetPos + states.climbHit.normal * 0.25f, temp2 * 2, Color.cyan);
         }
 
+        void AdjustTargetPostion(RaycastHit hit, Vector3 dir)
+        {
+            bool climbNotFound = true;
+            //Check to see the position we will end up at is colliding with the length of the squirrel's collider
+            //if there is any object in the way, then move the target position backwards
+            do
+            {
+                if (Physics.Raycast(targetPos + states.climbHit.normal * 0.1f + targetRot * Vector3.forward * 2f, -states.climbHit.normal, out hit, 0.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+                {
+                    if (hit.transform.tag != "Climb")
+                    {
+                        //If there is an object that will block us from moving back, then move back only a little bit then break out of here
+                        if (Physics.Raycast(targetPos + states.climbHit.normal * 0.1f, -dir, out hit, 0.2f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+                        {
+                            targetPos -= (dir.normalized * (hit.distance * 0.5f));
+                            break;
+                        }
+                        targetPos -= (dir.normalized * 0.2f);
+                        climbNotFound = true;
+                    }
+                }
+                else
+                {
+                    //If there is an object that will block us from moving back, then move back only a little bit then break out of here
+                    if (Physics.Raycast(targetPos + states.climbHit.normal * 0.1f, -dir, out hit, 0.2f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+                    {
+                        targetPos -= (dir.normalized * (hit.distance * 0.5f));
+                        break;
+                    }
+                    targetPos -= (dir.normalized * 0.2f);
+                    climbNotFound = true;
+                }
+            } while (climbNotFound);
+        }
+
         public override void OnFixed(StateManager sm)
         {
             base.OnFixed(states);
@@ -178,7 +227,7 @@ namespace PreServer
                     tp = targetPos;
                 states.transform.position = tp;
             }
-            if (Vector3.Distance(states.transform.position, targetPos) <= offsetFromWall)
+            if (Vector3.Distance(states.transform.position, targetPos) <= states.climbingVariables.offsetFromWall)
             {
                 if(!debug)
                     inPos = true;
@@ -218,7 +267,7 @@ namespace PreServer
         {
             Vector3 direction = origin - target;
             direction.Normalize();
-            Vector3 offset = direction * offsetFromWall;
+            Vector3 offset = direction * states.climbingVariables.offsetFromWall;
             return target + offset;
         }
 
