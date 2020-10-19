@@ -51,7 +51,7 @@ namespace PreServer
             var test1 = Mathf.Abs(states.movementVariables.horizontal);
             var test2 = Mathf.Abs(states.movementVariables.vertical);
 
-            if (Vector3.Angle(targetDir, states.mTransform.forward) > 90 && (test1 >= .02 || test2 >= .02) && states.rotateBool && states.rotateDelayTest == 5)
+            if (Vector3.Angle(targetDir, states.mTransform.forward) > 90 && (test1 >= .02 || test2 >= .02) && states.rotateBool && states.rotateDelayTest == 10 && states.grindDoneAdjusting)
             {
                 states.rotateBool = false;
                 states.comingBackFrom180 = true;
@@ -76,7 +76,7 @@ namespace PreServer
 
             Quaternion tr = Quaternion.LookRotation(targetDir, states.groundNormal);
 
-            Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * states.movementVariables.moveAmount * speed);
+            //Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * states.movementVariables.moveAmount * speed);
         }
     }
 }

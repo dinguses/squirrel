@@ -19,7 +19,7 @@ namespace PreServer
             // If player has left grind zone, they're no longer grinding
             if (!state.inGrindZone && state.isGrounded)
             {
-                Debug.Log("Left the grind");
+                Debug.Log("Left the grind - ground");
 
                 // Time for gravity again
                 state.rigid.useGravity = true;

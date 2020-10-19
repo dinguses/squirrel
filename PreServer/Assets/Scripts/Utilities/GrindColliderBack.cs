@@ -12,6 +12,7 @@ namespace PreServer
         {
             if (other.name == "GrindCollider")
             {
+                Debug.Log("i'm the culprit");
                 states.BackLeftTest();
             }
         }

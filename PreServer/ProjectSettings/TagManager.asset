@@ -20,6 +20,8 @@ TagManager:
   - hurty
   - finalCrusher
   - challenge3
+  - grindMeat
+  - UndergroundGrind
   layers:
   - Default
   - TransparentFX

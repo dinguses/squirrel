@@ -80,7 +80,7 @@ namespace PreServer
             //{
             Quaternion tr = Quaternion.FromToRotation(states.mTransform.up, ground) * states.mTransform.rotation;
             Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * amount);
-            states.mTransform.rotation = targetRotation;
+            //states.mTransform.rotation = targetRotation;
             //}
 
             /*if (Mathf.Abs((angle2 - angle)) < 1.0f)

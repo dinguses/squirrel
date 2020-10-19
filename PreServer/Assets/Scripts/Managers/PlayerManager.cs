@@ -75,7 +75,6 @@ namespace PreServer
 
         public bool inGrindZone;
         public Dictionary<int, Vector3> grindPoints;
-        //public Dictionary<int, BoxCollider> grindCenters;
 
         public float held180RotationAmt = 0;
         public Vector3 middlePivot;
@@ -100,6 +99,10 @@ namespace PreServer
         public bool inJoint = false;
         public float grindTimer = 0.25f;
         public bool comingBackFrom180;
+        public bool grindDoneAdjusting = false;
+        public int nextPointTimer = -1;
+        public enum GrindType { STD, UNDERGROUND, DBL_UNDERGROUND, CIRCULAR };
+        public GrindType grindType;
 
         public bool rotateBool = false;
         public SkinnedMeshRenderer playerMesh;
@@ -201,7 +204,6 @@ namespace PreServer
             inGrindZone = false;
 
             grindPoints = new Dictionary<int, Vector3>();
-            //grindCenters = new Dictionary<int, BoxCollider>();
 
             speedHackAmount = 2f;
         }
@@ -240,6 +242,41 @@ namespace PreServer
                 grindTimer += 0.01f;
             }
 
+            if (nextPointTimer >= 0 && nextPointTimer < 16)
+            {
+                nextPointTimer++;
+            }
+            else
+            {
+                if (grindPoints.Count > 0)
+                {
+                    if (grindType == GrindType.UNDERGROUND && facingPoint == grindPoints[0] && behindPoint == grindPoints[1])
+                    {
+                        LeaveGrindOverrideNoMovement();
+                    }
+                }
+            }
+
+            if (nextPointTimer == 15)
+            {
+                if (grindPoints.Count > 0)
+                {
+                    if (grindType == GrindType.UNDERGROUND && facingPoint == grindPoints[0])
+                    {
+                        nextPointTimer = -1;
+                        LeaveGrindOverrideNoMovement();
+                    }
+                }
+            }
+
+            if (grindPoints.Count > 0)
+            {
+                if (grindType == GrindType.UNDERGROUND && facingPoint == grindPoints[1] && behindPoint == grindPoints[0])
+                {
+                    NextPoint();
+                }
+            }
+
             // Check squirrel distance to forward point
             if (facingPoint != Vector3.zero && currentState.name == "Grinding")
             {
@@ -252,6 +289,21 @@ namespace PreServer
                 }
             }
 
+            //TODO Better endpoint
+            /*if (grindEnds.Count != 0 && currentState.name == "Grinding")
+            {
+                var squirrelFront = mTransform.position + (mTransform.forward * 2);
+
+                foreach (var grindEnd in grindEnds)
+                {
+                    //Debug.Log("Dist from end - "+Vector3.Distance(squirrelFront, grindEnd));
+                    if (Vector3.Distance(squirrelFront, grindEnd) < 1.25f)
+                    {
+                        //Debug.Log("Time for leaving");
+                        //BackLeftTest();
+                    }
+                }
+            }*/
 
             delta = Time.deltaTime;
             if (climbState == ClimbState.NONE)
@@ -648,12 +700,19 @@ namespace PreServer
 
             if (Physics.SphereCast(backOrigin, 0.3f, dir, out backHit, dis, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
-                backNormal = backHit.normal;
-                angle = Vector3.Angle(backHit.normal, Vector3.up);
-                if (angle >= 70)
+                if (backHit.transform.tag == "grindMeat")
+                {
                     back = null;
+                }
                 else
-                    back = backHit.transform.gameObject;
+                {
+                    backNormal = backHit.normal;
+                    angle = Vector3.Angle(backHit.normal, Vector3.up);
+                    if (angle >= 70)
+                        back = null;
+                    else
+                        back = backHit.transform.gameObject;
+                }
             }
             else
             {
@@ -990,21 +1049,17 @@ namespace PreServer
             }*/
 
             // Start a grind if you've entered a grind zone and were not already in one
+            if (other.tag == "Grind")
+            {
+                //Debug.Log("in grind zone, regardless of other stuff");
+            }
+
+
             if (other.tag == "Grind" && !inGrindZone && grindTimer >= 0.15f && currentState.name != "WaitForAnimation")
             {
                 Debug.Log(Time.frameCount + " - entered grind collider?");
-
                 inGrindZone = true;
-
                 GenerateGrindPoints(other);
-
-                // If it's only a two point grind
-                if (grindPoints.Count == 2)
-                {
-                    var grindMaster = other.gameObject.transform.parent.parent;
-                    //var centers = grindMaster.GetChild(1);
-                    //grindCenter = centers.GetChild(0).GetComponent<BoxCollider>();
-                }
             }
 
             if (other.tag == "joint")
@@ -1052,18 +1107,70 @@ namespace PreServer
 
         public void BackLeftTest()
         {
-            if (!inJoint && /*!testRotate &&*/ doneAdjustingGrind)
+            if (!inJoint && /*!testRotate &&*/ grindDoneAdjusting)
             {
                 Debug.Log("purge?");
 
                 Debug.Log("isGrounded: " + isGrounded);
 
+                mTransform.position = Vector3.Lerp(mTransform.position, (mTransform.position + (mTransform.forward)), Time.deltaTime * 2f);
+                //Vector3.Lerp(states.rigid.position, test + (states.mTransform.forward / 8), states.delta * 10);
+
                 grindTimer = 0f;
 
                 PurgeGrindPoints();
                 inGrindZone = false;
-                doneAdjustingGrind = false;
+                grindDoneAdjusting = false;
             }
+        }
+
+        public void LeftUndergroundGrind()
+        {
+            Debug.Log("left underground grind");
+
+            var fronttest = (mTransform.position + (mTransform.forward * 2));
+
+            //var testyyy = Vector3.Distance(mTransform.position, grindEnds[2]) - Vector3.Distance(grindEnds[1], grindEnds[2]);
+
+            //mTransform.position = Vector3.Lerp(mTransform.position, grindEnds[2], Time.deltaTime * 10f);
+
+            if (movementVariables.moveAmount <= 0.5f)
+            {
+                //mTransform.position = Vector3.Lerp(mTransform.position, grindEnds[2], Time.deltaTime * 5f);
+            }
+
+            /*var testyyy = Vector3.Distance(mTransform.position, grindEnds[1]);
+
+            if (movementVariables.moveAmount <= 0.5f)
+            {
+                mTransform.position = Vector3.MoveTowards(mTransform.position, grindEnds[1], testyyy / 6);
+            }*/
+
+            grindTimer = 0f;
+
+            PurgeGrindPoints();
+            inGrindZone = false;
+            grindDoneAdjusting = false;
+        }
+
+        public void LeaveGrindOverride()
+        {
+            mTransform.position = Vector3.Lerp(mTransform.position, (mTransform.position + (mTransform.forward * 4)), Time.deltaTime * 5f);
+
+            grindTimer = 0f;
+
+            PurgeGrindPoints();
+            inGrindZone = false;
+            grindDoneAdjusting = false;
+        }
+
+        public void LeaveGrindOverrideNoMovement()
+        {
+            grindTimer = 0f;
+
+            PurgeGrindPoints();
+            inGrindZone = false;
+            grindDoneAdjusting = false;
         }
 
         /// <summary>
@@ -1157,9 +1264,16 @@ namespace PreServer
         /// </summary>
         public void NextPoint()
         {
-            if (facingPointPair.Key == 0 || facingPointPair.Key == (grindPoints.Count - 1))
+            if (grindDoneAdjusting == false || facingPointPair.Key == 0 || facingPointPair.Key == (grindPoints.Count - 1))
             {
                 return;
+            }
+
+            //TODO make this (and other grindPoints[0], etc not break every grind :)
+            bool point0Adj = false;
+            if (grindType == GrindType.UNDERGROUND && facingPoint == grindPoints[1] && behindPoint == grindPoints[0])
+            {
+                point0Adj = true;
             }
 
             Debug.Log("Next Point");
@@ -1203,12 +1317,23 @@ namespace PreServer
 
             Debug.Log("This is testyyy - " + testyyy);
 
+
             mTransform.position = Vector3.MoveTowards(mTransform.position, facingPoint, testyyy / 8);
 
             if (movementVariables.moveAmount <= 0.5f)
             {
-                mTransform.position = Vector3.MoveTowards(mTransform.position, facingPoint, testyyy/16);
+                if (!point0Adj)
+                {
+                    mTransform.position = Vector3.MoveTowards(mTransform.position, facingPoint, testyyy / 16);
+                }
+                else
+                {
+                    Debug.Log("point0Adj");
+                    mTransform.position = Vector3.MoveTowards(mTransform.position, facingPoint, testyyy / 4);
+                }
             }
+
+            nextPointTimer = 0;
 
             frontCollider.enabled = true;
         }
@@ -1219,12 +1344,24 @@ namespace PreServer
         /// <param name="grindColliderGen"></param>
         void GenerateGrindPoints(Collider grindColliderGen)
         {
-            Debug.Log("generate grind point?");
+            Debug.Log("generate grind points");
+
+            //grindColliderGen.gameObject.transform.parent.parent.tag
 
             // If there's not already grind points (to catch any double calls)
             if (grindPoints.Count == 0)
             {
                 var grindMaster = grindColliderGen.gameObject.transform.parent.parent;
+
+                switch (grindMaster.tag)
+                {
+                    case "UndergroundGrind":
+                        grindType = GrindType.UNDERGROUND;
+                        break;
+                    default:
+                        grindType = GrindType.STD;
+                        break;
+                }
 
                 Debug.Log(grindMaster.name);
                 //var points = grindMaster.GetChild(2);
@@ -1236,14 +1373,6 @@ namespace PreServer
                 {
                     grindPoints.Add(i, points.GetChild(i).position);
                 }
-
-                /*var centers = grindMaster.GetChild(1);
-
-                for (int i = 0; i < centers.childCount; i++)
-                {
-                    var center = centers.GetChild(i).GetComponent<BoxCollider>();
-                    grindCenters.Add(i, center);
-                }*/
             }
 
             // No grind points? As a pre-caution, purge everything and start over
@@ -1260,8 +1389,6 @@ namespace PreServer
         void PurgeGrindPoints()
         {
             grindPoints = new Dictionary<int, Vector3>();
-            //grindCenters = new Dictionary<int, BoxCollider>();
-            //grindCenter = new BoxCollider();
         }
 
         public bool CanDash()
