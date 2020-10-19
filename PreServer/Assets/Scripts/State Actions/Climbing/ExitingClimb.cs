@@ -13,13 +13,11 @@ namespace PreServer
         Vector3 targetPos;
         Quaternion startRot;
         Quaternion targetRot;
-        public float offsetFromWall = 0.3f;
         float delta;
         PlayerManager states;
-        public float angle = 0;
+        float angle = 0;
         Vector3 newDirection;
         Vector3 originalDirection;
-
         public override void OnEnter(StateManager sm)
         {
             states = (PlayerManager)sm;
@@ -27,7 +25,7 @@ namespace PreServer
             states.rigid.velocity = Vector3.zero;
             states.rigid.useGravity = false;
             startPos = states.transform.position;
-            targetPos = states.climbHit.point + (states.climbHit.normal * offsetFromWall);
+            targetPos = states.climbHit.point + (states.climbHit.normal * states.climbingVariables.offsetFromWall);
             targetRot = Quaternion.FromToRotation(states.transform.up, states.climbHit.normal) * states.transform.rotation;
             t = 0;
             inPos = false;
@@ -124,7 +122,7 @@ namespace PreServer
         public override void OnUpdate(StateManager sm)
         {
             base.OnUpdate(states);
-            delta = Time.deltaTime * 4;
+            delta = Time.deltaTime * 4 * states.climbingVariables.transferSpeedMult;
             if (!inPos)
             {
                 t += delta;
@@ -133,7 +131,7 @@ namespace PreServer
                     tp = targetPos;
                 states.transform.position = tp;
             }
-            if (Vector3.Distance(states.transform.position, targetPos) <= offsetFromWall)
+            if (Vector3.Distance(states.transform.position, targetPos) <= states.climbingVariables.offsetFromWall)
             {
                 inPos = true;
             }
@@ -167,13 +165,14 @@ namespace PreServer
         {
             Vector3 direction = origin - target;
             direction.Normalize();
-            Vector3 offset = direction * offsetFromWall;
+            Vector3 offset = direction * states.climbingVariables.offsetFromWall;
             return target + offset;
         }
 
         public override void OnExit(StateManager sm)
         {
             base.OnExit(states);
+            ((PlayerManager)states).UpdateGroundNormals();
             states.rigid.velocity = Vector3.zero;
             states.rigid.useGravity = true;
             states.anim.SetBool(states.hashes.isClimbing, false);

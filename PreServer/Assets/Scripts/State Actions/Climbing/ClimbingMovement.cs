@@ -8,8 +8,6 @@ namespace PreServer
     [CreateAssetMenu(menuName = "Actions/State Actions/Climbing Movement")]
     public class ClimbingMovement : StateActions
     {
-        public float climbSpeed = 2f;
-        public float rotationSpeed = 3f;
         public TransformVariable cameraTransform;
         Vector3 climbRight;
         Vector3 climbUp;
@@ -23,13 +21,14 @@ namespace PreServer
         float tempAngle = 0;
         PlayerManager states;
         float prevAngle = 0;
-        public float minTransferAngle = 30f;
         bool ignoreGravity = false;
-        public float angle = 0;
+        float angle = 0;
         Vector3 newDirection;
         Vector3 originalDirection;
         public bool debug = false;
         Vector3 prevNormal;
+        Quaternion tRotation;
+        Vector3 tVelocity;
 
         public override void OnEnter(StateManager sm)
         {
@@ -40,8 +39,9 @@ namespace PreServer
             {
                 camera = Camera.main.transform.parent.GetComponent<CameraManager>();
             }
-            transferSpeedMult = 1f;
-
+            states.climbingVariables.transferSpeedMult = 1f;
+            tRotation = states.transform.rotation;
+            tVelocity = Vector3.zero;
             front = new RaycastHit();
             under = new RaycastHit();
             transitioning = false;
@@ -169,11 +169,12 @@ namespace PreServer
                 RotateTowardsClimb();
                 Rotate(states);
                 Move(states);
+                SafeMove();
                 CheckRaycast(states);
             }
-            if (Input.GetKeyDown(KeyCode.O))
-                rotateBasedOnCamera = !rotateBasedOnCamera;
-            Debug.DrawRay(states.climbHit.point, states.climbHit.normal * 3f, Color.black);
+            //if (Input.GetKeyDown(KeyCode.O))
+            //    rotateBasedOnCamera = !rotateBasedOnCamera;
+            //Debug.DrawRay(states.climbHit.point, states.climbHit.normal * 3f, Color.black);
         }
 
         bool frontHit = false, underHit = false;
@@ -182,7 +183,7 @@ namespace PreServer
             float topFloat = .4f;
             Vector3 frontOrigin = states.transform.position + (states.transform.forward * 1.5f) + (states.transform.up * topFloat);
 
-            Debug.DrawRay(frontOrigin, states.transform.forward * 0.75f, Color.blue);
+            //Debug.DrawRay(frontOrigin, states.transform.forward * 0.75f, Color.blue);
             //Raycast in front of the squirrel, used to check if we've hit a ceiling, ground, or another climb-able surface
             if (Physics.Raycast(frontOrigin, states.transform.forward, out front, 0.75f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
@@ -200,18 +201,22 @@ namespace PreServer
 
                     states.climbHit = front;
                     startPos = states.transform.position;
-                    targetPos = states.climbHit.point + (states.climbHit.normal * offsetFromWall);
+                    targetPos = states.climbHit.point + (states.climbHit.normal * states.climbingVariables.offsetFromWall);
                     targetRot = Quaternion.FromToRotation(states.transform.up, states.climbHit.normal) * states.transform.rotation;
+                    tVelocity = Vector3.zero;
+                    tRotation = targetRot;
                     t = 0;
                     inPos = false;
                     inRot = false;
 
                     transitioning = true;
+                    safeTurn = true;
+                    Debug.Log("Transitiong");
                     lagDashCooldown = states.lagDashCooldown;
 
                     // 9/2/20: Acute corner transfer best value - 1.15f
                     // Animation speed - .75f
-                    transferSpeedMult = 1.15f;
+                    states.climbingVariables.transferSpeedMult = 1.15f;
                     states.anim.CrossFade(states.hashes.squ_climb_corner_acute, 0.2f);
                     SafeClimb();
                     return;
@@ -225,6 +230,7 @@ namespace PreServer
                         states.climbHit = front;
                         states.anim.CrossFade(states.hashes.squ_climb_corner_acute, 0.2f);
                         states.climbState = PlayerManager.ClimbState.EXITING;
+                        states.climbingVariables.transferSpeedMult = 1.5f;
                         return;
                     }
                     else
@@ -239,7 +245,7 @@ namespace PreServer
 
 
             Vector3 underOrigin = states.transform.position;
-            underOrigin += states.transform.forward + states.transform.forward / 1.7f + (states.transform.up * 0.5f);
+            underOrigin += states.transform.forward * 1.7f + (states.transform.up * 0.5f);
 
             // Dir represents the downward direction
             Vector3 dir = -states.transform.forward + (-states.transform.up);
@@ -256,33 +262,7 @@ namespace PreServer
                 //If I hit another climb, check if I should transfer to it
                 if (under.transform.tag == "Climb")
                 {
-                    angle = Vector3.Angle(under.normal, states.climbHit.normal);
-                    prevNormal = states.climbHit.normal;
-                    states.climbHit = under;
-                    //if(Mathf.Abs(angle - prevAngle) >= minTransferAngle)
-                    //Debug.Log(Mathf.Abs(angle - prevAngle));
-                    //if the angle between the new climb and the current one is greater than the transfer amount, then transfer to it
-                    if (Mathf.Abs(angle - prevAngle) >= minTransferAngle)
-                    {
-                        ignoreGravity = true;
-                        prevAngle = angle;
-                        //Debug.Log("Under has detected a new climb to transition to");
-                        states.rigid.velocity = Vector3.zero;
-
-                        ////Update variables for transfer
-                        startPos = states.transform.position;
-                        targetPos = states.climbHit.point + (states.climbHit.normal * offsetFromWall);
-                        targetRot = Quaternion.FromToRotation(prevNormal, states.climbHit.normal) * states.transform.rotation;
-                        t = 0;
-                        inPos = false;
-                        inRot = false;
-                        transitioning = true;
-                        lagDashCooldown = states.lagDashCooldown;
-                        transferSpeedMult = 1f;
-                        states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
-                        SafeClimb();
-                    }
-                    SetCameraAngle(prevNormal, under.normal);
+                    UnderHit();
                 }
                 //I didn't hit a climb but I must do something based on the angle of the hit
                 else
@@ -297,7 +277,7 @@ namespace PreServer
                         states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
                         states.anim.SetBool(states.hashes.isClimbing, false);
                         states.rigid.velocity = Vector3.zero;
-
+                        states.climbingVariables.transferSpeedMult = 1.5f;
                         return;
                     }
                     ////detach
@@ -314,7 +294,9 @@ namespace PreServer
                     {
 
                         //Debug.Log("Under has detected a non-climbable surface, stop moving");
-                        states.rigid.velocity = Vector3.zero;
+                        //states.rigid.velocity = -states.rigid.velocity;
+                        //states.rigid.velocity = Vector3.zero;
+                        //states.transform.rotation = prevRotation;
                         return;
                     }
                 }
@@ -322,88 +304,18 @@ namespace PreServer
             }
             else
             {
-                //TODO: Refactor later, all transfer climbs do the same code, it will be more efficient to make a function
                 if (Physics.Raycast(underOrigin, Quaternion.AngleAxis(30f, states.climbHit.normal) * dir, out under, 1.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                 {
                     if (under.transform.tag == "Climb")
                     {
-                        angle = Vector3.Angle(under.normal, states.climbHit.normal);
-                        prevNormal = states.climbHit.normal;
-                        states.climbHit = under;
-                        //if(Mathf.Abs(angle - prevAngle) >= minTransferAngle)
-                        //Debug.Log(Mathf.Abs(angle - prevAngle));
-                        //if the angle between the new climb and the current one is greater than the transfer amount, then transfer to it
-                        if (Mathf.Abs(angle - prevAngle) >= minTransferAngle)
-                        {
-                            ignoreGravity = true;
-                            prevAngle = angle;
-                            //Debug.Log("Under has detected a new climb to transition to");
-                            states.rigid.velocity = Vector3.zero;
-
-
-                            ////Update variables for transfer
-                            startPos = states.transform.position;
-                            targetPos = states.climbHit.point + (states.climbHit.normal * offsetFromWall);
-                            targetRot = Quaternion.FromToRotation(prevNormal, states.climbHit.normal) * states.transform.rotation;
-                            t = 0;
-                            inPos = false;
-                            inRot = false;
-                            transitioning = true;
-                            lagDashCooldown = states.lagDashCooldown;
-                            transferSpeedMult = 1f;
-                            states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
-                            SafeClimb();
-                        }
-                        SetCameraAngle(prevNormal, under.normal);
+                        UnderHit();
                     }
                 }
                 else if (Physics.Raycast(underOrigin, Quaternion.AngleAxis(-30f, states.climbHit.normal) * dir, out under, 1.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                 {
                     if (under.transform.tag == "Climb")
                     {
-                        angle = Vector3.Angle(under.normal, states.climbHit.normal);
-                        prevNormal = states.climbHit.normal;
-                        states.climbHit = under;
-                        //if(Mathf.Abs(angle - prevAngle) >= minTransferAngle)
-                        //Debug.Log(Mathf.Abs(angle - prevAngle));
-                        //if the angle between the new climb and the current one is greater than the transfer amount, then transfer to it
-                        if (Mathf.Abs(angle - prevAngle) >= minTransferAngle)
-                        {
-                            ignoreGravity = true;
-                            prevAngle = angle;
-                            //Debug.Log("Under has detected a new climb to transition to");
-                            states.rigid.velocity = Vector3.zero;
-
-                            //Camera rotations, checking if the camera needs to be repositioned based on where it is relative to the climb
-                            //angle = Vector3.SignedAngle(prevNormal, under.normal, Vector3.up);
-                            //if (angle != 0 && camera != null)
-                            //{
-                            //    Debug.LogError("Adding amount: " + angle);
-                            //    //camera.debugAmount += angle;
-                            //}
-                            //tempAngle = Vector3.SignedAngle(prevNormal, under.normal, Vector3.up);
-                            //if (tempAngle < 90 && tempAngle > -90)
-                            //{
-                            //cameraAngle = (tempAngle > 0 ? -180 + tempAngle : 180 + tempAngle);
-                            //cameraAngle = 0;
-                            //if (camera != null)
-                            //    camera.ignoreInput = true;
-                            //}
-
-                            ////Update variables for transfer
-                            startPos = states.transform.position;
-                            targetPos = states.climbHit.point + (states.climbHit.normal * offsetFromWall);
-                            targetRot = Quaternion.FromToRotation(prevNormal, states.climbHit.normal) * states.transform.rotation;
-                            t = 0;
-                            inPos = false;
-                            inRot = false;
-                            transitioning = true;
-                            lagDashCooldown = states.lagDashCooldown;
-                            transferSpeedMult = 1f;
-                            states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
-                            SafeClimb();
-                        }
-                        SetCameraAngle(prevNormal, under.normal);
+                        UnderHit();
                     }
                 }
                 else
@@ -418,8 +330,43 @@ namespace PreServer
 
             }
         }
+
+        void UnderHit()
+        {
+            angle = Vector3.Angle(under.normal, states.climbHit.normal);
+            prevNormal = states.climbHit.normal;
+            states.climbHit = under;
+            //if(Mathf.Abs(angle - prevAngle) >= minTransferAngle)
+            //Debug.Log(Mathf.Abs(angle - prevAngle));
+            //if the angle between the new climb and the current one is greater than the transfer amount, then transfer to it
+            if (Mathf.Abs(angle - prevAngle) >= states.climbingVariables.minTransferAngle)
+            {
+                ignoreGravity = true;
+                prevAngle = angle;
+                //Debug.Log("Under has detected a new climb to transition to");
+                states.rigid.velocity = Vector3.zero;
+
+                ////Update variables for transfer
+                startPos = states.transform.position;
+                targetPos = states.climbHit.point + (states.climbHit.normal * states.climbingVariables.offsetFromWall);
+                targetRot = Quaternion.FromToRotation(prevNormal, states.climbHit.normal) * states.transform.rotation;
+                tVelocity = Vector3.zero;
+                tRotation = targetRot;
+                t = 0;
+                inPos = false;
+                inRot = false;
+                transitioning = true;
+                safeTurn = true;
+                lagDashCooldown = states.lagDashCooldown;
+                states.climbingVariables.transferSpeedMult = 1f;
+                states.anim.CrossFade(states.hashes.squ_climb_corner, 0.2f);
+                SafeClimb();
+            }
+            SetCameraAngle(prevNormal, under.normal);
+        }
+
         Quaternion prevRotation;
-        bool rotateBasedOnCamera = false;
+        //bool rotateBasedOnCamera = false;
         void Rotate(StateManager sm)
         {
             if (cameraTransform.value == null)
@@ -444,23 +391,27 @@ namespace PreServer
             Vector3 climbForwardAlt = climbForward;
             Vector3 climbRightAlt = climbRight;
 
-            if (rotateBasedOnCamera)
-            {
-                climbForwardAlt = (Quaternion.AngleAxis(rotateAngle, climbUp) * -climbForward);
-                climbRightAlt = (Quaternion.AngleAxis(rotateAngle, climbUp) * -climbRight);
-                if (climbForwardAlt == Vector3.zero)
-                    climbForwardAlt = climbForward;
-                if (climbRightAlt == Vector3.zero)
-                    climbRightAlt = climbRight;
-            }
+            //float sAngle = Vector3.SignedAngle(climbRight, camForward, Vector3.up);
+            //climbRightAlt = (sAngle <= 45f || sAngle >= 135f) ? climbRight : - climbRight;
+            //Debug.Log("ANGLE: " + Vector3.Angle(climbRight, camForward) + " || SIGNED ANGLE: " + Vector3.SignedAngle(climbRight, camForward, Vector3.up));
 
-            Debug.DrawRay(states.mTransform.position, climbForwardAlt * 5f, Color.magenta);
-            Debug.DrawRay(states.mTransform.position, climbRightAlt * 5f, Color.cyan);
+            //if (rotateBasedOnCamera)
+            //{
+            //    climbForwardAlt = (Quaternion.AngleAxis(rotateAngle, climbUp) * -climbForward);
+            //    climbRightAlt = (Quaternion.AngleAxis(rotateAngle, climbUp) * -climbRight);
+            //    if(climbForwardAlt == Vector3.zero)
+            //        climbForwardAlt = climbForward;
+            //    if (climbRightAlt == Vector3.zero)
+            //        climbRightAlt = climbRight;
+            //}
+
+            //Debug.DrawRay(states.mTransform.position, climbForwardAlt * 5f, Color.magenta);
+            //Debug.DrawRay(states.mTransform.position, climbRightAlt * 5f, Color.cyan);
 
             Vector3 targetDir = climbForwardAlt * v;
             targetDir += (climbRightAlt * h);
             targetDir.Normalize();
-
+            //Debug.DrawRay(states.transform.position, targetDir * 5, Color.magenta);
             //Debug purposes to visualize the direction
             //Debug.DrawRay(states.transform.position, climbForwardAlt * 3, Color.red);
             //Debug.DrawRay(states.transform.position, climbRightAlt * 3, Color.yellow);
@@ -471,11 +422,23 @@ namespace PreServer
 
             //Apply rotation
             states.movementVariables.moveDirection = targetDir;
-
+            //rotationSpeed = Mathf.Lerp(20, 6, (states.rigid.velocity.magnitude / 6f));
             Quaternion tr = Quaternion.LookRotation(targetDir, states.transform.up);
-            Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * states.movementVariables.moveAmount * rotationSpeed);
+            tRotation = Quaternion.Slerp(states.mTransform.rotation, tr, Time.deltaTime * states.movementVariables.moveAmount * states.climbingVariables.turnSpeed);
+            //Quaternion targetRotation = Quaternion.Slerp(states.mTransform.rotation, tr, states.delta * states.movementVariables.moveAmount * rotationSpeed);
 
-            states.mTransform.rotation = targetRotation;
+            //Vector3 underOrigin = states.transform.position;
+            //underOrigin += (targetRotation * Vector3.forward)  + (states.transform.up * 0.5f);
+
+            //// Dir represents the downward direction
+            //Vector3 dir = (states.transform.position + states.transform.forward + (-states.transform.up * 1.5f)) - underOrigin;
+            //RaycastHit hit = new RaycastHit();
+            //Debug.DrawRay(underOrigin, dir, Color.magenta);
+            //if (Physics.Raycast(underOrigin, dir.normalized, out hit, 1.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            //{
+            //    if (hit.transform.tag == "Climb")
+            //        states.mTransform.rotation = targetRotation;
+            //}
         }
 
         void RotateTowardsClimb()
@@ -486,37 +449,118 @@ namespace PreServer
 
             // Dir represents the downward direction
             Vector3 dir = -states.transform.up * 0.5f;
+            //Debug.DrawRay(center, dir * 1.25f, Color.blue);
 
             // Draw the rays
             //Debug.DrawRay(center, dir * 5f, Color.red);
             RaycastHit hit = new RaycastHit();
-            if (Physics.Raycast(center, dir, out hit, 5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(center, dir, out hit, 1.25f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
-                states.mTransform.rotation = Quaternion.Slerp(states.mTransform.rotation, Quaternion.FromToRotation(states.transform.up, hit.normal) * states.transform.rotation, Time.unscaledDeltaTime * rotationSpeed);
-                Vector3 v = Vector3.Cross(hit.normal, Vector3.up);
-                climbForward = Vector3.Cross(v, hit.normal);
-                climbRight = Vector3.Cross(hit.normal, Vector3.up);
-                climbUp = hit.normal;
+                if (hit.transform.tag == "Climb")
+                {
+                    states.mTransform.rotation = Quaternion.Slerp(states.mTransform.rotation, Quaternion.FromToRotation(states.transform.up, hit.normal) * states.transform.rotation, Time.unscaledDeltaTime * states.climbingVariables.climbRotateSpeed);
+                    Vector3 v = Vector3.Cross(hit.normal, Vector3.up);
+                    climbForward = Vector3.Cross(v, hit.normal);
+                    climbRight = Vector3.Cross(hit.normal, Vector3.up);
+                    climbUp = hit.normal;
+                }
             }
 
-            Debug.DrawRay(states.mTransform.position, climbForward * 5f, Color.red);
-            Debug.DrawRay(states.mTransform.position, climbRight * 5f, Color.blue);
-            Debug.DrawRay(states.mTransform.position, climbUp * 5f, Color.yellow);
+            //Debug.DrawRay(states.mTransform.position, climbForward * 5f, Color.red);
+            //Debug.DrawRay(states.mTransform.position, climbRight * 5f, Color.blue);
+            //Debug.DrawRay(states.mTransform.position, climbUp * 5f, Color.yellow);
         }
-
+        float velMag = 0;
         void Move(StateManager sm)
         {
             Vector3 testOrigin = states.mTransform.position + (states.mTransform.forward * .75f);
             testOrigin.y += .5f;
             //Debug.DrawRay(origin2, -Vector3.up, Color.red);
-            Vector3 targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * climbSpeed * states.climbSpeedMult;
-            if (!ignoreGravity)
-                targetVelocity -= climbUp.normalized * targetVelocity.magnitude * 0.5f;
+            Vector3 targetVelocity = states.mTransform.forward * states.movementVariables.moveAmount * states.climbingVariables.climbSpeed * states.climbSpeedMult;
+            velMag = targetVelocity.magnitude;
             //if (transitioning)
             //    targetVelocity = Quaternion.Inverse(targetRot) * targetVelocity;
             Vector3 currentVelocity = states.rigid.velocity;
             states.targetVelocity = targetVelocity;
-            states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity, states.delta * climbSpeed);
+            //states.rigid.velocity = Vector3.Lerp(currentVelocity, targetVelocity, Time.deltaTime * climbSpeed);
+            if (safeTurn)
+                tVelocity = Vector3.Lerp(currentVelocity, targetVelocity, Time.deltaTime * states.climbingVariables.climbSpeed);
+        }
+
+        bool safeTurn = true;
+        void SafeMove()
+        {
+            Vector3 underPos = states.transform.position + states.transform.forward + (-states.transform.up * 1.5f);
+            RaycastHit hit = new RaycastHit();
+
+            Vector3 underOrigin = states.transform.position;
+            underOrigin += (tRotation * (Vector3.forward * 1.25f)) + (states.transform.up * 0.5f);
+
+            Debug.DrawLine(underOrigin, underPos, Color.magenta);
+            Vector3 targetVelocity = GetRotationVelocity();
+            Debug.DrawRay(states.transform.position, targetVelocity, new Color(1,0,1));
+            if (Physics.Linecast(underOrigin, underPos, out hit, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                if (hit.transform.tag == "Climb")
+                {
+                    states.mTransform.rotation = tRotation;
+                    safeTurn = true;
+                }
+                else
+                {
+                    states.rigid.velocity = targetVelocity;
+                    states.mTransform.rotation = tRotation;
+                    //states.rigid.velocity = Vector3.Slerp(states.rigid.velocity, targetVelocity, 0.2f);
+                    //states.mTransform.rotation = Quaternion.Slerp(states.mTransform.rotation, tRotation, 0.2f);
+                    safeTurn = false;
+                    //Debug.LogError("not hitting climb");
+                }
+            }
+            else
+            {
+                states.rigid.velocity = targetVelocity;
+                states.mTransform.rotation = tRotation;
+                //states.rigid.velocity = Vector3.Slerp(states.rigid.velocity, targetVelocity, 0.2f);
+                //states.mTransform.rotation = Quaternion.Slerp(states.mTransform.rotation, tRotation, 0.2f);
+                safeTurn = false;
+
+            }
+
+            Vector3 climbVel = Vector3.Lerp(Vector3.zero, climbUp.normalized * velMag * 0.5f, Time.deltaTime * states.climbingVariables.climbSpeed);
+            //SOMETHING IS NOT RIGHT HERE
+            Vector3 potPosition = states.transform.position + (tVelocity * Time.deltaTime) + (states.transform.forward * 1.25f) + climbVel;
+            Debug.DrawLine(potPosition, underPos, Color.cyan);
+            if (safeTurn)
+            {
+                if (Physics.Linecast(potPosition, underPos, out hit, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+                {
+                    if (hit.transform.tag == "Climb")
+                        states.rigid.velocity = tVelocity;
+                    else
+                    {
+                        states.rigid.velocity = Vector3.zero;
+                        //Debug.LogError("not hitting climb");
+                    }
+                }
+                else
+                {
+                    //Debug.LogError("not hitting anything");
+                    states.rigid.velocity = Vector3.zero;
+                }
+            }
+
+            if (!ignoreGravity)
+                states.rigid.velocity -= climbVel;
+        }
+
+        Vector3 GetRotationVelocity()
+        {
+            float a = Mathf.Abs(Vector3.SignedAngle(states.transform.forward, tRotation * Vector3.forward, states.climbHit.normal));
+            float omega = a * Time.deltaTime * 10f * 2 * Mathf.PI;
+
+            Vector3 targetVelocity = ((tRotation * -Vector3.forward) + states.transform.forward).normalized;
+            targetVelocity *= omega;
+            return targetVelocity;
         }
 
         bool inPos;
@@ -526,13 +570,11 @@ namespace PreServer
         Vector3 targetPos;
         Quaternion startRot;
         Quaternion targetRot;
-        public float offsetFromWall = 0.3f;
         float delta;
         float lagDashCooldown = 0;
-        float transferSpeedMult = 1f;
         void Transfer(StateManager sm)
         {
-            delta = Time.deltaTime * 4 * transferSpeedMult;
+            delta = Time.deltaTime * 4 * states.climbingVariables.transferSpeedMult;
 
             if (inPos && inRot)
             {
@@ -570,7 +612,7 @@ namespace PreServer
                     tp = targetPos;
                 states.transform.position = tp;
             }
-            if (Vector3.Distance(states.transform.position, targetPos) <= offsetFromWall)
+            if (Vector3.Distance(states.transform.position, targetPos) <= states.climbingVariables.offsetFromWall)
             {
                 if (!debug)
                     inPos = true;
@@ -585,7 +627,7 @@ namespace PreServer
         void CheckUnder()
         {
             Vector3 underOrigin = states.transform.position;
-            underOrigin += states.transform.forward + states.transform.forward / 1.7f + (states.transform.up * 0.5f);
+            underOrigin += states.transform.forward * 1.7f + (states.transform.up * 0.5f);
             // Dir represents the downward direction
             Vector3 dir = -states.transform.forward + (-states.transform.up);
             if (Physics.Raycast(underOrigin, dir, out under, 1.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
@@ -600,29 +642,29 @@ namespace PreServer
             climbUp = states.climbHit.normal;
         }
 
-        public override void OnFixed(StateManager sm)
-        {
-            base.OnFixed(states);
+        //public override void OnFixed(StateManager sm)
+        //{
+        //    base.OnFixed(states);
 
-            if (camera != null && Mathf.Abs(cameraAngle) > 0)
-            {
-                float angle = 0;
-                if (Mathf.Abs(cameraAngle) >= 1.5f)
-                {
-                    angle = 1.5f;
-                }
-                else if (Mathf.Abs(cameraAngle) >= 0.75f)
-                {
-                    angle = 0.75f;
-                }
-                else
-                {
-                    angle = Mathf.Abs(cameraAngle);
-                }
-                camera.AddToYaw(angle * (cameraAngle > 0 ? 1 : -1));
-                cameraAngle -= angle * (cameraAngle > 0 ? 1 : -1);
-            }
-        }
+        //    //if (camera != null && Mathf.Abs(cameraAngle) > 0)
+        //    //{
+        //    //    float angle = 0;
+        //    //    if (Mathf.Abs(cameraAngle) >= 1.5f)
+        //    //    {
+        //    //        angle = 1.5f;
+        //    //    }
+        //    //    else if (Mathf.Abs(cameraAngle) >= 0.75f)
+        //    //    {
+        //    //        angle = 0.75f;
+        //    //    }
+        //    //    else
+        //    //    {
+        //    //        angle = Mathf.Abs(cameraAngle);
+        //    //    }
+        //    //    camera.AddToYaw(angle * (cameraAngle > 0 ? 1 : -1));
+        //    //    cameraAngle -= angle * (cameraAngle > 0 ? 1 : -1);
+        //    //}
+        //}
 
         void SetCameraAngle(Vector3 prev, Vector3 curr)
         {
@@ -636,13 +678,24 @@ namespace PreServer
 
                 float a = Vector3.SignedAngle(-cameraForward, curr, Vector3.up);
                 //angle += (angle * 0.1f);
+                CameraAdjustment camState = camera.GetCamAdjustState(states.currentState.name);
+                if (camState != null)
+                    a -= camState.adjustmentValue.y;
                 if (Mathf.Abs(a) > 45f)
                 {
-                    if (Mathf.Abs(a) > Mathf.Abs(angle))
-                        cameraAngle += a;
-                    else
-                        cameraAngle += angle;
-                    //Debug.LogError("Adding angle: " + angle + " angle between camera: " + a);
+                    if (camState != null)
+                        a += camState.adjustmentValue.y;
+                    //if (Mathf.Abs(a) > Mathf.Abs(angle))
+                    //{
+                    camera.AddCamAdjustment(new CameraAdjustment(new Vector2(0, a), 1.5f, states.currentState.name));
+                    //cameraAngle += a;
+                    //}
+                    //else
+                    //{
+                    //    camera.AddCamAdjustment(new CameraAdjustment(new Vector2(0, angle), 1.5f, states.currentState.name));
+                    //    cameraAngle += angle;
+                    //}
+                    ////Debug.LogError("Adding angle: " + angle + " angle between camera: " + a);
                 }
             }
         }
@@ -661,7 +714,7 @@ namespace PreServer
         {
             Vector3 direction = origin - target;
             direction.Normalize();
-            Vector3 offset = direction * offsetFromWall;
+            Vector3 offset = direction * states.climbingVariables.offsetFromWall;
             return target + offset;
         }
 
@@ -670,11 +723,23 @@ namespace PreServer
             base.OnExit(states);
             if (states.lagDashCooldown > 1f)
                 states.lagDashCooldown = lagDashCooldown;
+            safeTurn = true;
 
             //states.rigid.velocity = Vector3.zero;
             moveCamera = false;
             if (camera != null)
                 camera.ignoreInput = false;
         }
+    }
+
+    [System.Serializable]
+    public class ClimbingVariables
+    {
+        public float climbSpeed = 5.25f;
+        public float turnSpeed = 6f;
+        public float climbRotateSpeed = 6f;
+        public float transferSpeedMult = 1f;
+        public float minTransferAngle = 30f;
+        public float offsetFromWall = 0.05f;
     }
 }
