@@ -908,16 +908,19 @@ namespace PreServer
                 //Debug.LogError("Path time: " + path[pathIndex].time + " time passed: " + t + " lerpVal: " + path[pathIndex].lerper.GetLerpVal());
 
                 //If the current path is complete, then move onto the next one
-                if (path[pathIndex].lerper.done)
+                //using a loop so I can keep passing the time over if the next path is complete
+                while (path[pathIndex].lerper.done)
                 {
-                    //Debug.LogError(path[pathIndex].time + " " + path[pathIndex].GetRemainder());
+                    states.transform.position = path[pathIndex].lerper.endVal;
                     states.transform.rotation = path[pathIndex].slerper.endVal;
                     ++pathIndex;
                     //Add any remaining time from the previous path into the current so we don't go an extra frame or 2 over
                     if (pathIndex < path.Count)
                     {
-                        path[pathIndex].lerper.Update(path[pathIndex - 1].GetRemainder() / path[pathIndex].time);
+                        path[pathIndex].Update(path[pathIndex - 1].GetRemainder());
                     }
+                    else
+                        break;
                 }
             }
         }
@@ -1294,7 +1297,7 @@ namespace PreServer
         {
             remainder = (amount / time) + lerper.GetLerpVal();
             if (remainder >= 1)
-                remainder = (remainder - 1f) * time;
+                remainder = (remainder * time) - time;
             lerper.Update(amount / time);
             slerper.Update(amount / (time * 0.25f));
         }
