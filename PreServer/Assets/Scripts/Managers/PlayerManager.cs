@@ -462,20 +462,23 @@ namespace PreServer
 
                 switch (currentScene.name)
                 {
-                    case "TestScene":
-                        SceneManager.LoadScene("Plaza");
-                        break;
+                    //case "TestScene":
+                    //    SceneManager.LoadScene("Plaza");
+                    //    break;
                     case "Plaza":
-                        SceneManager.LoadScene("DEMO");
-                        break;
-                    case "DEMO":
+                        //SceneManager.LoadScene("DEMO");
                         SceneManager.LoadScene("DEMO 2");
                         break;
+                    //case "DEMO":
+                    //    SceneManager.LoadScene("DEMO 2");
+                    //    break;
                     case "DEMO 2":
-                        SceneManager.LoadScene("TestScene");
+                        //SceneManager.LoadScene("TestScene");
+                        SceneManager.LoadScene("Plaza");
                         break;
                     default:
-                        SceneManager.LoadScene("DEMO");
+                        //SceneManager.LoadScene("DEMO");
+                        SceneManager.LoadScene("DEMO 2");
                         break;
                 }
             }
@@ -1596,20 +1599,20 @@ namespace PreServer
         private void OnDrawGizmos()
         {
 
-            if(drawPath)
-            {
-                Gizmos.color = Color.red;
-                float c = 0;
-                for (int i = 0; i < path.Count; ++i)
-                {
-                   c = 0;
-                   while (c <= 1)
-                   {
-                        Gizmos.DrawSphere(Vector3.Lerp(path[i].lerper.startVal, path[i].lerper.endVal, c) + (path[i].up * 0.45f), 0.375f);
-                        c += 0.05f;
-                   }
-                }
-            }
+            //if(drawPath)
+            //{
+            //    Gizmos.color = Color.red;
+            //    float c = 0;
+            //    for (int i = 0; i < path.Count; ++i)
+            //    {
+            //       c = 0;
+            //       while (c <= 1)
+            //       {
+            //            Gizmos.DrawSphere(Vector3.Lerp(path[i].lerper.startVal, path[i].lerper.endVal, c) + (path[i].up * 0.45f), 0.375f);
+            //            c += 0.05f;
+            //       }
+            //    }
+            //}
             //Visualize climbHit
             //var topFloat = .5f;
             //var topRay = transform.position + (transform.forward * .9f) + (transform.up * topFloat);

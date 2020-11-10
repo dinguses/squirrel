@@ -35,65 +35,21 @@ namespace PreServer
 
         void SafeClimb()
         {
-            originalDirection = targetRot * Vector3.forward.normalized;
-            newDirection = originalDirection;
+
             //This is under the assumption that the climbhit will never be inside a mesh collider
             RaycastHit hit = new RaycastHit();
-            //Check to see the position we will end up at is colliding with the length of the squirrel's collider
-            //if there is any object in the way, then move the target position backwards
-            while (Physics.Raycast(targetPos + states.climbHit.normal * 0.1f, originalDirection, out hit, 2f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
-            {
-                //If there is an object that will block us from moving back, then move back only a little bit then break out of here
-                if (Physics.Raycast(targetPos + states.climbHit.normal * 0.1f, -originalDirection, out hit, 0.2f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
-                {
-                    targetPos -= (originalDirection.normalized * (hit.distance * 0.5f));
-                    break;
-                }
-                targetPos -= (originalDirection.normalized * 0.2f);
-            }
+
+            Vector3 originalDirection = targetRot * Vector3.forward.normalized;
+            Vector3 newDirection = originalDirection;
 
             angle = 0;
             newDirection = originalDirection;
             float angleDirection = 1f;
 
             //We've moved back as far as we can, if we're still hitting anything, then we'll rotating out of it should fix it
-            while (Physics.Raycast(targetPos + states.climbHit.normal * 0.1f, newDirection, out hit, 2f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            while (Physics.SphereCast(targetPos + states.climbHit.normal * 0.45f, 0.375f, newDirection, out hit, 2f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
-                switch (angle)
-                {
-                    case 0:
-                        angleDirection = 1;
-                        break;
-                    case 45:
-                        angleDirection = -1;
-                        angle = 0;
-                        break;
-                    case -45:
-                        angleDirection = 1;
-                        angle = 45;
-                        break;
-                    case 90:
-                        angleDirection = -1;
-                        angle = -45;
-                        break;
-                    case -90:
-                        angleDirection = 1;
-                        angle = 90;
-                        break;
-                    case 135:
-                        angleDirection = -1;
-                        angle = -90;
-                        break;
-                    case -135:
-                        angleDirection = 1;
-                        angle = 135;
-                        break;
-                    case 180:
-                        angleDirection = -1;
-                        angle = -135;
-                        break;
-                }
-
+                CheckAngle(ref angle, ref angleDirection);
                 angle += angleDirection;
                 newDirection = Quaternion.AngleAxis(angle, states.climbHit.normal) * originalDirection.normalized;
                 //if we've done a full rotation and we still can't get out, then break out of the function otherwise we'll be in an endless loop
@@ -101,17 +57,71 @@ namespace PreServer
                 if (angle <= -180)
                     break;
             }
-            //if (angle == 0)
-            //{
-            //    //Debug.LogError("Mission failed we'll get 'em next time");
-            //}
-            //Debug.LogError(angle);
-            //angle = angle % 360;
+
             if (angle != 0)
+            {
                 targetRot = Quaternion.AngleAxis(angle, states.climbHit.normal) * targetRot;
-            //Debug.DrawRay(targetPos, states.climbHit.normal * 2f, Color.red);
-            //Debug.DrawRay(targetPos + states.climbHit.normal * 0.25f, targetRot * temp.normalized * 2, Color.yellow);
-            //Debug.DrawRay(targetPos + states.climbHit.normal * 0.25f, temp2 * 2, Color.cyan);
+                originalDirection = targetRot * Vector3.forward.normalized;
+            }
+            bool backBlocked = false;
+            //Check to see the position we will end up at is colliding with the length of the squirrel's collider
+            //if there is any object in the way, then move the target position backwards
+            while (Physics.SphereCast(targetPos + states.climbHit.normal * 0.45f, 0.375f, originalDirection, out hit, 2f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                backBlocked = CheckBackBlocked(originalDirection, hit);
+                if (backBlocked)
+                    break;
+            }
+        }
+
+        void CheckAngle(ref float angle, ref float angleDirection)
+        {
+            switch (angle)
+            {
+                case 0:
+                    angleDirection = 1;
+                    break;
+                case 45:
+                    angleDirection = -1;
+                    angle = 0;
+                    break;
+                case -45:
+                    angleDirection = 1;
+                    angle = 45;
+                    break;
+                case 90:
+                    angleDirection = -1;
+                    angle = -45;
+                    break;
+                case -90:
+                    angleDirection = 1;
+                    angle = 90;
+                    break;
+                case 135:
+                    angleDirection = -1;
+                    angle = -90;
+                    break;
+                case -135:
+                    angleDirection = 1;
+                    angle = 135;
+                    break;
+                case 180:
+                    angleDirection = -1;
+                    angle = -135;
+                    break;
+            }
+        }
+
+        bool CheckBackBlocked(Vector3 dir, RaycastHit hit)
+        {
+            //If there is an object that will block us from moving back, then move back only a little bit then break out of here
+            if (Physics.SphereCast(targetPos + states.climbHit.normal * 0.45f, 0.375f, -dir, out hit, 0.2f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                //targetPos -= (originalDirection.normalized * (hit.distance * 0.5f));
+                return true;
+            }
+            targetPos -= (dir.normalized * 0.2f);
+            return false;
         }
 
         public override void Execute(StateManager sm)

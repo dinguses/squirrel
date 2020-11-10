@@ -38,7 +38,7 @@ namespace PreServer
         public float rotationSpeed = 16f;//speed the player rotates at
         public float rotationCutoff = 15f;//stops the player from rotating past this amount
         public float dashRotationSpeed = 16f;//speed the player rotates at
-        Vector3 prevRotation; //used to check against current rotation to know if the path should be recalculated
+        Quaternion prevRotation; //used to check against current rotation to know if the path should be recalculated
         Quaternion startRotation;
         Quaternion minRotation;
         Quaternion maxRotation;
@@ -94,7 +94,7 @@ namespace PreServer
             timeScaleSet = false;
             slowMoTimer = 0;
 
-            prevRotation = player.transform.forward;
+            prevRotation = player.transform.rotation;
             startRotation = player.transform.rotation;
             Vector3 dir = player.transform.forward;
             if (!player.isGrounded)
@@ -131,6 +131,7 @@ namespace PreServer
                     totalTime = time;
                 }
             }
+            fullDistanceUsed = false;
             //Get the current direction of the player and ignore vertical direction if in the air
             Vector3 dir = player.transform.forward;
             if (!player.isGrounded && player.climbState == PlayerManager.ClimbState.NONE)
@@ -148,12 +149,14 @@ namespace PreServer
                     pos = GetPoint(player.transform.position, player.climbHit.point, player.climbHit.point - (dir * distance));
                     player.transform.position = pos;
                 }
+                //Debug.DrawRay(pos, dir, Color.red, 5f);
+
                 CalculatePathClimb(distance, player.climbHit.transform == null ? (player.transform.up.normalized * 0.45f) : (player.climbHit.normal.normalized * 0.45f), dir, pos, totalTime, states.transform.rotation);
             }
             else
                 CalculatePath(distance, (player.transform.up * 0.45f), dir, pos, totalTime, states.transform.rotation);
 
-            if (fullDistanceUsed)
+            if (fullDistanceUsed || player.climbState == PlayerManager.ClimbState.CLIMBING)
             {
                 //Apparently safety net always needs to be active for a climb or just always
                 //That's so annoying!
@@ -284,6 +287,7 @@ namespace PreServer
 
         void ConvertHitInfo(ref RaycastHit hit, Vector3 start, Vector3 dir, Vector3 up)
         {
+            //Debug.DrawLine(start, hit.point, Color.green, 5f);
             RaycastHit secondHit = new RaycastHit();
             if (Physics.Linecast(start, hit.point + dir * 0.1f - up * 0.025f, out secondHit, Layers.ignoreLayersController, QueryTriggerInteraction.Collide))
             {
@@ -292,11 +296,14 @@ namespace PreServer
             }
             //Debug.DrawRay(hit.point, hit.normal * 5f, Color.green, 5f);
             Vector3 hitDir = hit.point - start;
+            //Debug.DrawRay(player.transform.position, dir * 5f, Color.green, 5f);
             if (hitDir != dir)
             {
                 dir = Vector3.Project(hitDir, dir);
                 hit.point = start + dir;
+                //Debug.LogError("Changing dir");
             }
+            //Debug.DrawRay(player.transform.position, dir * 5f, Color.cyan, 5f);
             //Debug.DrawRay(hit.point, hit.normal * 5f, Color.cyan, 5f);
         }
 
@@ -353,10 +360,8 @@ namespace PreServer
                 {
                     //If a wall isn't hit, then use up the rest of the distance because ain't nothing gonna stop us baby!!!!
                     //path[path.Count - 1].time = Mathf.Abs(remainingTime);
-                    target = tempPos - (up.normalized * 0.25f) - dir;//start + dir * Mathf.Abs(remainingDistance);
+                    target = tempPos - (up.normalized * 0.25f);//start + dir * Mathf.Abs(remainingDistance);
                     path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
-                    if (Vector3.Distance(start, target) >= remainingDistance)
-                        fullDistanceUsed = true;
                     remainingDistance = 0;
                     remainingTime = 0;
                 }
@@ -390,7 +395,6 @@ namespace PreServer
                 path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
                 remainingDistance = 0;
                 remainingTime = 0;
-                fullDistanceUsed = false;
             }
             else
             {
@@ -409,7 +413,6 @@ namespace PreServer
                         path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
                         remainingDistance = 0;
                         remainingTime = 0;
-                        fullDistanceUsed = false;
                     }
                     else
                     {
@@ -423,7 +426,6 @@ namespace PreServer
                         //subtract the distance and time from the respective remainings
                         remainingDistance -= hitInfo.distance;
                         remainingTime -= path[path.Count - 1].time;
-                        fullDistanceUsed = false;
                     }
                 }
                 else
@@ -432,7 +434,7 @@ namespace PreServer
                     {
                         //If a wall isn't hit, then use up the rest of the distance because ain't nothing gonna stop us baby!!!!
                         //path[path.Count - 1].time = Mathf.Abs(remainingTime);
-                        target = tempPos - (up.normalized * 0.25f) - (dir * 1.75f);//start + dir * Mathf.Abs(remainingDistance);
+                        target = tempPos - (up.normalized * 0.25f)/* - (dir * 1.75f)*/;//start + dir * Mathf.Abs(remainingDistance);
                         path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
                         remainingDistance = 0;
                         remainingTime = 0;
@@ -449,36 +451,35 @@ namespace PreServer
         {
             if (climbHit.normal == up.normalized && climbHit.transform.tag == "Climb")
             {
-                path[path.Count - 1].time = Mathf.Abs(remainingTime);
-                target = start + dir * Mathf.Abs(remainingDistance);
+                //path[path.Count - 1].time = Mathf.Abs(remainingTime);
+                //target = start + dir * Mathf.Abs(remainingDistance);
+                target = tempPos - (up.normalized * 0.25f)/* - (dir * 1.75f)*/;//start + dir * Mathf.Abs(remainingDistance);
+                path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
                 remainingDistance = 0;
                 remainingTime = 0;
-                fullDistanceUsed = true;
             }
             else
             {
                 if (climbHit.transform.tag == "Climb")
                 {
                     //end the current path at the hit point and set up the information for the new path
-                    target = GetPoint(climbHit.point, start, tempPos - up); //might subtract dir * (length of squirrel) later
+                    target = GetPoint(climbHit.point, start, tempPos - (up.normalized * 0.25f)); //might subtract dir * (length of squirrel) later
                     path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
 
-                    up = climbHit.normal * 0.25f;
+                    up = climbHit.normal * 0.45f;
                     dir = (Quaternion.FromToRotation(player.transform.up, climbHit.normal) * player.transform.rotation) * Vector3.forward.normalized;
 
                     //subtract the distance and time from the respective remainings
                     remainingDistance -= Vector3.Distance(start, target);
                     remainingTime -= path[path.Count - 1].time;
-                    fullDistanceUsed = false;
                 }
                 else
                 {
                     //move the target point back the length of the squirrel and end the dash
-                    target = GetPoint(climbHit.point, start, tempPos - up) - (dir * 1.75f);
+                    target = GetPoint(climbHit.point, start, tempPos - (up.normalized * 0.25f))/* - (dir * 1.75f)*/;
                     path[path.Count - 1].time = (Vector3.Distance(start, target) / distance) * totalTime;
                     remainingDistance = 0;
                     remainingTime = 0;
-                    fullDistanceUsed = false;
                 }
             }
         }
@@ -489,9 +490,11 @@ namespace PreServer
             float tempRemaining = distance;
             temp = start + (up.normalized * 0.25f);
             RaycastHit underInfo = new RaycastHit();
+            RaycastHit prevUnderInfo;
             //Vector3 newDir = /*(-dir * 0.15f)*/ - up;
             while (tempRemaining > 0)
             {
+                prevUnderInfo = underInfo;
                 if (tempRemaining >= 0.1f)
                 {
                     temp += dir.normalized * 0.1f;
@@ -501,7 +504,6 @@ namespace PreServer
                 {
                     temp += dir.normalized * tempRemaining;
                     tempRemaining = 0;
-                    fullDistanceUsed = true;
                 }
                 //Debug.LogError(tempPos + " " + dir.normalized);
                 Debug.DrawRay(temp, -up.normalized * 0.5f, Color.red);
@@ -523,7 +525,7 @@ namespace PreServer
                     }
                     else
                     {
-                        //return underInfo;
+                        return prevUnderInfo;
                     }
                     //else if (Physics.Raycast(temp - up * 0.5f, -up, out underInfo, 0.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                     //{
@@ -546,7 +548,8 @@ namespace PreServer
             RaycastHit under = new RaycastHit();
             if (Physics.Raycast(underOrigin, dir, out under, 1.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
-                player.climbHit = under;
+                if(under.transform.tag == "Climb")
+                    player.climbHit = under;
             }
         }
 
@@ -558,55 +561,191 @@ namespace PreServer
         //Once the path has been fully calculated figure out if the squirrel's face will hit anything just to make sure we don't go into any walls
         void SafetyNet()
         {
-            bool safe = false;
-            Vector3 dir = Vector3.zero;
-            RaycastHit hit = new RaycastHit();
-            float dist = 0;
+            if (path.Count == 0)
+            {
+                Debug.LogError("ERROR: Dash pathing length is zero");
+                return;
+            }
             if (player.climbState == PlayerManager.ClimbState.CLIMBING)
             {
-                dist = Vector3.Distance(path[path.Count - 1].lerper.endVal, path[path.Count - 1].lerper.startVal);
-                dir = path[path.Count - 1].lerper.endVal - path[path.Count - 1].lerper.startVal;
-                float temp = 1.75f;
-                while (temp > 0)
+                SafeClimb();
+            }
+            else
+            {
+                bool safe = false;
+                Vector3 dir = Vector3.zero;
+                RaycastHit hit = new RaycastHit();
+                float dist = 0;
+                do
                 {
-                    if (Physics.Raycast(path[path.Count - 1].lerper.endVal + (dir.normalized * temp) + (path[path.Count - 1].up * 0.25f), -path[path.Count - 1].up, out hit, 0.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+                    dir = path[path.Count - 1].lerper.endVal - path[path.Count - 1].lerper.startVal;
+                    //CHANGED TO SPHERECAST
+                    safe = !Physics.SphereCast(path[path.Count - 1].lerper.endVal + (path[path.Count - 1].up * 0.45f), 0.375f, dir, out hit, 2f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore);
+                    if (!safe)
                     {
-                        break;
+                        dist = Vector3.Distance(path[path.Count - 1].lerper.endVal, path[path.Count - 1].lerper.startVal);
+                        if (dist < 2f)
+                        {
+                            path.RemoveAt(path.Count - 1);
+                            continue;
+                        }
+                        else
+                        {
+                            path[path.Count - 1].lerper.Reset(path[path.Count - 1].lerper.startVal, path[path.Count - 1].lerper.endVal - (dir.normalized * (2f - hit.distance)));
+                            break;
+                        }
                     }
-                    if (temp >= 0.1f)
-                    {
-                        temp -= 0.1f;
-                    }
-                    else
-                    {
-                        temp = 0;
-                    }
-                }
-                if (temp != 1.75f)
-                    path[path.Count - 1].lerper.Reset(path[path.Count - 1].lerper.startVal, path[path.Count - 1].lerper.endVal - (dir.normalized * (1.75f - temp)));
-                //Debug.LogError("Hit the safety check");
+                } while (!safe && path.Count > 0);
+            }            
+        }
+
+        void SafeClimb()
+        {
+
+            //This is under the assumption that the climbhit will never be inside a mesh collider
+            RaycastHit hit = new RaycastHit();
+            Vector3 targetPos = path[path.Count - 1].lerper.endVal;
+            Vector3 originalDirection = (path[path.Count - 1].lerper.endVal - path[path.Count - 1].lerper.startVal).normalized;
+
+            bool backBlocked = false;
+
+            //Check to see the position we will end up at is colliding with the length of the squirrel's collider
+            //if there is any object in the way, then move the target position backwards
+            while (Physics.SphereCast(targetPos + path[path.Count - 1].up * 0.4f, 0.375f, originalDirection, out hit, 2f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                backBlocked = CheckBackBlocked(originalDirection, hit, false, ref targetPos);
+                if (backBlocked)
+                    break;
             }
 
-            while (!safe && path.Count > 0)
+            bool climbHit = true;
+            if (!backBlocked)
             {
-                dir = path[path.Count - 1].lerper.endVal - path[path.Count - 1].lerper.startVal;
-                //CHANGED TO SPHERECAST
-                safe = !Physics.SphereCast(path[path.Count - 1].lerper.endVal + (path[path.Count - 1].up * 0.45f), 0.375f, dir, out hit, 2f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore);
-                if (!safe)
+                climbHit = CheckClimbHit(targetPos + (path[path.Count - 1].up * 0.1f) + (originalDirection * 1.5f), hit);
+                while (!climbHit)
                 {
-                    dist = Vector3.Distance(path[path.Count - 1].lerper.endVal, path[path.Count - 1].lerper.startVal);
-                    if (dist < 2f)
-                    {
-                        path.RemoveAt(path.Count - 1);
-                        continue;
-                    }
-                    else
-                    {
-                        path[path.Count - 1].lerper.Reset(path[path.Count - 1].lerper.startVal, path[path.Count - 1].lerper.endVal - (dir.normalized * (2f - hit.distance)));
+                    backBlocked = CheckBackBlocked(originalDirection, hit, true, ref targetPos);
+                    if (backBlocked)
                         break;
-                    }
+                    climbHit = CheckClimbHit(targetPos + (path[path.Count - 1].up * 0.1f) + (originalDirection * 1.5f), hit);
                 }
             }
+
+            if (targetPos != path[path.Count - 1].lerper.endVal)
+            {
+                path[path.Count - 1].lerper.Reset(path[path.Count - 1].lerper.startVal, targetPos);
+            }
+
+            float angle = 0;
+            Vector3 newDirection = originalDirection;
+            float angleDirection = 1f;
+
+            //We've moved back as far as we can, if we're still hitting anything, then we'll rotating out of it should fix it
+            while (Physics.SphereCast(targetPos + path[path.Count - 1].up * 0.4f, 0.375f, newDirection, out hit, 2f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                CheckAngle(ref angle, ref angleDirection);
+                angle += angleDirection;
+                newDirection = Quaternion.AngleAxis(angle, path[path.Count - 1].up) * originalDirection.normalized;
+                //if we've done a full rotation and we still can't get out, then break out of the function otherwise we'll be in an endless loop
+                //If we ever have to break out, then this is most probably an issue with the level design
+                if (angle <= -180)
+                    break;
+            }
+
+            if (angle > -180f)
+            {
+                climbHit = CheckClimbHit(targetPos + (path[path.Count - 1].up * 0.1f) + (newDirection * 1.5f), hit);
+                while (!climbHit)
+                {
+
+                    CheckAngle(ref angle, ref angleDirection);
+                    angle += angleDirection;
+                    newDirection = Quaternion.AngleAxis(angle, path[path.Count - 1].up) * originalDirection.normalized;
+                    if (angle <= -180)
+                        break;
+                    climbHit = CheckClimbHit(targetPos + (path[path.Count - 1].up * 0.1f) + (newDirection * 1.5f), hit);
+                }
+            }
+
+            if (angle != 0)
+            {
+                path[path.Count - 1].slerper.Reset(path[path.Count - 1].slerper.startVal, Quaternion.AngleAxis(angle, path[path.Count - 1].up) * path[path.Count - 1].slerper.endVal);
+                originalDirection = path[path.Count - 1].slerper.endVal * Vector3.forward.normalized;
+            }
+
+
+            //Debug.DrawRay(targetPos, states.climbHit.normal * 2f, Color.red);
+            //Debug.DrawRay(targetPos + states.climbHit.normal * 0.25f, targetRot * temp.normalized * 2, Color.yellow);
+            //Debug.DrawRay(targetPos + states.climbHit.normal * 0.25f, temp2 * 2, Color.cyan);
+        }
+
+        bool CheckClimbHit(Vector3 origin, RaycastHit hit)
+        {
+            if (Physics.Raycast(origin, -path[path.Count - 1].up, out hit, 0.5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                if (hit.transform.tag == "Climb")
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        void CheckAngle(ref float angle, ref float angleDirection)
+        {
+            switch (angle)
+            {
+                case 0:
+                    angleDirection = 1;
+                    break;
+                case 45:
+                    angleDirection = -1;
+                    angle = 0;
+                    break;
+                case -45:
+                    angleDirection = 1;
+                    angle = 45;
+                    break;
+                case 90:
+                    angleDirection = -1;
+                    angle = -45;
+                    break;
+                case -90:
+                    angleDirection = 1;
+                    angle = 90;
+                    break;
+                case 135:
+                    angleDirection = -1;
+                    angle = -90;
+                    break;
+                case -135:
+                    angleDirection = 1;
+                    angle = 135;
+                    break;
+                case 180:
+                    angleDirection = -1;
+                    angle = -135;
+                    break;
+            }
+        }
+
+        bool CheckBackBlocked(Vector3 dir, RaycastHit hit, bool safetyCheck, ref Vector3 targetPos)
+        {
+            //If there is an object that will block us from moving back, then move back only a little bit then break out of here
+            if (Physics.SphereCast(targetPos + path[path.Count - 1].up * 0.4f, 0.375f, -dir, out hit, 0.1f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                //targetPos -= (originalDirection.normalized * (hit.distance * 0.5f));
+                return true;
+            }
+            if (safetyCheck)
+            {
+                if (!CheckClimbHit(targetPos + path[path.Count - 1].up * 0.1f - (dir.normalized * 0.1f), hit))
+                    return true;
+                if (Physics.CheckSphere(targetPos + path[path.Count - 1].up * 0.4f, 0.375f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+                    return true;
+            }
+            targetPos -= (dir.normalized * 0.1f);
+            return false;
         }
 
         public override void OnUpdate(StateManager states)
@@ -665,7 +804,7 @@ namespace PreServer
                     }
 
 
-                    if (player.transform.position != path[0].lerper.startVal || player.transform.forward != prevRotation)
+                    if (player.transform.position != path[0].lerper.startVal || player.transform.rotation != prevRotation)
                     {
                         if (blueSquirrel)
                             GetGhostTime();
@@ -769,39 +908,74 @@ namespace PreServer
                 //Debug.LogError("Path time: " + path[pathIndex].time + " time passed: " + t + " lerpVal: " + path[pathIndex].lerper.GetLerpVal());
 
                 //If the current path is complete, then move onto the next one
-                if (path[pathIndex].lerper.done)
+                //using a loop so I can keep passing the time over if the next path is complete
+                while (path[pathIndex].lerper.done)
                 {
-                    //Debug.LogError(path[pathIndex].time + " " + path[pathIndex].GetRemainder());
+                    states.transform.position = path[pathIndex].lerper.endVal;
                     states.transform.rotation = path[pathIndex].slerper.endVal;
                     ++pathIndex;
                     //Add any remaining time from the previous path into the current so we don't go an extra frame or 2 over
                     if (pathIndex < path.Count)
                     {
-                        path[pathIndex].lerper.Update(path[pathIndex - 1].GetRemainder() / path[pathIndex].time);
+                        path[pathIndex].Update(path[pathIndex - 1].GetRemainder());
                     }
+                    else
+                        break;
                 }
             }
         }
 
+        Vector3 climbRight;
+        Vector3 climbUp;
+        Vector3 climbForward;
         void Rotate(StateManager states)
         {
-            prevRotation = player.transform.forward;
-            var cam = Camera.main.transform;
+            prevRotation = player.transform.rotation;
+            Quaternion tr = prevRotation;
+            Vector3 targetDir = Vector3.zero;
+            if (player.climbState == PlayerManager.ClimbState.CLIMBING)
+            {
+                float h = player.movementVariables.horizontal;
+                float v = player.movementVariables.vertical;
 
-            float h = player.movementVariables.horizontal;
-            float v = player.movementVariables.vertical;
+                //rotating climb up and climb right based on camera's position
+                targetDir = climbForward * v;
+                targetDir += (climbRight * h);
+                targetDir.Normalize();
 
-            Vector3 targetDir = cam.forward * v;
-            targetDir += cam.right * h;
+                if (targetDir == Vector3.zero)
+                    return;
 
-            targetDir.Normalize();
-            targetDir.y = 0;
+                //Apply rotation
+                player.movementVariables.moveDirection = targetDir;
+                //rotationSpeed = Mathf.Lerp(20, 6, (states.rigid.velocity.magnitude / 6f));
+                tr = Quaternion.LookRotation(targetDir, states.transform.up);
+            }
+            else
+            {
+                var cam = Camera.main.transform;
+
+                float h = player.movementVariables.horizontal;
+                float v = player.movementVariables.vertical;
+
+                targetDir = cam.forward * v;
+                targetDir += cam.right * h;
+
+                targetDir.Normalize();
+                targetDir.y = 0;
+                if (targetDir == Vector3.zero)
+                    targetDir = player.transform.forward;
+
+                player.movementVariables.moveDirection = targetDir;
+
+                tr = Quaternion.LookRotation(targetDir, player.groundNormal);
+            }
             if (targetDir == Vector3.zero)
-                targetDir = player.transform.forward;
+            {
+                Debug.Log("TargetDir is zero!");
+                return;
+            }
 
-            player.movementVariables.moveDirection = targetDir;
-
-            Quaternion tr = Quaternion.LookRotation(targetDir, player.groundNormal);
             if (Quaternion.Angle(tr, startRotation) > rotationCutoff)
             {
                 if (Quaternion.Angle(tr, minRotation) <= Quaternion.Angle(tr, maxRotation))
@@ -811,9 +985,38 @@ namespace PreServer
             }
             Quaternion targetRotation = Quaternion.Slerp(player.transform.rotation, tr, Time.unscaledDeltaTime * player.movementVariables.moveAmount * rotationSpeed);
 
-            player.transform.rotation = targetRotation;
+            if (player.climbState == PlayerManager.ClimbState.CLIMBING)
+            {
+                if(CheckClimbRotation(targetRotation))
+                    player.transform.rotation = targetRotation;
+                else
+                    player.transform.rotation = prevRotation;
+            }
+            else
+            {
+                player.transform.rotation = targetRotation;
+            }
+
             //if (blueSquirrel != null)
             //    blueSquirrel.transform.rotation = targetRotation;
+        }
+
+        bool CheckClimbRotation(Quaternion targetRotation)
+        {
+            Vector3 underPos = player.transform.position + player.transform.forward + (-player.transform.up * 1.5f);
+            RaycastHit hit = new RaycastHit();
+
+            Vector3 underOrigin = player.transform.position;
+            underOrigin += (targetRotation * (Vector3.forward * 1.25f)) + (player.transform.up * 0.5f);
+
+            if (Physics.Linecast(underOrigin, underPos, out hit, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
+            {
+                if (hit.transform.tag == "Climb")
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         void RotateBasedOnGround(StateManager states)
@@ -831,7 +1034,14 @@ namespace PreServer
                 RaycastHit hit = new RaycastHit();
                 if (Physics.Raycast(center, dir, out hit, 5f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
                 {
-                    states.transform.rotation = Quaternion.Slerp(states.transform.rotation, Quaternion.FromToRotation(states.transform.up, hit.normal) * states.transform.rotation, Time.unscaledDeltaTime * rotationSpeed);
+                    if (hit.transform.tag == "Climb")
+                    {
+                        states.transform.rotation = Quaternion.Slerp(states.transform.rotation, Quaternion.FromToRotation(states.transform.up, hit.normal) * states.transform.rotation, Time.unscaledDeltaTime * rotationSpeed);
+                        Vector3 v = Vector3.Cross(hit.normal, Vector3.up);
+                        climbForward = Vector3.Cross(v, hit.normal);
+                        climbRight = Vector3.Cross(hit.normal, Vector3.up);
+                        climbUp = hit.normal;
+                    }
                 }
             }
             else
@@ -1043,12 +1253,12 @@ namespace PreServer
         }
         public override void OnExit(StateManager states)
         {
-            //int pathsCompleted = 0;
-            //for (int i = 0; i < path.Count; ++i)
-            //{
-            //    pathsCompleted += path[i].lerper.done ? 1 : 0;
-            //}
-            //Debug.Log("Completed " + pathsCompleted + " path(s) in " + t + " seconds, total time: " + totalTime + " slowMoTimer: " + slowMoTimer);
+            int pathsCompleted = 0;
+            for (int i = 0; i < path.Count; ++i)
+            {
+                pathsCompleted += path[i].lerper.done ? 1 : 0;
+            }
+            Debug.Log("Completed " + pathsCompleted + " path(s) in " + t + " seconds, total time: " + totalTime + " slowMoTimer: " + slowMoTimer);
             player.anim.SetBool(player.hashes.isDashing, false);
             base.OnExit(states);
 
@@ -1063,6 +1273,10 @@ namespace PreServer
                     player.rigid.velocity = additionalMomentum;
                     player.rigid.useGravity = true;
                 }
+            }
+            else
+            {
+                player.rigid.velocity = Vector3.zero;
             }
             if (player.isGrounded || player.climbState != PlayerManager.ClimbState.NONE)
                 player.pauseSpeedHackTimer = false;
@@ -1083,7 +1297,7 @@ namespace PreServer
         {
             remainder = (amount / time) + lerper.GetLerpVal();
             if (remainder >= 1)
-                remainder = (remainder - 1f) * time;
+                remainder = (remainder * time) - time;
             lerper.Update(amount / time);
             slerper.Update(amount / (time * 0.25f));
         }
