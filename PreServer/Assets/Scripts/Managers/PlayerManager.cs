@@ -103,6 +103,8 @@ namespace PreServer
         public int nextPointTimer = -1;
         public enum GrindType { STD, UNDERGROUND, DBL_UNDERGROUND, CIRCULAR };
         public GrindType grindType;
+        public bool onLastGrindSeg = false;
+        public Collider heldGrindCollider;
 
         public bool rotateBool = false;
         public SkinnedMeshRenderer playerMesh;
@@ -238,6 +240,8 @@ namespace PreServer
             anim.SetFloat(hashes.grindTimer, grindTimer);
             anim.SetBool(hashes.groundedState, (currentState.name == "Locomotion") ? true : false);
 
+            //Debug.Log(mTransform.rotation.eulerAngles);
+
             if (grindTimer <= 0.25f)
             {
                 grindTimer += 0.01f;
@@ -255,6 +259,15 @@ namespace PreServer
                     {
                         LeaveGrindOverrideNoMovement();
                     }
+
+                    else if (grindType == GrindType.DBL_UNDERGROUND)
+                    {
+                        if ((facingPoint == grindPoints[0] && behindPoint == grindPoints[1]) 
+                            || (facingPoint == grindPoints[grindPoints.Count - 1] && behindPoint == grindPoints[grindPoints.Count - 2]))
+                        {
+                            LeaveGrindOverrideNoMovement();
+                        }
+                    }
                 }
             }
 
@@ -267,6 +280,16 @@ namespace PreServer
                         nextPointTimer = -1;
                         LeaveGrindOverrideNoMovement();
                     }
+
+                    else if (grindType == GrindType.DBL_UNDERGROUND)
+                    {
+                        if ((facingPoint == grindPoints[0])
+                            || (facingPoint == grindPoints[grindPoints.Count - 1]))
+                        {
+                            nextPointTimer = -1;
+                            LeaveGrindOverrideNoMovement();
+                        }
+                    }
                 }
             }
 
@@ -276,6 +299,15 @@ namespace PreServer
                 {
                     NextPoint();
                 }
+
+                else if (grindType == GrindType.DBL_UNDERGROUND)
+                {
+                    if ((facingPoint == grindPoints[1] && behindPoint == grindPoints[0])
+                        || (facingPoint == grindPoints[grindPoints.Count - 2] && behindPoint == grindPoints[grindPoints.Count - 1]))
+                    {
+                        NextPoint();
+                    }
+                }
             }
 
             // Check squirrel distance to forward point
@@ -283,7 +315,7 @@ namespace PreServer
             {
                 if (Vector3.Distance(mTransform.position, facingPoint) <= 2.1f)
                 {
-                    Debug.Log(Vector3.Distance(mTransform.position, facingPoint) + " - got too close, next point");
+                    //Debug.Log(Vector3.Distance(mTransform.position, facingPoint) + " - got too close, next point");
 
                     frontCollider.enabled = false;
                     NextPoint();
@@ -682,6 +714,12 @@ namespace PreServer
             backSliding = false;
             if (Physics.Raycast(frontOrigin, dir, out frontHit, dis + 0.3f, Layers.ignoreLayersController, QueryTriggerInteraction.Ignore))
             {
+                /*if (frontHit.transform.tag == "grindMeat" && !inGrindZone)
+                {
+                    inGrindZone = true;
+                    GenerateGrindPoints(heldGrindCollider);
+                }*/
+
                 frontNormal = frontHit.normal;
                 angle = Vector3.Angle(frontHit.normal, Vector3.up);
                 if (angle >= 70)
@@ -1070,7 +1108,7 @@ namespace PreServer
             // Start a grind if you've entered a grind zone and were not already in one
             if (other.tag == "Grind")
             {
-                //Debug.Log("in grind zone, regardless of other stuff");
+                heldGrindCollider = other;
             }
 
 
@@ -1115,6 +1153,7 @@ namespace PreServer
             if (other.tag == "Grind" && currentState.name != "Grinding" && currentState.name != "WaitForAnimation")
             {
                 inGrindZone = false;
+                heldGrindCollider = null;
             }
 
             if (other.tag == "joint")
@@ -1283,49 +1322,166 @@ namespace PreServer
         /// </summary>
         public void NextPoint()
         {
-            if (grindDoneAdjusting == false || facingPointPair.Key == 0 || facingPointPair.Key == (grindPoints.Count - 1))
+            if (grindDoneAdjusting == false)
             {
                 return;
             }
 
-            //TODO make this (and other grindPoints[0], etc not break every grind :)
+            if (grindType != GrindType.CIRCULAR && (facingPointPair.Key == 0 || facingPointPair.Key == (grindPoints.Count - 1)))
+            {
+                return;
+            }
+
+            Debug.Log("Next Point");
+
             bool point0Adj = false;
             if (grindType == GrindType.UNDERGROUND && facingPoint == grindPoints[1] && behindPoint == grindPoints[0])
             {
                 point0Adj = true;
             }
 
-            Debug.Log("Next Point");
+            else if (grindType == GrindType.DBL_UNDERGROUND)
+            {
+                if ((facingPoint == grindPoints[1] && behindPoint == grindPoints[0]) 
+                    || (facingPoint == grindPoints[grindPoints.Count - 2] && behindPoint == grindPoints[grindPoints.Count - 1]))
+                {
+                    point0Adj = true;
+                }
+            }
 
+            // TODO simplify this, no need to repeat the same code 8 times
             // If the grind has more than 1 segment, move to next (or previous) point
             if (grindPoints.Count > 2)
             {
-                if (facingPointPair.Key > behindPointPair.Key)
+                // Circular grind logic
+                if (grindType == GrindType.CIRCULAR)
                 {
-                    var newKey = facingPointPair.Key + 1;
-                    var bungus = grindPoints[newKey];
+                    // If heading towards point 0
+                    if (facingPointPair.Key == 0)
+                    {
+                        // And you're coming from the last point and heading towards point 1
+                        if (behindPointPair.Key == grindPoints.Count - 1)
+                        {
+                            var newKey = 1;
+                            var bungus = grindPoints[newKey];
 
-                    var hold = facingPoint;
-                    var holdPair = facingPointPair;
+                            var hold = facingPoint;
+                            var holdPair = facingPointPair;
 
-                    facingPoint = bungus;
-                    facingPointPair = new KeyValuePair<int, Vector3>(newKey, bungus);
-                    behindPoint = hold;
-                    behindPointPair = holdPair;
+                            facingPoint = bungus;
+                            facingPointPair = new KeyValuePair<int, Vector3>(newKey, bungus);
+                            behindPoint = hold;
+                            behindPointPair = holdPair;
+                        }
+                        // Or coming from point 1 and heading towards last point
+                        else
+                        {
+                            var newKey = grindPoints.Count - 1;
+                            var bungus = grindPoints[newKey];
+
+                            var hold = facingPoint;
+                            var holdPair = facingPointPair;
+
+                            facingPoint = bungus;
+                            facingPointPair = new KeyValuePair<int, Vector3>(newKey, bungus);
+                            behindPoint = hold;
+                            behindPointPair = holdPair;
+                        }
+                    }
+                    // If heading towards last point in circle
+                    else if (facingPointPair.Key == grindPoints.Count - 1)
+                    {
+                        // And coming from point 0 towards 2nd to last point
+                        if (behindPointPair.Key == 0)
+                        {
+                            var newKey = facingPointPair.Key - 1;
+                            var bungus = grindPoints[newKey];
+
+                            var hold = facingPoint;
+                            var holdPair = facingPointPair;
+
+                            facingPoint = bungus;
+                            facingPointPair = new KeyValuePair<int, Vector3>(newKey, bungus);
+                            behindPoint = hold;
+                            behindPointPair = holdPair;
+                        }
+                        // Or coming from 2nd to last point towards point 0
+                        else
+                        {
+                            var newKey = 0;
+                            var bungus = grindPoints[newKey];
+
+                            var hold = facingPoint;
+                            var holdPair = facingPointPair;
+
+                            facingPoint = bungus;
+                            facingPointPair = new KeyValuePair<int, Vector3>(newKey, bungus);
+                            behindPoint = hold;
+                            behindPointPair = holdPair;
+                        }
+                    }
+                    // Regular Next Point facing/behind swaps
+                    else
+                    {
+                        if (facingPointPair.Key > behindPointPair.Key)
+                        {
+                            var newKey = facingPointPair.Key + 1;
+                            var bungus = grindPoints[newKey];
+
+                            var hold = facingPoint;
+                            var holdPair = facingPointPair;
+
+                            facingPoint = bungus;
+                            facingPointPair = new KeyValuePair<int, Vector3>(newKey, bungus);
+                            behindPoint = hold;
+                            behindPointPair = holdPair;
+                        }
+
+                        if (facingPointPair.Key < behindPointPair.Key)
+                        {
+                            var newKey = facingPointPair.Key - 1;
+                            var bungus = grindPoints[newKey];
+
+                            var hold = facingPoint;
+                            var holdPair = facingPointPair;
+
+                            facingPoint = bungus;
+                            facingPointPair = new KeyValuePair<int, Vector3>(newKey, bungus);
+                            behindPoint = hold;
+                            behindPointPair = holdPair;
+                        }
+                    }
                 }
-
-                if (facingPointPair.Key < behindPointPair.Key)
+                // Non circular point swap logic
+                else
                 {
-                    var newKey = facingPointPair.Key - 1;
-                    var bungus = grindPoints[newKey];
+                    if (facingPointPair.Key > behindPointPair.Key)
+                    {
+                        var newKey = facingPointPair.Key + 1;
+                        var bungus = grindPoints[newKey];
 
-                    var hold = facingPoint;
-                    var holdPair = facingPointPair;
+                        var hold = facingPoint;
+                        var holdPair = facingPointPair;
 
-                    facingPoint = bungus;
-                    facingPointPair = new KeyValuePair<int, Vector3>(newKey, bungus);
-                    behindPoint = hold;
-                    behindPointPair = holdPair;
+                        facingPoint = bungus;
+                        facingPointPair = new KeyValuePair<int, Vector3>(newKey, bungus);
+                        behindPoint = hold;
+                        behindPointPair = holdPair;
+                    }
+
+                    if (facingPointPair.Key < behindPointPair.Key)
+                    {
+                        var newKey = facingPointPair.Key - 1;
+                        var bungus = grindPoints[newKey];
+
+                        var hold = facingPoint;
+                        var holdPair = facingPointPair;
+
+                        facingPoint = bungus;
+                        facingPointPair = new KeyValuePair<int, Vector3>(newKey, bungus);
+                        behindPoint = hold;
+                        behindPointPair = holdPair;
+                    }
                 }
             }
 
@@ -1334,7 +1490,7 @@ namespace PreServer
 
             var testyyy = Vector3.Distance(mTransform.position, facingPoint) - Vector3.Distance(behindPoint, facingPoint);
 
-            Debug.Log("This is testyyy - " + testyyy);
+            //Debug.Log("This is testyyy - " + testyyy);
 
 
             mTransform.position = Vector3.MoveTowards(mTransform.position, facingPoint, testyyy / 8);
@@ -1371,19 +1527,6 @@ namespace PreServer
             if (grindPoints.Count == 0)
             {
                 var grindMaster = grindColliderGen.gameObject.transform.parent.parent;
-
-                switch (grindMaster.tag)
-                {
-                    case "UndergroundGrind":
-                        grindType = GrindType.UNDERGROUND;
-                        break;
-                    default:
-                        grindType = GrindType.STD;
-                        break;
-                }
-
-                Debug.Log(grindMaster.name);
-                //var points = grindMaster.GetChild(2);
                 var points = grindMaster.GetChild(1);
 
                 var numPoints = points.childCount;
@@ -1391,6 +1534,28 @@ namespace PreServer
                 for (int i = 0; i < numPoints; i++)
                 {
                     grindPoints.Add(i, points.GetChild(i).position);
+                }
+
+                switch (grindMaster.tag)
+                {
+                    case "UndergroundGrind":
+                        grindType = GrindType.UNDERGROUND;
+                        break;
+                    case "DblUndergroundGrind":
+                        grindType = GrindType.DBL_UNDERGROUND;
+                        break;
+                    case "CircularGrind":
+                        grindType = GrindType.CIRCULAR;
+
+                        if (grindColliderGen.name.Contains("0") && !grindColliderGen.name.Contains("1"))
+                        {
+                            onLastGrindSeg = true;
+                        }
+
+                        break;
+                    default:
+                        grindType = GrindType.STD;
+                        break;
                 }
             }
 
@@ -1407,6 +1572,7 @@ namespace PreServer
         /// </summary>
         void PurgeGrindPoints()
         {
+            onLastGrindSeg = false;
             grindPoints = new Dictionary<int, Vector3>();
         }
 

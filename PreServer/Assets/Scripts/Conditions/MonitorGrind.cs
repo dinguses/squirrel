@@ -34,18 +34,37 @@ namespace PreServer
                     }
                 }
 
+                // onLastGrindSeg stuff feels overcomplicated, but you can't assume segments will always be equal length
+                // so you can't just check if player is closer to point 1 or last point
+
                 // If the grind point is the first on the grind, the other point must be the second
                 if (closestPoint.Key == 0)
                 {
-                    otherPoint = new KeyValuePair<int, Vector3>(1, state.grindPoints[1]);
-                    otherPointValue = otherPoint.Value;
+                    if (state.onLastGrindSeg)
+                    {
+                        otherPoint = new KeyValuePair<int, Vector3>(state.grindPoints.Count - 1, state.grindPoints[state.grindPoints.Count - 1]);
+                        otherPointValue = otherPoint.Value;
+                    }
+                    else
+                    {
+                        otherPoint = new KeyValuePair<int, Vector3>(1, state.grindPoints[1]);
+                        otherPointValue = otherPoint.Value;
+                    }
                 }
 
                 // If the grind point is the last on the grind, the other point must be the 2nd to last
                 else if (closestPoint.Key == (state.grindPoints.Count - 1))
                 {
-                    otherPoint = new KeyValuePair<int, Vector3>(closestPoint.Key - 1, state.grindPoints[closestPoint.Key - 1]);
-                    otherPointValue = otherPoint.Value;
+                    if (state.onLastGrindSeg)
+                    {
+                        otherPoint = new KeyValuePair<int, Vector3>(0, state.grindPoints[0]);
+                        otherPointValue = otherPoint.Value;
+                    }
+                    else
+                    {
+                        otherPoint = new KeyValuePair<int, Vector3>(closestPoint.Key - 1, state.grindPoints[closestPoint.Key - 1]);
+                        otherPointValue = otherPoint.Value;
+                    }
                 }
 
                 else
@@ -77,6 +96,9 @@ namespace PreServer
 
                 // Time to find out which point the player should be facing on the grind
 
+                // For sloped grinds, if their y's are different, sometimes you would start the grind facing the wrong point
+                closestPointValue.y = otherPointValue.y;
+
                 // Get the angle between the player's direction and the closest point
                 Vector3 _closestDirection = (closestPointValue - reusable).normalized;
                 Quaternion _closestLookRotation = Quaternion.LookRotation(_closestDirection);
@@ -87,22 +109,62 @@ namespace PreServer
                 Quaternion _otherLookRotation = Quaternion.LookRotation(_otherDirection);
                 float otherAngle = Quaternion.Angle(state.mTransform.rotation, _otherLookRotation);
 
-                // If the angle towards the closest point is less than the other angle, than it's the point to face towards
-                if (closestAngle < otherAngle)
+                foreach (var grindPoint in state.grindPoints)
                 {
-                    state.facingPoint = closestPointValue;
-                    state.behindPoint = otherPointValue;
+                    if (grindPoint.Value == closestPointValue)
+                    {
+                        Debug.Log("closes point is - " + grindPoint.Key);
+                    }
 
-                    state.facingPointPair = closestPoint;
-                    state.behindPointPair = otherPoint;
+                    if (grindPoint.Value == otherPointValue)
+                    {
+                        Debug.Log("other point is - " + grindPoint.Key);
+                    }
+                }
+
+                //Debug.Log("Closest angle - " + closestAngle);
+                //Debug.Log("other angle - " + otherAngle);
+
+                // Underground (and Double Underground should use the end most point, not point 0!)
+                if (state.grindType == PlayerManager.GrindType.UNDERGROUND)
+                {
+                    // If the angle towards the closest point is less than the other angle, than it's the point to face towards
+                    if (closestAngle < otherAngle)
+                    {
+                        state.facingPoint = closestPointValue;
+                        state.behindPoint = otherPointValue;
+
+                        state.facingPointPair = closestPoint;
+                        state.behindPointPair = otherPoint;
+                    }
+                    else
+                    {
+                        state.facingPoint = otherPointValue;
+                        state.behindPoint = closestPointValue;
+
+                        state.facingPointPair = otherPoint;
+                        state.behindPointPair = closestPoint;
+                    }
                 }
                 else
                 {
-                    state.facingPoint = otherPointValue;
-                    state.behindPoint = closestPointValue;
+                    // If the angle towards the closest point is less than the other angle, than it's the point to face towards
+                    if (closestAngle < otherAngle)
+                    {
+                        state.facingPoint = closestPointValue;
+                        state.behindPoint = otherPointValue;
 
-                    state.facingPointPair = otherPoint;
-                    state.behindPointPair = closestPoint;
+                        state.facingPointPair = closestPoint;
+                        state.behindPointPair = otherPoint;
+                    }
+                    else
+                    {
+                        state.facingPoint = otherPointValue;
+                        state.behindPoint = closestPointValue;
+
+                        state.facingPointPair = otherPoint;
+                        state.behindPointPair = closestPoint;
+                    }
                 }
 
                 #region oldGrindCenter

@@ -22,6 +22,8 @@ TagManager:
   - challenge3
   - grindMeat
   - UndergroundGrind
+  - CircularGrind
+  - DblUndergroundGrind
   layers:
   - Default
   - TransparentFX
